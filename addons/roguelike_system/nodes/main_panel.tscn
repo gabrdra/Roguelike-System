@@ -1,0 +1,24 @@
+[gd_scene load_steps=2 format=3 uid="uid://dvis5r7ijqlb"]
+
+[ext_resource type="PackedScene" uid="uid://dmiy2qk1j8u3w" path="res://addons/roguelike_system/nodes/room_details.tscn" id="1_yees8"]
+
+[node name="MainPanel" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 3
+
+[node name="TabContainer" type="TabContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+tab_alignment = 1
+
+[node name="RoomDetails" parent="TabContainer" instance=ExtResource("1_yees8")]
+layout_mode = 2
