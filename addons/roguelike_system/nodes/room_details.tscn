@@ -28,9 +28,9 @@ horizontal_alignment = 1
 layout_mode = 2
 alignment = 1
 
-[node name="AddRoom" type="Button" parent="Container/ScrollContainer/List/AddRemoveRoom"]
+[node name="NewRoom" type="Button" parent="Container/ScrollContainer/List/AddRemoveRoom"]
 layout_mode = 2
-text = "Add Room"
+text = "New Room"
 
 [node name="DeleteRoom" type="Button" parent="Container/ScrollContainer/List/AddRemoveRoom"]
 layout_mode = 2
@@ -44,16 +44,91 @@ layout_mode = 2
 layout_mode = 2
 
 [node name="Details" type="PanelContainer" parent="."]
-custom_minimum_size = Vector2(500, 0)
+custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="ScrollContainer" type="ScrollContainer" parent="Details"]
 layout_mode = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Details/ScrollContainer"]
 layout_mode = 2
+size_flags_horizontal = 3
 
-[node name="Label" type="Label" parent="Details/ScrollContainer/VBoxContainer"]
+[node name="Name" type="HBoxContainer" parent="Details/ScrollContainer/VBoxContainer"]
 layout_mode = 2
-text = "Room details will go here
+
+[node name="RoomNameLabel" type="Label" parent="Details/ScrollContainer/VBoxContainer/Name"]
+layout_mode = 2
+text = "Room name:
 "
+
+[node name="RoomNameInput" type="TextEdit" parent="Details/ScrollContainer/VBoxContainer/Name"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "defaults to scene name"
+scroll_fit_content_height = true
+
+[node name="Scene" type="HBoxContainer" parent="Details/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="SceneLabel" type="Label" parent="Details/ScrollContainer/VBoxContainer/Scene"]
+layout_mode = 2
+text = "Room scene:
+"
+
+[node name="SceneButton" type="Button" parent="Details/ScrollContainer/VBoxContainer/Scene"]
+layout_mode = 2
+text = "Select Scene"
+
+[node name="Required" type="HBoxContainer" parent="Details/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="RequiredLabel" type="Label" parent="Details/ScrollContainer/VBoxContainer/Required"]
+layout_mode = 2
+text = "Required:
+"
+
+[node name="RequiredButton" type="CheckButton" parent="Details/ScrollContainer/VBoxContainer/Required"]
+layout_mode = 2
+
+[node name="MaxPasses" type="HBoxContainer" parent="Details/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="MaxPassesLabel" type="Label" parent="Details/ScrollContainer/VBoxContainer/MaxPasses"]
+layout_mode = 2
+text = "max passes:
+"
+
+[node name="MaxPassesInput" type="TextEdit" parent="Details/ScrollContainer/VBoxContainer/MaxPasses"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "maximum number of times a room can appear"
+scroll_fit_content_height = true
+
+[node name="ListPassages" type="HBoxContainer" parent="Details/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ListPassagesLabel" type="Label" parent="Details/ScrollContainer/VBoxContainer/ListPassages"]
+layout_mode = 2
+text = "List of passages:
+"
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Details/ScrollContainer/VBoxContainer/ListPassages"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "- left
+- up
+- down
+- right"
+fit_content = true
+
+[node name="AddRoom" type="CenterContainer" parent="Details/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="AddRoomButton" type="Button" parent="Details/ScrollContainer/VBoxContainer/AddRoom"]
+layout_mode = 2
+text = "Add room to graph"

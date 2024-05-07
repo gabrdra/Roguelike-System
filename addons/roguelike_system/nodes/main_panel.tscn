@@ -20,5 +20,5 @@ grow_horizontal = 2
 grow_vertical = 2
 tab_alignment = 1
 
-[node name="RoomDetails" parent="TabContainer" instance=ExtResource("1_yees8")]
+[node name="Room Details" parent="TabContainer" instance=ExtResource("1_yees8")]
 layout_mode = 2
