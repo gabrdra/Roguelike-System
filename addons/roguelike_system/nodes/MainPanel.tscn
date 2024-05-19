@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://dvis5r7ijqlb"]
 
-[ext_resource type="PackedScene" uid="uid://dmiy2qk1j8u3w" path="res://addons/roguelike_system/nodes/room_details.tscn" id="1_yees8"]
+[ext_resource type="PackedScene" uid="uid://dmiy2qk1j8u3w" path="res://addons/roguelike_system/nodes/RoomDetails.tscn" id="1_7ysua"]
 
 [node name="MainPanel" type="Control"]
 layout_mode = 3
@@ -20,5 +20,5 @@ grow_horizontal = 2
 grow_vertical = 2
 tab_alignment = 1
 
-[node name="Room Details" parent="TabContainer" instance=ExtResource("1_yees8")]
+[node name="Room Details" parent="TabContainer" instance=ExtResource("1_7ysua")]
 layout_mode = 2

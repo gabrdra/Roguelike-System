@@ -1,4 +1,14 @@
-[gd_scene format=3 uid="uid://dmiy2qk1j8u3w"]
+[gd_scene load_steps=2 format=3 uid="uid://dmiy2qk1j8u3w"]
+
+[sub_resource type="GDScript" id="GDScript_5jpvo"]
+script/source = "@tool
+extends Button
+
+@onready var file_selection:FileDialog = $FileSelection
+
+func _on_button_down() -> void:
+	file_selection.popup_centered_ratio(0.5)
+"
 
 [node name="RoomDetails" type="HBoxContainer"]
 anchors_preset = 15
@@ -81,6 +91,15 @@ text = "Room scene:
 [node name="SceneButton" type="Button" parent="Details/ScrollContainer/VBoxContainer/Scene"]
 layout_mode = 2
 text = "Select Scene"
+script = SubResource("GDScript_5jpvo")
+
+[node name="FileSelection" type="FileDialog" parent="Details/ScrollContainer/VBoxContainer/Scene/SceneButton"]
+title = "Open a File"
+position = Vector2i(0, 36)
+size = Vector2i(392, 159)
+ok_button_text = "Open"
+file_mode = 0
+filters = PackedStringArray("*.tscn", "*.scn")
 
 [node name="Required" type="HBoxContainer" parent="Details/ScrollContainer/VBoxContainer"]
 layout_mode = 2
@@ -132,3 +151,5 @@ layout_mode = 2
 [node name="AddRoomButton" type="Button" parent="Details/ScrollContainer/VBoxContainer/AddRoom"]
 layout_mode = 2
 text = "Add room to graph"
+
+[connection signal="button_down" from="Details/ScrollContainer/VBoxContainer/Scene/SceneButton" to="Details/ScrollContainer/VBoxContainer/Scene/SceneButton" method="_on_button_down"]

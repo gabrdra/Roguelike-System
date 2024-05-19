@@ -1,7 +1,7 @@
 @tool
 extends EditorPlugin
 
-const MainPanel = preload("res://addons/roguelike_system/nodes/main_panel.tscn")
+const MainPanel = preload("res://addons/roguelike_system/nodes/MainPanel.tscn")
 
 var main_panel_instance
 
