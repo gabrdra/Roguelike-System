@@ -1,4 +1,25 @@
-[gd_scene load_steps=2 format=3 uid="uid://dmiy2qk1j8u3w"]
+[gd_scene load_steps=3 format=3 uid="uid://dmiy2qk1j8u3w"]
+
+[sub_resource type="GDScript" id="GDScript_50bse"]
+script/source = "@tool
+extends PanelContainer
+
+@onready var file_selection:FileDialog = $ScrollContainer/VBoxContainer/Scene/SceneButton/FileSelection
+@onready var scene_path_label: Label = $ScrollContainer/VBoxContainer/Scene/ScenePathLabel
+var currentRoom:= Room.new();
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	pass
+
+
+
+func _on_scene_selected(path: String) -> void:
+	print(\"on function\")
+	print(ResourceLoader.get_resource_uid(path))
+	currentRoom.sceneUid = ResourceUID.id_to_text(ResourceLoader.get_resource_uid(path))
+	print(currentRoom.sceneUid)
+	scene_path_label.text = path
+"
 
 [sub_resource type="GDScript" id="GDScript_5jpvo"]
 script/source = "@tool
@@ -57,6 +78,7 @@ layout_mode = 2
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 size_flags_horizontal = 3
+script = SubResource("GDScript_50bse")
 
 [node name="ScrollContainer" type="ScrollContainer" parent="Details"]
 layout_mode = 2
@@ -100,6 +122,10 @@ size = Vector2i(392, 159)
 ok_button_text = "Open"
 file_mode = 0
 filters = PackedStringArray("*.tscn", "*.scn")
+
+[node name="ScenePathLabel" type="Label" parent="Details/ScrollContainer/VBoxContainer/Scene"]
+layout_mode = 2
+text = "No scene currently selected"
 
 [node name="Required" type="HBoxContainer" parent="Details/ScrollContainer/VBoxContainer"]
 layout_mode = 2
@@ -153,3 +179,4 @@ layout_mode = 2
 text = "Add room to graph"
 
 [connection signal="button_down" from="Details/ScrollContainer/VBoxContainer/Scene/SceneButton" to="Details/ScrollContainer/VBoxContainer/Scene/SceneButton" method="_on_button_down"]
+[connection signal="file_selected" from="Details/ScrollContainer/VBoxContainer/Scene/SceneButton/FileSelection" to="Details" method="_on_scene_selected"]
