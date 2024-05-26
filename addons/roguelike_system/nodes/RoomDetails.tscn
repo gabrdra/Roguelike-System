@@ -9,12 +9,31 @@ extends PanelContainer
 @onready var room_name_input: TextEdit = $ScrollContainer/VBoxContainer/Name/RoomNameInput
 @onready var max_passes_input: SpinBox = $ScrollContainer/VBoxContainer/MaxPasses/MaxPassesInput
 @onready var list_passages_text: RichTextLabel = $ScrollContainer/VBoxContainer/ListPassages/ListPassagesText
-
-var current_room:= Room.new();
+@onready var required_button: CheckButton = $ScrollContainer/VBoxContainer/Required/RequiredButton
+enum State {CREATE, UPDATE}
+var current_state:State
+var current_room:Room;
+var room_old_name:String;
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	create_new_empty_room()
+
+func create_new_empty_room() -> void:
+	current_state = State.CREATE
+	current_room = Room.new()
 	current_room.max_passes = 1
 	current_room.required = false
+	room_old_name = \"\"
+
+func retrieve_existing_room(room_name:String) -> void:
+	var room := RogueSys.get_room_by_name(room_name)
+	room_old_name = room.name
+	current_room = room
+	scene_path_label.text = ResourceUID.get_id_path(int(current_room.scene_uid.trim_prefix(\"uid://\")))
+	room_name_input.text = current_room.name
+	max_passes_input.value = current_room.max_passes
+	required_button.set_pressed_no_signal(current_room.required)
+	
 
 func print_current_room() -> void:
 	print(current_room.name)
@@ -57,10 +76,12 @@ func set_passages_from_scene() -> void:
 			return
 		current_room.passages[p.name]=[]
 	list_passages_text.clear()
+	update_passages_text()
+	
+func update_passages_text()->void:
 	for p in current_room.passages:
 		list_passages_text.append_text(\"- \"+str(p))
 		list_passages_text.newline()
-	
 
 func _on_scene_selected(path: String) -> void:
 	current_room.scene_uid = ResourceUID.id_to_text(ResourceLoader.get_resource_uid(path))
@@ -88,8 +109,13 @@ func _on_required_toggled(toggled_on: bool) -> void:
 func _on_max_passes_value_changed(value: float) -> void:
 	current_room.max_passes = value
 
-func _on_add_room_button() -> void:
+func _on_save_room_button() -> void:
 	print_current_room()
+	match current_state:
+		State.CREATE:
+			RogueSys.add_new_room(current_room)
+		State.UPDATE:
+			RogueSys.update_room(current_room,room_old_name)
 "
 
 [sub_resource type="GDScript" id="GDScript_5jpvo"]
@@ -239,16 +265,16 @@ layout_mode = 2
 size_flags_horizontal = 3
 fit_content = true
 
-[node name="AddRoom" type="CenterContainer" parent="Details/ScrollContainer/VBoxContainer"]
+[node name="SaveRoom" type="CenterContainer" parent="Details/ScrollContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="AddRoomButton" type="Button" parent="Details/ScrollContainer/VBoxContainer/AddRoom"]
+[node name="SaveRoomButton" type="Button" parent="Details/ScrollContainer/VBoxContainer/SaveRoom"]
 layout_mode = 2
-text = "Add room to graph"
+text = "save room"
 
 [connection signal="text_changed" from="Details/ScrollContainer/VBoxContainer/Name/RoomNameInput" to="Details" method="_on_room_name_changed"]
 [connection signal="button_down" from="Details/ScrollContainer/VBoxContainer/Scene/SceneButton" to="Details/ScrollContainer/VBoxContainer/Scene/SceneButton" method="_on_button_down"]
 [connection signal="file_selected" from="Details/ScrollContainer/VBoxContainer/Scene/SceneButton/FileSelection" to="Details" method="_on_scene_selected"]
 [connection signal="toggled" from="Details/ScrollContainer/VBoxContainer/Required/RequiredButton" to="Details" method="_on_required_toggled"]
 [connection signal="value_changed" from="Details/ScrollContainer/VBoxContainer/MaxPasses/MaxPassesInput" to="Details" method="_on_max_passes_value_changed"]
-[connection signal="button_down" from="Details/ScrollContainer/VBoxContainer/AddRoom/AddRoomButton" to="Details" method="_on_add_room_button"]
+[connection signal="button_down" from="Details/ScrollContainer/VBoxContainer/SaveRoom/SaveRoomButton" to="Details" method="_on_save_room_button"]

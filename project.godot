@@ -14,6 +14,10 @@ config/name="Roguelike System"
 config/features=PackedStringArray("4.2", "Forward Plus")
 config/icon="res://icon.svg"
 
+[autoload]
+
+RogueSys="*res://addons/roguelike_system/scripts/RogueSysSingleton.gd"
+
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/roguelike_system/plugin.cfg")

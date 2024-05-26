@@ -8,6 +8,7 @@ var main_panel_instance
 func _enter_tree():
 	main_panel_instance = MainPanel.instantiate()
 	EditorInterface.get_editor_main_screen().add_child(main_panel_instance)
+	add_autoload_singleton("RogueSys", "res://addons/roguelike_system/scripts/RogueSysSingleton.gd")
 	_make_visible(false)
 
 
