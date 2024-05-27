@@ -1,0 +1,80 @@
+[gd_scene load_steps=2 format=3 uid="uid://b8x37u1dmaqn"]
+
+[sub_resource type="GDScript" id="GDScript_1lob4"]
+script/source = "@tool
+extends HBoxContainer
+
+@onready var rooms_container: VBoxContainer = $Container/ScrollContainer/List/RoomsContainer
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	fill_rooms_list()
+
+func _on_room_selected(button:Button) -> void:
+	button.disabled = true
+
+func fill_rooms_list() -> void:
+	for r in rooms_container.get_children():
+		r.queue_free()
+	var rooms := RogueSys.get_rooms()
+	print(rooms)
+	for name in rooms:
+		print(name)
+		var button := Button.new()
+		button.text = name
+		button.button_down.connect(_on_room_selected.bind(button))
+		rooms_container.add_child(button)
+
+
+func _on_visibility_changed() -> void:
+	if is_visible() == true:
+		fill_rooms_list()
+"
+
+[node name="PossibilityGraph" type="HBoxContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_1lob4")
+
+[node name="Container" type="PanelContainer" parent="."]
+custom_minimum_size = Vector2(250, 0)
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Container"]
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="List" type="VBoxContainer" parent="Container/ScrollContainer"]
+custom_minimum_size = Vector2(230, 0)
+layout_mode = 2
+
+[node name="RoomsListLabel" type="Label" parent="Container/ScrollContainer/List"]
+layout_mode = 2
+text = "Rooms list"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="Container/ScrollContainer/List"]
+layout_mode = 2
+
+[node name="RoomsContainer" type="VBoxContainer" parent="Container/ScrollContainer/List"]
+layout_mode = 2
+
+[node name="GraphEdit" type="GraphEdit" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="GraphNode" type="GraphNode" parent="GraphEdit"]
+layout_mode = 0
+offset_left = 100.0
+offset_top = 100.0
+offset_right = 174.0
+offset_bottom = 155.0
+mouse_filter = 1
+position_offset = Vector2(100, 100)
+resizable = true
+title = "Example"
+
+[connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
