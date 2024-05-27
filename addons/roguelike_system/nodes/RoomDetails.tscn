@@ -1,8 +1,45 @@
-[gd_scene load_steps=3 format=3 uid="uid://dmiy2qk1j8u3w"]
+[gd_scene load_steps=4 format=3 uid="uid://dmiy2qk1j8u3w"]
+
+[sub_resource type="GDScript" id="GDScript_om7ie"]
+script/source = "@tool
+extends HBoxContainer
+
+@onready var details: PanelContainer = $Details
+@onready var rooms_container: VBoxContainer = $Container/ScrollContainer/List/RoomsContainer
+
+#create a new scene that has a a button with the name of the room, connect all the buttons to this script with them passing their name when button_down
+func _ready() -> void:
+	fill_rooms_list()
+	
+func _on_new_room_button_down() -> void:
+	details.create_new_empty_room()
+
+
+func _on_rooms_changed() -> void:
+	fill_rooms_list()
+
+func _on_room_selected(name:String) -> void:
+	details.retrieve_existing_room(name)
+
+func fill_rooms_list() -> void:
+	for r in rooms_container.get_children():
+		r.queue_free()
+	var rooms := RogueSys.get_rooms()
+	print(rooms)
+	for name in rooms:
+		print(name)
+		var button := Button.new()
+		button.text = name
+		button.button_down.connect(_on_room_selected.bind(button.text))
+		rooms_container.add_child(button)
+		
+"
 
 [sub_resource type="GDScript" id="GDScript_50bse"]
 script/source = "@tool
 extends PanelContainer
+
+signal rooms_changed
 
 @onready var file_selection:FileDialog = $ScrollContainer/VBoxContainer/Scene/SceneButton/FileSelection
 @onready var scene_path_label: Label = $ScrollContainer/VBoxContainer/Scene/ScenePathLabel
@@ -24,16 +61,24 @@ func create_new_empty_room() -> void:
 	current_room.max_passes = 1
 	current_room.required = false
 	room_old_name = \"\"
-
+	fill_interface()
+	
 func retrieve_existing_room(room_name:String) -> void:
+	current_state = State.UPDATE
 	var room := RogueSys.get_room_by_name(room_name)
 	room_old_name = room.name
 	current_room = room
-	scene_path_label.text = ResourceUID.get_id_path(int(current_room.scene_uid.trim_prefix(\"uid://\")))
+	fill_interface()
+	
+func fill_interface() -> void:
+	if(current_room.scene_uid.is_empty()):
+		scene_path_label.text = \"\"
+	else:
+		scene_path_label.text = ResourceUID.get_id_path(ResourceUID.text_to_id(current_room.scene_uid))
 	room_name_input.text = current_room.name
 	max_passes_input.value = current_room.max_passes
 	required_button.set_pressed_no_signal(current_room.required)
-	
+	update_passages_text()
 
 func print_current_room() -> void:
 	print(current_room.name)
@@ -75,10 +120,10 @@ func set_passages_from_scene() -> void:
 			current_room.passages = {}
 			return
 		current_room.passages[p.name]=[]
-	list_passages_text.clear()
 	update_passages_text()
 	
 func update_passages_text()->void:
+	list_passages_text.clear()
 	for p in current_room.passages:
 		list_passages_text.append_text(\"- \"+str(p))
 		list_passages_text.newline()
@@ -110,12 +155,18 @@ func _on_max_passes_value_changed(value: float) -> void:
 	current_room.max_passes = value
 
 func _on_save_room_button() -> void:
+	#TODO: add Data validation
+	#- validate that there is no room with the name already
+	if(current_room.name==\"\"):
+		printerr(\"The room must have a name\")
+		return
 	print_current_room()
 	match current_state:
 		State.CREATE:
 			RogueSys.add_new_room(current_room)
 		State.UPDATE:
 			RogueSys.update_room(current_room,room_old_name)
+	rooms_changed.emit()
 "
 
 [sub_resource type="GDScript" id="GDScript_5jpvo"]
@@ -134,6 +185,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = SubResource("GDScript_om7ie")
 
 [node name="Container" type="PanelContainer" parent="."]
 custom_minimum_size = Vector2(250, 0)
@@ -147,9 +199,9 @@ horizontal_scroll_mode = 0
 custom_minimum_size = Vector2(230, 0)
 layout_mode = 2
 
-[node name="RoomListLabel" type="Label" parent="Container/ScrollContainer/List"]
+[node name="RoomsListLabel" type="Label" parent="Container/ScrollContainer/List"]
 layout_mode = 2
-text = "Room list"
+text = "Rooms list"
 horizontal_alignment = 1
 
 [node name="AddRemoveRoom" type="HBoxContainer" parent="Container/ScrollContainer/List"]
@@ -168,7 +220,7 @@ text = "Delete Room
 [node name="HSeparator" type="HSeparator" parent="Container/ScrollContainer/List"]
 layout_mode = 2
 
-[node name="Rooms" type="VBoxContainer" parent="Container/ScrollContainer/List"]
+[node name="RoomsContainer" type="VBoxContainer" parent="Container/ScrollContainer/List"]
 layout_mode = 2
 
 [node name="Details" type="PanelContainer" parent="."]
@@ -222,7 +274,6 @@ filters = PackedStringArray("*.tscn", "*.scn")
 
 [node name="ScenePathLabel" type="Label" parent="Details/ScrollContainer/VBoxContainer/Scene"]
 layout_mode = 2
-text = "No scene currently selected"
 
 [node name="Required" type="HBoxContainer" parent="Details/ScrollContainer/VBoxContainer"]
 layout_mode = 2
@@ -272,6 +323,8 @@ layout_mode = 2
 layout_mode = 2
 text = "save room"
 
+[connection signal="button_down" from="Container/ScrollContainer/List/AddRemoveRoom/NewRoom" to="." method="_on_new_room_button_down"]
+[connection signal="rooms_changed" from="Details" to="." method="_on_rooms_changed"]
 [connection signal="text_changed" from="Details/ScrollContainer/VBoxContainer/Name/RoomNameInput" to="Details" method="_on_room_name_changed"]
 [connection signal="button_down" from="Details/ScrollContainer/VBoxContainer/Scene/SceneButton" to="Details/ScrollContainer/VBoxContainer/Scene/SceneButton" method="_on_button_down"]
 [connection signal="file_selected" from="Details/ScrollContainer/VBoxContainer/Scene/SceneButton/FileSelection" to="Details" method="_on_scene_selected"]

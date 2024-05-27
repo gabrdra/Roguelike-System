@@ -1,3 +1,4 @@
+@tool
 class_name RogueSysSingleton extends Node
 
 var maps: Dictionary = {}
@@ -15,6 +16,7 @@ func get_rooms()->Dictionary:
 	
 func add_new_room(room:Room)-> void:
 	current_map.rooms[room.name]=room
+	print(current_map.rooms[room.name])
 	
 func get_room_by_name(name:String) -> Room:
 	return current_map.rooms[name]
