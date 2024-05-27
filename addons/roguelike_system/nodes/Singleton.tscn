@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://dx4wkuhxmn48h"]
+
+[ext_resource type="Script" path="res://addons/roguelike_system/scripts/RogueSysSingleton.gd" id="1_mn6w2"]
+
+[node name="Singleton" type="Node"]
+script = ExtResource("1_mn6w2")
