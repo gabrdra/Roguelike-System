@@ -80,13 +80,13 @@ func fill_interface() -> void:
 	required_button.set_pressed_no_signal(current_room.required)
 	update_passages_text()
 
-func print_current_room() -> void:
-	print(current_room.name)
-	print(current_room.scene_uid)
-	print(current_room.required)
-	print(current_room.max_passes)
-	for p in current_room.passages:
-		print(p+\" = \"+str(current_room.passages[p]))
+#func print_current_room() -> void:
+	#print(current_room.name)
+	#print(current_room.scene_uid)
+	#print(current_room.required)
+	#print(current_room.max_passes)
+	#for p in current_room.passages:
+		#print(p+\" = \"+str(current_room.passages[p]))
 
 func set_passages_from_scene() -> void:
 	if(current_room.scene_uid.is_empty()):
@@ -156,13 +156,14 @@ func _on_max_passes_value_changed(value: float) -> void:
 
 func _on_save_room_button() -> void:
 	#TODO: add Data validation
-	#- validate that there is no room with the name already
 	if(current_room.name==\"\"):
 		printerr(\"The room must have a name\")
 		return
-	print_current_room()
 	match current_state:
 		State.CREATE:
+			if(RogueSys.get_room_by_name(current_room.name) != null):
+				printerr(\"Room name must be unique\")
+				return
 			RogueSys.add_new_room(current_room)
 		State.UPDATE:
 			RogueSys.update_room(current_room,room_old_name)

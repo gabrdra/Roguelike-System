@@ -5,21 +5,38 @@ script/source = "@tool
 extends HBoxContainer
 
 @onready var rooms_container: VBoxContainer = $Container/ScrollContainer/List/RoomsContainer
-
-# Called when the node enters the scene tree for the first time.
-func _ready() -> void:
-	fill_rooms_list()
+@onready var graph_edit: GraphEdit = $GraphEdit
 
 func _on_room_selected(button:Button) -> void:
-	button.disabled = true
+	var room := RogueSys.get_room_by_name(button.text)
+	var node:= GraphNode.new()
+	node.title = room.name
+	#Change Variant.TYPE_NIL to Variant.DICTIONARY???
+	var i:=0
+	for p in room.passages:
+		node.set_slot(i,true,Variant.Type.TYPE_NIL,Color.GREEN,true,Variant.Type.TYPE_NIL,Color.GREEN)
+		var slot_node := Label.new()
+		slot_node.text = p
+		slot_node.custom_minimum_size = Vector2(0,40)
+		slot_node.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		slot_node.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		node.add_child(slot_node)
+		i+=1
+	#Set offset according to graphedit size
+	node.position_offset = Vector2(100,100)
+	node.resizable = true
+	node.size = Vector2(100,100)
+	graph_edit.add_child(node)
+	#button.disabled = true
 
 func fill_rooms_list() -> void:
+	if not rooms_container:
+		print(\"rooms_container is null in fill_rooms_list\")
+		return
 	for r in rooms_container.get_children():
 		r.queue_free()
 	var rooms := RogueSys.get_rooms()
-	print(rooms)
 	for name in rooms:
-		print(name)
 		var button := Button.new()
 		button.text = name
 		button.button_down.connect(_on_room_selected.bind(button))
@@ -65,16 +82,5 @@ layout_mode = 2
 [node name="GraphEdit" type="GraphEdit" parent="."]
 layout_mode = 2
 size_flags_horizontal = 3
-
-[node name="GraphNode" type="GraphNode" parent="GraphEdit"]
-layout_mode = 0
-offset_left = 100.0
-offset_top = 100.0
-offset_right = 174.0
-offset_bottom = 155.0
-mouse_filter = 1
-position_offset = Vector2(100, 100)
-resizable = true
-title = "Example"
 
 [connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]

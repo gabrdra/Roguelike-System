@@ -16,10 +16,11 @@ func get_rooms()->Dictionary:
 	
 func add_new_room(room:Room)-> void:
 	current_map.rooms[room.name]=room
-	print(current_map.rooms[room.name])
 	
 func get_room_by_name(name:String) -> Room:
-	return current_map.rooms[name]
+	if(current_map.rooms.has(name)):
+		return current_map.rooms[name]
+	return null
 	
 func update_room(room:Room, old_room_name:String)->void:
 	if room.name==old_room_name:
