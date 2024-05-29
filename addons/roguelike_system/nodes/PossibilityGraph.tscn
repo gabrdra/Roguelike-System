@@ -7,14 +7,19 @@ extends HBoxContainer
 @onready var rooms_container: VBoxContainer = $Container/ScrollContainer/List/RoomsContainer
 @onready var graph_edit: GraphEdit = $GraphEdit
 
+var node_colors := [Color.WHITE, Color.LIME_GREEN,Color.INDIAN_RED,Color.REBECCA_PURPLE,
+	Color.LIGHT_YELLOW,Color.DARK_BLUE,Color.ORANGE,Color.ORCHID]
+
 func _on_room_selected(button:Button) -> void:
 	var room := RogueSys.get_room_by_name(button.text)
 	var node:= GraphNode.new()
 	node.title = room.name
+	node.name = room.name
 	#Change Variant.TYPE_NIL to Variant.DICTIONARY???
-	var i:=0
+	var i := 0
 	for p in room.passages:
-		node.set_slot(i,true,Variant.Type.TYPE_NIL,Color.GREEN,true,Variant.Type.TYPE_NIL,Color.GREEN)
+		var node_color:Color = node_colors[(i+1)%node_colors.size()]
+		node.set_slot(i,true,Variant.Type.TYPE_NIL,node_color,true,Variant.Type.TYPE_NIL,node_color)
 		var slot_node := Label.new()
 		slot_node.text = p
 		slot_node.custom_minimum_size = Vector2(0,40)
@@ -42,10 +47,12 @@ func fill_rooms_list() -> void:
 		button.button_down.connect(_on_room_selected.bind(button))
 		rooms_container.add_child(button)
 
-
 func _on_visibility_changed() -> void:
 	if is_visible() == true:
 		fill_rooms_list()
+
+func _on_connection_request(from_node: StringName, from_port: int, to_node: StringName, to_port: int) -> void:
+	graph_edit.connect_node(from_node,from_port,to_node,to_port)
 "
 
 [node name="PossibilityGraph" type="HBoxContainer"]
@@ -82,5 +89,7 @@ layout_mode = 2
 [node name="GraphEdit" type="GraphEdit" parent="."]
 layout_mode = 2
 size_flags_horizontal = 3
+right_disconnects = true
 
 [connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
+[connection signal="connection_request" from="GraphEdit" to="." method="_on_connection_request"]
