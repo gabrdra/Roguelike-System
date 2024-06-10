@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://ijvi0n5vw8w7"]
+
+[node name="Room" type="Node2D"]
+
+[node name="passages" type="Node2D" parent="."]
+
+[node name="left" type="Node2D" parent="passages"]
+
+[node name="right" type="Node2D" parent="passages"]
