@@ -136,19 +136,19 @@ min_value = 1.0
 value = 1.0
 update_on_text_changed = true
 
-[node name="ListPassages" type="HBoxContainer" parent="RoomProperties/ScrollContainer/VBoxContainer"]
+[node name="ListPassages" type="VBoxContainer" parent="RoomProperties/ScrollContainer/VBoxContainer"]
 layout_mode = 2
 
 [node name="ListPassagesLabel" type="Label" parent="RoomProperties/ScrollContainer/VBoxContainer/ListPassages"]
 layout_mode = 2
-text = "List of passages:
+text = "Passages:
 "
 
-[node name="ListPassagesText" type="RichTextLabel" parent="RoomProperties/ScrollContainer/VBoxContainer/ListPassages"]
-custom_minimum_size = Vector2(300, 0)
+[node name="HSeparator" type="HSeparator" parent="RoomProperties/ScrollContainer/VBoxContainer/ListPassages"]
 layout_mode = 2
-size_flags_horizontal = 3
-fit_content = true
+
+[node name="PassagesHolder" type="VBoxContainer" parent="RoomProperties/ScrollContainer/VBoxContainer/ListPassages"]
+layout_mode = 2
 
 [node name="SaveRoom" type="CenterContainer" parent="RoomProperties/ScrollContainer/VBoxContainer"]
 layout_mode = 2

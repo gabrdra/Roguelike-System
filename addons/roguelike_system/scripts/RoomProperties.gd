@@ -7,8 +7,8 @@ signal rooms_changed
 @onready var scene_path_label: Label = $ScrollContainer/VBoxContainer/Scene/ScenePathLabel
 @onready var room_name_input: TextEdit = $ScrollContainer/VBoxContainer/Name/RoomNameInput
 @onready var max_passes_input: SpinBox = $ScrollContainer/VBoxContainer/MaxPasses/MaxPassesInput
-@onready var list_passages_text: RichTextLabel = $ScrollContainer/VBoxContainer/ListPassages/ListPassagesText
 @onready var required_button: CheckButton = $ScrollContainer/VBoxContainer/Required/RequiredButton
+@onready var passages_holder: VBoxContainer = $ScrollContainer/VBoxContainer/ListPassages/PassagesHolder
 enum State {CREATE, UPDATE}
 var current_state:State
 var current_room:Room;
@@ -40,7 +40,7 @@ func fill_interface() -> void:
 	room_name_input.text = current_room.name
 	max_passes_input.value = current_room.max_passes
 	required_button.set_pressed_no_signal(current_room.required)
-	update_passages_text()
+	update_passages()
 
 #func print_current_room() -> void:
 	#print(current_room.name)
@@ -82,13 +82,28 @@ func set_passages_from_scene() -> void:
 			current_room.passages = {}
 			return
 		current_room.passages[p.name]=[]
-	update_passages_text()
+	update_passages()
 	
-func update_passages_text()->void:
-	list_passages_text.clear()
+func update_passages()->void:
+	for p in passages_holder.get_children():
+		p.queue_free()
 	for p in current_room.passages:
-		list_passages_text.append_text("- "+str(p))
-		list_passages_text.newline()
+		var passage_container:= VBoxContainer.new()
+		var name_and_button_container := HBoxContainer.new()
+		passage_container.add_child(name_and_button_container)
+		var passage_name := Label.new()
+		passage_name.text ="- "+ p
+		name_and_button_container.add_child(passage_name)
+		var passage_button := Button.new()
+		passage_button.text = "Change adjacencies"
+		name_and_button_container.add_child(passage_button)
+		var possibilies_text := RichTextLabel.new()
+		for possibility in current_room.passages[p]:
+			possibilies_text.append_text("|- " + possibility)
+		passage_container.add_child(possibilies_text)
+		var separator:= HSeparator.new()
+		passage_container.add_child(separator)
+		passages_holder.add_child(passage_container)
 
 func _on_scene_selected(path: String) -> void:
 	current_room.scene_uid = ResourceUID.id_to_text(ResourceLoader.get_resource_uid(path))
