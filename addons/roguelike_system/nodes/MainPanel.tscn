@@ -1,17 +1,16 @@
 [gd_scene load_steps=4 format=3 uid="uid://dvis5r7ijqlb"]
 
 [ext_resource type="PackedScene" uid="uid://dmiy2qk1j8u3w" path="res://addons/roguelike_system/nodes/RoomDetails.tscn" id="1_7ysua"]
-[ext_resource type="PackedScene" uid="uid://b8x37u1dmaqn" path="res://addons/roguelike_system/nodes/PossibilityGraph.tscn" id="2_2f1ef"]
+[ext_resource type="PackedScene" uid="uid://b8x37u1dmaqn" path="res://addons/roguelike_system/nodes/PossibilitiesGraph.tscn" id="2_fw4mo"]
 
 [sub_resource type="GDScript" id="GDScript_ss06m"]
 script/source = "extends Control
-
-@onready var possibility_graph: HBoxContainer = $TabContainer/PossibilityGraph
+@onready var possibilities_graph: HBoxContainer = $\"TabContainer/Possibilities Graph\"
 @onready var tab_container: TabContainer = $TabContainer
 
 func _on_tab_container_tab_changed(tab: int) -> void:
-	if(tab_container.get_current_tab_control()==possibility_graph):
-		possibility_graph.fill_rooms_list()
+	if(tab_container.get_current_tab_control()==possibilities_graph):
+		possibilities_graph.fill_rooms_list()
 "
 
 [node name="MainPanel" type="Control"]
@@ -36,7 +35,7 @@ tab_alignment = 1
 [node name="Room Details" parent="TabContainer" instance=ExtResource("1_7ysua")]
 layout_mode = 2
 
-[node name="PossibilityGraph" parent="TabContainer" instance=ExtResource("2_2f1ef")]
+[node name="Possibilities Graph" parent="TabContainer" instance=ExtResource("2_fw4mo")]
 visible = false
 layout_mode = 2
 

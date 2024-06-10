@@ -1,7 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://b8x37u1dmaqn"]
-
-[sub_resource type="GDScript" id="GDScript_1lob4"]
-script/source = "@tool
+@tool
 extends HBoxContainer
 
 @onready var rooms_container: VBoxContainer = $Container/ScrollContainer/List/RoomsContainer
@@ -36,7 +33,7 @@ func _on_room_selected(button:Button) -> void:
 
 func fill_rooms_list() -> void:
 	if not rooms_container:
-		print(\"rooms_container is null in fill_rooms_list\")
+		print("rooms_container is null in fill_rooms_list")
 		return
 	for r in rooms_container.get_children():
 		r.queue_free()
@@ -53,43 +50,3 @@ func _on_visibility_changed() -> void:
 
 func _on_connection_request(from_node: StringName, from_port: int, to_node: StringName, to_port: int) -> void:
 	graph_edit.connect_node(from_node,from_port,to_node,to_port)
-"
-
-[node name="PossibilityGraph" type="HBoxContainer"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-script = SubResource("GDScript_1lob4")
-
-[node name="Container" type="PanelContainer" parent="."]
-custom_minimum_size = Vector2(250, 0)
-layout_mode = 2
-
-[node name="ScrollContainer" type="ScrollContainer" parent="Container"]
-layout_mode = 2
-horizontal_scroll_mode = 0
-
-[node name="List" type="VBoxContainer" parent="Container/ScrollContainer"]
-custom_minimum_size = Vector2(230, 0)
-layout_mode = 2
-
-[node name="RoomsListLabel" type="Label" parent="Container/ScrollContainer/List"]
-layout_mode = 2
-text = "Rooms list"
-horizontal_alignment = 1
-
-[node name="HSeparator" type="HSeparator" parent="Container/ScrollContainer/List"]
-layout_mode = 2
-
-[node name="RoomsContainer" type="VBoxContainer" parent="Container/ScrollContainer/List"]
-layout_mode = 2
-
-[node name="GraphEdit" type="GraphEdit" parent="."]
-layout_mode = 2
-size_flags_horizontal = 3
-right_disconnects = true
-
-[connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
-[connection signal="connection_request" from="GraphEdit" to="." method="_on_connection_request"]
