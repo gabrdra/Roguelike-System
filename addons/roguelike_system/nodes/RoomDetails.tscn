@@ -177,16 +177,17 @@ layout_mode = 2
 [node name="MainContent" type="HBoxContainer" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer"]
 layout_mode = 2
 size_flags_vertical = 3
-alignment = 1
 
 [node name="OtherRoomsHolder" type="VBoxContainer" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer/MainContent"]
 layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="VSeparator" type="VSeparator" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer/MainContent"]
 layout_mode = 2
 
 [node name="SelectedOtherRoomPassagesHolder" type="VBoxContainer" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer/MainContent"]
 layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="ConfirmAndCancelHolder" type="HBoxContainer" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer"]
 layout_mode = 2
