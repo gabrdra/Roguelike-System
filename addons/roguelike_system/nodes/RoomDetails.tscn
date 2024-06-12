@@ -136,6 +136,74 @@ min_value = 1.0
 value = 1.0
 update_on_text_changed = true
 
+[node name="AdjacencySelection" type="Window" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses"]
+position = Vector2i(425, 95)
+size = Vector2i(700, 400)
+
+[node name="Background" type="ColorRect" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.211765, 0.239216, 0.290196, 1)
+
+[node name="SelectionContainer" type="VBoxContainer" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 3
+
+[node name="CurrentPassageHolder" type="CenterContainer" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer"]
+layout_mode = 2
+
+[node name="CurrentPassage" type="Label" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer/CurrentPassageHolder"]
+layout_mode = 2
+text = "room_name: passage"
+
+[node name="Filter" type="TextEdit" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "filter"
+scroll_fit_content_height = true
+
+[node name="HSeparator" type="HSeparator" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer"]
+layout_mode = 2
+
+[node name="MainContent" type="HBoxContainer" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+alignment = 1
+
+[node name="OtherRoomsHolder" type="VBoxContainer" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer/MainContent"]
+layout_mode = 2
+
+[node name="VSeparator" type="VSeparator" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer/MainContent"]
+layout_mode = 2
+
+[node name="SelectedOtherRoomPassagesHolder" type="VBoxContainer" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer/MainContent"]
+layout_mode = 2
+
+[node name="ConfirmAndCancelHolder" type="HBoxContainer" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer"]
+layout_mode = 2
+alignment = 2
+
+[node name="ConfirmButton" type="Button" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer/ConfirmAndCancelHolder"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Confirm selection
+"
+
+[node name="CancelButton" type="Button" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer/ConfirmAndCancelHolder"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Cancel selection
+"
+
 [node name="ListPassages" type="VBoxContainer" parent="RoomProperties/ScrollContainer/VBoxContainer"]
 layout_mode = 2
 
@@ -164,4 +232,5 @@ text = "save room"
 [connection signal="file_selected" from="RoomProperties/ScrollContainer/VBoxContainer/Scene/SceneButton/FileSelection" to="RoomProperties" method="_on_scene_selected"]
 [connection signal="toggled" from="RoomProperties/ScrollContainer/VBoxContainer/Required/RequiredButton" to="RoomProperties" method="_on_required_toggled"]
 [connection signal="value_changed" from="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/MaxPassesInput" to="RoomProperties" method="_on_max_passes_value_changed"]
+[connection signal="close_requested" from="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection" to="RoomProperties" method="_on_adjacency_selection_close_requested"]
 [connection signal="button_down" from="RoomProperties/ScrollContainer/VBoxContainer/SaveRoom/SaveRoomButton" to="RoomProperties" method="_on_save_room_button"]

@@ -9,6 +9,9 @@ signal rooms_changed
 @onready var max_passes_input: SpinBox = $ScrollContainer/VBoxContainer/MaxPasses/MaxPassesInput
 @onready var required_button: CheckButton = $ScrollContainer/VBoxContainer/Required/RequiredButton
 @onready var passages_holder: VBoxContainer = $ScrollContainer/VBoxContainer/ListPassages/PassagesHolder
+@onready var adjacency_selection: Window = $ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection
+@onready var other_rooms_holder: VBoxContainer = $ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer/MainContent/OtherRoomsHolder
+@onready var selected_other_room_passages_holder: VBoxContainer = $ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer/MainContent/SelectedOtherRoomPassagesHolder
 enum State {CREATE, UPDATE}
 var current_state:State
 var current_room:Room;
@@ -96,6 +99,7 @@ func update_passages()->void:
 		name_and_button_container.add_child(passage_name)
 		var passage_button := Button.new()
 		passage_button.text = "Change adjacencies"
+		passage_button.button_down.connect(_on_passage_button_down.bind(p))
 		name_and_button_container.add_child(passage_button)
 		var possibilies_text := RichTextLabel.new()
 		for possibility in current_room.passages[p]:
@@ -104,6 +108,25 @@ func update_passages()->void:
 		var separator:= HSeparator.new()
 		passage_container.add_child(separator)
 		passages_holder.add_child(passage_container)
+
+func _on_passage_button_down(curr_passage:String):
+	adjacency_selection.popup_centered_ratio(0.5)
+	for other_room_name in RogueSys.get_rooms():
+		var other_room: Room = RogueSys.get_room_by_name(other_room_name)
+		if(other_room.name == current_room.name):
+			continue
+		var other_room_button := Button.new()
+		other_room_button.text = other_room.name
+		#other_room_button.grow_horizontal = Control.GROW_DIRECTION_BOTH
+		other_room_button.button_down.connect(_on_other_room_button_down.bind(other_room))
+		other_rooms_holder.add_child(other_room_button)
+		
+func _on_other_room_button_down(otherRoom:Room):
+	for p in otherRoom.passages:
+		var passage_button:=Button.new()
+		passage_button.text = p
+		#passage_button.grow_horizontal = Control.GROW_DIRECTION_BOTH
+		selected_other_room_passages_holder.add_child(passage_button)
 
 func _on_scene_selected(path: String) -> void:
 	current_room.scene_uid = ResourceUID.id_to_text(ResourceLoader.get_resource_uid(path))
@@ -146,3 +169,7 @@ func _on_save_room_button() -> void:
 			RogueSys.update_room(current_room,room_old_name)
 	rooms_changed.emit()
 	create_new_empty_room()
+
+
+func _on_adjacency_selection_close_requested() -> void:
+	adjacency_selection.hide()
