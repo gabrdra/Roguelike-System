@@ -10,6 +10,7 @@ signal rooms_changed
 @onready var required_button: CheckButton = $ScrollContainer/VBoxContainer/Required/RequiredButton
 @onready var passages_holder: VBoxContainer = $ScrollContainer/VBoxContainer/ListPassages/PassagesHolder
 @onready var adjacency_selection: Window = $ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection
+@onready var current_passage_label: Label = $ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer/CurrentPassageHolder/CurrentPassageLabel
 @onready var other_rooms_holder: VBoxContainer = $ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer/MainContent/OtherRoomsHolder
 @onready var selected_other_room_passages_holder: VBoxContainer = $ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer/MainContent/SelectedOtherRoomPassagesHolder
 enum State {CREATE, UPDATE}
@@ -110,6 +111,7 @@ func update_passages()->void:
 		passages_holder.add_child(passage_container)
 
 func _on_passage_button_down(curr_passage:String):
+	current_passage_label.text = current_room.name+ ": " +curr_passage
 	adjacency_selection.popup_centered_ratio(0.5)
 	for other_room_name in RogueSys.get_rooms():
 		var other_room: Room = RogueSys.get_room_by_name(other_room_name)

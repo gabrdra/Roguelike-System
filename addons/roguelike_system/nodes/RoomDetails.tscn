@@ -139,6 +139,7 @@ update_on_text_changed = true
 [node name="AdjacencySelection" type="Window" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses"]
 position = Vector2i(425, 95)
 size = Vector2i(700, 400)
+visible = false
 
 [node name="Background" type="ColorRect" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection"]
 anchors_preset = 15
@@ -160,7 +161,7 @@ size_flags_vertical = 3
 [node name="CurrentPassageHolder" type="CenterContainer" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer"]
 layout_mode = 2
 
-[node name="CurrentPassage" type="Label" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer/CurrentPassageHolder"]
+[node name="CurrentPassageLabel" type="Label" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer/CurrentPassageHolder"]
 layout_mode = 2
 text = "room_name: passage"
 
