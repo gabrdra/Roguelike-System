@@ -16,7 +16,10 @@ signal rooms_changed
 enum State {CREATE, UPDATE}
 var current_state:State
 var current_room:Room;
+var current_passage:String;
 var room_old_name:String;
+var connections_to_add: Array[Room.Connection]
+var connections_to_remove: Array[Room.Connection]
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	create_new_empty_room()
@@ -28,19 +31,21 @@ func create_new_empty_room() -> void:
 	current_room.required = false
 	room_old_name = ""
 	fill_interface()
-	
+
 func retrieve_existing_room(room_name:String) -> void:
 	current_state = State.UPDATE
 	var room := RogueSys.get_room_by_name(room_name)
 	room_old_name = room.name
 	current_room = room
 	fill_interface()
-	
+
 func fill_interface() -> void:
 	if(current_room.scene_uid.is_empty()):
 		scene_path_label.text = ""
 	else:
-		scene_path_label.text = ResourceUID.get_id_path(ResourceUID.text_to_id(current_room.scene_uid))
+		scene_path_label.text = ResourceUID.get_id_path(
+			ResourceUID.text_to_id(current_room.scene_uid)
+			)
 	room_name_input.text = current_room.name
 	max_passes_input.value = current_room.max_passes
 	required_button.set_pressed_no_signal(current_room.required)
@@ -87,10 +92,10 @@ func set_passages_from_scene() -> void:
 			return
 		current_room.passages[p.name]=[]
 	update_passages()
-	
+
 func update_passages()->void:
-	for p in passages_holder.get_children():
-		p.queue_free()
+	for child in passages_holder.get_children():
+		child.queue_free()
 	for p in current_room.passages:
 		var passage_container:= VBoxContainer.new()
 		var name_and_button_container := HBoxContainer.new()
@@ -98,20 +103,33 @@ func update_passages()->void:
 		var passage_name := Label.new()
 		passage_name.text ="- "+ p
 		name_and_button_container.add_child(passage_name)
-		var passage_button := Button.new()
-		passage_button.text = "Change adjacencies"
-		passage_button.button_down.connect(_on_passage_button_down.bind(p))
-		name_and_button_container.add_child(passage_button)
+		var change_adjacencies_button := Button.new()
+		change_adjacencies_button.text = "Change adjacencies"
+		change_adjacencies_button.button_down.connect(
+			_on_change_adjacencies_button_down.bind(p)
+			)
+		name_and_button_container.add_child(change_adjacencies_button)
 		var possibilies_text := RichTextLabel.new()
 		for possibility in current_room.passages[p]:
-			possibilies_text.append_text("|- " + possibility)
+			possibilies_text.append_text("|- " + possibility._to_string()+" ")
+		possibilies_text.fit_content = true
 		passage_container.add_child(possibilies_text)
 		var separator:= HSeparator.new()
 		passage_container.add_child(separator)
 		passages_holder.add_child(passage_container)
 
-func _on_passage_button_down(curr_passage:String):
-	current_passage_label.text = current_room.name+ ": " +curr_passage
+func check_connection_array_has_element(arr:Array, element:Room.Connection) -> bool:
+	for i in arr:
+		if element.equals(i): return true
+	return false
+
+func _on_change_adjacencies_button_down(curr_passage:String):
+	current_passage = curr_passage
+	for child in other_rooms_holder.get_children():
+		child.queue_free()
+	for child in selected_other_room_passages_holder.get_children():
+		child.queue_free()
+	current_passage_label.text = current_room.name+ ": " +current_passage
 	adjacency_selection.popup_centered_ratio(0.5)
 	for other_room_name in RogueSys.get_rooms():
 		var other_room: Room = RogueSys.get_room_by_name(other_room_name)
@@ -119,16 +137,53 @@ func _on_passage_button_down(curr_passage:String):
 			continue
 		var other_room_button := Button.new()
 		other_room_button.text = other_room.name
-		#other_room_button.grow_horizontal = Control.GROW_DIRECTION_BOTH
-		other_room_button.button_down.connect(_on_other_room_button_down.bind(other_room))
+		other_room_button.button_down.connect(
+			_on_other_room_button_down.bind(other_room)
+			)
 		other_rooms_holder.add_child(other_room_button)
-		
-func _on_other_room_button_down(otherRoom:Room):
-	for p in otherRoom.passages:
-		var passage_button:=Button.new()
-		passage_button.text = p
-		#passage_button.grow_horizontal = Control.GROW_DIRECTION_BOTH
-		selected_other_room_passages_holder.add_child(passage_button)
+
+func _on_other_room_button_down(other_room:Room):
+	var current_connections:Array = current_room.passages[current_passage]
+	var inText := " (already in)"
+	for child in selected_other_room_passages_holder.get_children():
+		child.queue_free()
+	for p in other_room.passages:
+		var other_room_passage_button:=Button.new()
+		other_room_passage_button.text = p
+		var connection:= Room.Connection.new()
+		connection.room = other_room
+		connection.connected_passage = p
+		if(check_connection_array_has_element(current_connections,connection)):
+			other_room_passage_button.text += inText
+		other_room_passage_button.button_down.connect(
+			_on_other_room_passage_button_down.bind(connection,other_room_passage_button)
+			)
+		selected_other_room_passages_holder.add_child(other_room_passage_button)
+
+func _on_other_room_passage_button_down(connection: Room.Connection, other_room_passage_button:Button):
+	var current_connections:Array = current_room.passages[current_passage]
+	var inText := " (already in)"
+	var addText := " (to add)"
+	var removeText:=" (to remove)"
+	if check_connection_array_has_element(current_connections,connection):
+		if check_connection_array_has_element(connections_to_remove,connection):
+			connections_to_remove.erase(connection)
+			other_room_passage_button.text = other_room_passage_button.text.left(
+				other_room_passage_button.text.length()-removeText.length()
+				)
+			other_room_passage_button.text += inText
+			return
+		connections_to_remove.append(connection)
+		other_room_passage_button.text += removeText
+		return
+	if check_connection_array_has_element(connections_to_add,connection):
+		connections_to_add.erase(connection)
+		other_room_passage_button.text = other_room_passage_button.text.left(
+				other_room_passage_button.text.length()-addText.length()
+				)
+		return
+	connections_to_add.append(connection)
+	other_room_passage_button.text += addText
 
 func _on_scene_selected(path: String) -> void:
 	current_room.scene_uid = ResourceUID.id_to_text(ResourceLoader.get_resource_uid(path))
@@ -152,7 +207,7 @@ func _on_required_toggled(toggled_on: bool) -> void:
 		max_passes_input.value = current_room.max_passes
 	else:
 		max_passes_input.editable=true
-	
+
 func _on_max_passes_value_changed(value: float) -> void:
 	current_room.max_passes = value
 
@@ -174,4 +229,19 @@ func _on_save_room_button() -> void:
 
 
 func _on_adjacency_selection_close_requested() -> void:
+	current_passage =""
+	connections_to_add.clear()
+	connections_to_remove.clear()
 	adjacency_selection.hide()
+
+func _on_confirm_passages_button_down() -> void:
+	#TODO: this method needs to also alter the passages on the affected rooms, not only on the currently opened one
+	var current_connections = current_room.passages[current_passage].filter(
+		func(c): return !check_connection_array_has_element(connections_to_remove,c)
+		# see if there isn't a better way to do this ^
+		)
+	current_connections.append_array(connections_to_add)
+	current_room.passages[current_passage] = current_connections
+	update_passages()
+	_on_adjacency_selection_close_requested()
+	

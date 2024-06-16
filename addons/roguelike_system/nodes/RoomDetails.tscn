@@ -194,7 +194,7 @@ size_flags_horizontal = 3
 layout_mode = 2
 alignment = 2
 
-[node name="ConfirmButton" type="Button" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer/ConfirmAndCancelHolder"]
+[node name="ConfirmPassagesButton" type="Button" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer/ConfirmAndCancelHolder"]
 layout_mode = 2
 size_flags_horizontal = 4
 text = "Confirm selection
@@ -235,4 +235,6 @@ text = "save room"
 [connection signal="toggled" from="RoomProperties/ScrollContainer/VBoxContainer/Required/RequiredButton" to="RoomProperties" method="_on_required_toggled"]
 [connection signal="value_changed" from="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/MaxPassesInput" to="RoomProperties" method="_on_max_passes_value_changed"]
 [connection signal="close_requested" from="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection" to="RoomProperties" method="_on_adjacency_selection_close_requested"]
+[connection signal="button_down" from="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer/ConfirmAndCancelHolder/ConfirmPassagesButton" to="RoomProperties" method="_on_confirm_passages_button_down"]
+[connection signal="button_down" from="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer/ConfirmAndCancelHolder/CancelButton" to="RoomProperties" method="_on_adjacency_selection_close_requested"]
 [connection signal="button_down" from="RoomProperties/ScrollContainer/VBoxContainer/SaveRoom/SaveRoomButton" to="RoomProperties" method="_on_save_room_button"]
