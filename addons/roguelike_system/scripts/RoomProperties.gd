@@ -18,14 +18,16 @@ var current_state:State
 var current_room:Room;
 var current_passage:String;
 var room_old_name:String;
-var connections_to_add: Array[Room.Connection]
-var connections_to_remove: Array[Room.Connection]
+var connections_to_add:Dictionary #Array[Room.Connection]
+var connections_to_remove:Dictionary #Array[Room.Connection]
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	create_new_empty_room()
 
 func create_new_empty_room() -> void:
 	current_state = State.CREATE
+	connections_to_add.clear()
+	connections_to_remove.clear()
 	current_room = Room.new()
 	current_room.max_passes = 1
 	current_room.required = false
@@ -34,6 +36,8 @@ func create_new_empty_room() -> void:
 
 func retrieve_existing_room(room_name:String) -> void:
 	current_state = State.UPDATE
+	connections_to_add.clear()
+	connections_to_remove.clear()
 	var room := RogueSys.get_room_by_name(room_name)
 	room_old_name = room.name
 	current_room = room
@@ -109,11 +113,25 @@ func update_passages()->void:
 			_on_change_adjacencies_button_down.bind(p)
 			)
 		name_and_button_container.add_child(change_adjacencies_button)
-		var possibilies_text := RichTextLabel.new()
+		var possibilities_text := RichTextLabel.new()
+		possibilities_text.bbcode_enabled=true
+		possibilities_text.append_text("[font_size=16]Already in: [/font_size] \n")
 		for possibility in current_room.passages[p]:
-			possibilies_text.append_text("|- " + possibility._to_string()+" ")
-		possibilies_text.fit_content = true
-		passage_container.add_child(possibilies_text)
+			possibilities_text.append_text("|- " + possibility._to_string()+" ")
+		if(!connections_to_add.has(p)):
+			connections_to_add[p]=[]
+		if(connections_to_add[p]!=[]):
+			possibilities_text.append_text("\n\n[font_size=16]To add: [/font_size] \n")
+			for conn in connections_to_add[p]:
+				possibilities_text.append_text("|-" + conn._to_string()+"")
+		if(!connections_to_remove.has(p)):
+			connections_to_remove[p]=[]
+		if(connections_to_remove[p]!=[]):
+			possibilities_text.append_text("\n\n[font_size=16]To remove: [/font_size] \n")
+			for conn in connections_to_remove[p]:
+				possibilities_text.append_text("|-" + conn._to_string()+"")
+		possibilities_text.fit_content = true
+		passage_container.add_child(possibilities_text)
 		var separator:= HSeparator.new()
 		passage_container.add_child(separator)
 		passages_holder.add_child(passage_container)
@@ -121,6 +139,13 @@ func update_passages()->void:
 func check_connection_array_has_element(arr:Array, element:Room.Connection) -> bool:
 	for i in arr:
 		if element.equals(i): return true
+	return false
+
+func delete_connection_from_array(arr:Array, element:Room.Connection) -> bool:
+	for i in arr:
+		if(element.equals(i)):
+			arr.erase(i)
+			return true
 	return false
 
 func _on_change_adjacencies_button_down(curr_passage:String):
@@ -145,6 +170,8 @@ func _on_change_adjacencies_button_down(curr_passage:String):
 func _on_other_room_button_down(other_room:Room):
 	var current_connections:Array = current_room.passages[current_passage]
 	var inText := " (already in)"
+	var addText := " (to add)"
+	var removeText:=" (to remove)"
 	for child in selected_other_room_passages_holder.get_children():
 		child.queue_free()
 	for p in other_room.passages:
@@ -153,8 +180,13 @@ func _on_other_room_button_down(other_room:Room):
 		var connection:= Room.Connection.new()
 		connection.room = other_room
 		connection.connected_passage = p
-		if(check_connection_array_has_element(current_connections,connection)):
+		if(check_connection_array_has_element(connections_to_remove[current_passage], connection)):
+			other_room_passage_button.text += removeText
+		elif(check_connection_array_has_element(connections_to_add[current_passage], connection)):
+			other_room_passage_button.text += addText
+		elif(check_connection_array_has_element(current_connections,connection)):
 			other_room_passage_button.text += inText
+		
 		other_room_passage_button.button_down.connect(
 			_on_other_room_passage_button_down.bind(connection,other_room_passage_button)
 			)
@@ -162,27 +194,27 @@ func _on_other_room_button_down(other_room:Room):
 
 func _on_other_room_passage_button_down(connection: Room.Connection, other_room_passage_button:Button):
 	var current_connections:Array = current_room.passages[current_passage]
+	var conn_remove_array:Array = connections_to_remove[current_passage]
+	var conn_add_array:Array = connections_to_add[current_passage]
 	var inText := " (already in)"
 	var addText := " (to add)"
 	var removeText:=" (to remove)"
-	if check_connection_array_has_element(current_connections,connection):
-		if check_connection_array_has_element(connections_to_remove,connection):
-			connections_to_remove.erase(connection)
-			other_room_passage_button.text = other_room_passage_button.text.left(
-				other_room_passage_button.text.length()-removeText.length()
-				)
-			other_room_passage_button.text += inText
+	#checks if connection is already in
+	if check_connection_array_has_element(current_connections,connection): 
+		#if connection is to be removed, deletes connection from the removing array
+		if delete_connection_from_array(conn_remove_array,connection):
+			other_room_passage_button.text = connection.connected_passage+inText
 			return
-		connections_to_remove.append(connection)
-		other_room_passage_button.text += removeText
+		#if connection wasn't removed from the removing array, add connection to removing array
+		connections_to_remove[current_passage].append(connection)
+		other_room_passage_button.text = connection.connected_passage+removeText
 		return
-	if check_connection_array_has_element(connections_to_add,connection):
-		connections_to_add.erase(connection)
-		other_room_passage_button.text = other_room_passage_button.text.left(
-				other_room_passage_button.text.length()-addText.length()
-				)
+	#if connection in the to add array, delete connection from to add array
+	if delete_connection_from_array(conn_add_array,connection):
+		other_room_passage_button.text = connection.connected_passage
 		return
-	connections_to_add.append(connection)
+	#if none of the above were true, then the connection should be added to the to add array
+	connections_to_add[current_passage].append(connection)
 	other_room_passage_button.text += addText
 
 func _on_scene_selected(path: String) -> void:
@@ -230,18 +262,16 @@ func _on_save_room_button() -> void:
 
 func _on_adjacency_selection_close_requested() -> void:
 	current_passage =""
-	connections_to_add.clear()
-	connections_to_remove.clear()
 	adjacency_selection.hide()
 
 func _on_confirm_passages_button_down() -> void:
 	#TODO: this method needs to also alter the passages on the affected rooms, not only on the currently opened one
-	var current_connections = current_room.passages[current_passage].filter(
-		func(c): return !check_connection_array_has_element(connections_to_remove,c)
-		# see if there isn't a better way to do this ^
-		)
-	current_connections.append_array(connections_to_add)
-	current_room.passages[current_passage] = current_connections
+	#var current_connections = current_room.passages[current_passage].filter(
+		#func(c): return !check_connection_array_has_element(connections_to_remove,c)
+		## see if there isn't a better way to do this ^
+		#)
+	#current_connections.append_array(connections_to_add)
+	#current_room.passages[current_passage] = current_connections
 	update_passages()
 	_on_adjacency_selection_close_requested()
 	

@@ -32,6 +32,8 @@ func delete_room(room_name):
 	current_map.rooms.erase(room_name)
 	
 
+#add a new method for updating passages
+
 class MapData:
 	var rooms:Dictionary = {}#Room name will be key and the room will be the value
 	var default_room_folder:String#add the option on settings to register a default folder for the rooms
