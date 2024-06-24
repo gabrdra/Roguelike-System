@@ -138,7 +138,8 @@ func update_passages()->void:
 
 func check_connection_array_has_element(arr:Array, element:Connection) -> bool:
 	for i in arr:
-		if element.equals(i): return true
+		if element.equals(i): 
+			return true
 	return false
 
 func delete_connection_from_array(arr:Array, element:Connection) -> bool:
