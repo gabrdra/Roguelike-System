@@ -34,8 +34,9 @@ func update_room(room:Room, old_room_name:String,
 	_add_passages(room,connections_to_add)
 	_remove_passages(room, connections_to_remove)
 
-func delete_room(room_name) -> void:
-	current_map.rooms.erase(room_name)
+func delete_room(room:Room) -> void:
+	_remove_passages(room, room.passages)
+	current_map.rooms.erase(room.name)
 	
 func _add_passages(room:Room, connections_to_add: Dictionary) -> void:
 	for passage_name in connections_to_add:

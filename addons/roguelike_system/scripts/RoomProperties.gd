@@ -13,6 +13,7 @@ signal rooms_changed
 @onready var current_passage_label: Label = $ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer/CurrentPassageHolder/CurrentPassageLabel
 @onready var other_rooms_holder: VBoxContainer = $ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer/MainContent/OtherRoomsHolder
 @onready var selected_other_room_passages_holder: VBoxContainer = $ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer/MainContent/SelectedOtherRoomPassagesHolder
+@onready var delete_room_confirmation: ConfirmationDialog = $DeleteRoomConfirmation
 enum State {CREATE, UPDATE}
 var current_state:State
 var current_room:Room;
@@ -33,6 +34,13 @@ func create_new_empty_room() -> void:
 	current_room.required = false
 	room_old_name = ""
 	fill_interface()
+
+func open_delete_current_room_dialog() -> void:
+	if(current_state == State.CREATE):
+		create_new_empty_room()
+		return
+	delete_room_confirmation.dialog_text = "Delete "+ current_room.name+"?"
+	delete_room_confirmation.popup_centered()
 
 func retrieve_existing_room(room_name:String) -> void:
 	current_state = State.UPDATE
@@ -149,7 +157,7 @@ func delete_connection_from_array(arr:Array, element:Connection) -> bool:
 			return true
 	return false
 
-func _on_change_adjacencies_button_down(curr_passage:String):
+func _on_change_adjacencies_button_down(curr_passage:String) -> void:
 	current_passage = curr_passage
 	for child in other_rooms_holder.get_children():
 		child.queue_free()
@@ -168,7 +176,7 @@ func _on_change_adjacencies_button_down(curr_passage:String):
 			)
 		other_rooms_holder.add_child(other_room_button)
 
-func _on_other_room_button_down(other_room:Room):
+func _on_other_room_button_down(other_room:Room) -> void:
 	var current_connections:Array = current_room.passages[current_passage]
 	var inText := " (already in)"
 	var addText := " (to add)"
@@ -193,7 +201,7 @@ func _on_other_room_button_down(other_room:Room):
 			)
 		selected_other_room_passages_holder.add_child(other_room_passage_button)
 
-func _on_other_room_passage_button_down(connection: Connection, other_room_passage_button:Button):
+func _on_other_room_passage_button_down(connection: Connection, other_room_passage_button:Button) -> void:
 	var current_connections:Array = current_room.passages[current_passage]
 	var conn_remove_array:Array = connections_to_remove[current_passage]
 	var conn_add_array:Array = connections_to_add[current_passage]
@@ -258,7 +266,6 @@ func _on_save_room_button() -> void:
 		State.UPDATE:
 			RogueSys.update_room(current_room,room_old_name, connections_to_add, connections_to_remove)
 	rooms_changed.emit()
-	create_new_empty_room()
 
 
 func _on_adjacency_selection_close_requested() -> void:
@@ -266,13 +273,10 @@ func _on_adjacency_selection_close_requested() -> void:
 	adjacency_selection.hide()
 
 func _on_confirm_passages_button_down() -> void:
-	#TODO: this method needs to also alter the passages on the affected rooms, not only on the currently opened one
-	#var current_connections = current_room.passages[current_passage].filter(
-		#func(c): return !check_connection_array_has_element(connections_to_remove,c)
-		## see if there isn't a better way to do this ^
-		#)
-	#current_connections.append_array(connections_to_add)
-	#current_room.passages[current_passage] = current_connections
 	update_passages()
 	_on_adjacency_selection_close_requested()
 	
+func _on_delete_room_confirmation_confirmed() -> void:
+	current_room.name = room_old_name
+	RogueSys.delete_room(current_room)
+	rooms_changed.emit()

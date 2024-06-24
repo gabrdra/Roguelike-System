@@ -10,9 +10,12 @@ func _ready() -> void:
 func _on_new_room_button_down() -> void:
 	room_properties.create_new_empty_room()
 
+func _on_delete_room_button_down() -> void:
+	room_properties.open_delete_current_room_dialog()
 
 func _on_rooms_changed() -> void:
 	fill_rooms_list()
+	room_properties.create_new_empty_room()
 
 func _on_room_selected(name:String) -> void:
 	room_properties.retrieve_existing_room(name)
