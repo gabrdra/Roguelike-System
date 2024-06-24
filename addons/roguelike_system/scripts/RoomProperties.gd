@@ -253,9 +253,9 @@ func _on_save_room_button() -> void:
 			if(RogueSys.get_room_by_name(current_room.name) != null):
 				printerr("Room name must be unique")
 				return
-			RogueSys.add_new_room(current_room)
+			RogueSys.add_new_room(current_room, connections_to_add)
 		State.UPDATE:
-			RogueSys.update_room(current_room,room_old_name)
+			RogueSys.update_room(current_room,room_old_name, connections_to_add, connections_to_remove)
 	rooms_changed.emit()
 	create_new_empty_room()
 
