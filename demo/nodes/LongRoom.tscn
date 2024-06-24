@@ -1,9 +1,11 @@
-[gd_scene format=3 uid="uid://ddwet0dv5h5yr"]
+[gd_scene format=3 uid="uid://c87buw0eafniv"]
 
-[node name="ExampleRoom" type="Node2D"]
+[node name="Room" type="Node2D"]
 
 [node name="passages" type="Node2D" parent="."]
 
 [node name="up" type="Node2D" parent="passages"]
+
+[node name="right" type="Node2D" parent="passages"]
 
 [node name="down" type="Node2D" parent="passages"]

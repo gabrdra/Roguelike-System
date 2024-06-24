@@ -1,173 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://dmiy2qk1j8u3w"]
 
-[sub_resource type="GDScript" id="GDScript_om7ie"]
-script/source = "@tool
-extends HBoxContainer
-
-@onready var details: PanelContainer = $Details
-@onready var rooms_container: VBoxContainer = $Container/ScrollContainer/List/RoomsContainer
-
-#create a new scene that has a a button with the name of the room, connect all the buttons to this script with them passing their name when button_down
-func _ready() -> void:
-	fill_rooms_list()
-	
-func _on_new_room_button_down() -> void:
-	details.create_new_empty_room()
-
-
-func _on_rooms_changed() -> void:
-	fill_rooms_list()
-
-func _on_room_selected(name:String) -> void:
-	details.retrieve_existing_room(name)
-
-func fill_rooms_list() -> void:
-	for r in rooms_container.get_children():
-		r.queue_free()
-	var rooms := RogueSys.get_rooms()
-	print(rooms)
-	for name in rooms:
-		print(name)
-		var button := Button.new()
-		button.text = name
-		button.button_down.connect(_on_room_selected.bind(button.text))
-		rooms_container.add_child(button)
-		
-"
-
-[sub_resource type="GDScript" id="GDScript_50bse"]
-script/source = "@tool
-extends PanelContainer
-
-signal rooms_changed
-
-@onready var file_selection:FileDialog = $ScrollContainer/VBoxContainer/Scene/SceneButton/FileSelection
-@onready var scene_path_label: Label = $ScrollContainer/VBoxContainer/Scene/ScenePathLabel
-@onready var room_name_input: TextEdit = $ScrollContainer/VBoxContainer/Name/RoomNameInput
-@onready var max_passes_input: SpinBox = $ScrollContainer/VBoxContainer/MaxPasses/MaxPassesInput
-@onready var list_passages_text: RichTextLabel = $ScrollContainer/VBoxContainer/ListPassages/ListPassagesText
-@onready var required_button: CheckButton = $ScrollContainer/VBoxContainer/Required/RequiredButton
-enum State {CREATE, UPDATE}
-var current_state:State
-var current_room:Room;
-var room_old_name:String;
-# Called when the node enters the scene tree for the first time.
-func _ready() -> void:
-	create_new_empty_room()
-
-func create_new_empty_room() -> void:
-	current_state = State.CREATE
-	current_room = Room.new()
-	current_room.max_passes = 1
-	current_room.required = false
-	room_old_name = \"\"
-	fill_interface()
-	
-func retrieve_existing_room(room_name:String) -> void:
-	current_state = State.UPDATE
-	var room := RogueSys.get_room_by_name(room_name)
-	room_old_name = room.name
-	current_room = room
-	fill_interface()
-	
-func fill_interface() -> void:
-	if(current_room.scene_uid.is_empty()):
-		scene_path_label.text = \"\"
-	else:
-		scene_path_label.text = ResourceUID.get_id_path(ResourceUID.text_to_id(current_room.scene_uid))
-	room_name_input.text = current_room.name
-	max_passes_input.value = current_room.max_passes
-	required_button.set_pressed_no_signal(current_room.required)
-	update_passages_text()
-
-func print_current_room() -> void:
-	print(current_room.name)
-	print(current_room.scene_uid)
-	print(current_room.required)
-	print(current_room.max_passes)
-	for p in current_room.passages:
-		print(p+\" = \"+str(current_room.passages[p]))
-
-func set_passages_from_scene() -> void:
-	if(current_room.scene_uid.is_empty()):
-		printerr(\"Scene hasn't been selected yet\")
-		return
-	var scene_loaded := ResourceLoader.load(current_room.scene_uid)
-	if !scene_loaded:
-		printerr(\"Error loading resource\")
-		return
-	var scene_instance = scene_loaded.instantiate()
-	if(!scene_instance):
-		printerr(\"Error instancing scene\")
-		return
-	var passages_node = scene_instance.get_node(\"passages\")
-	if(!passages_node):
-		passages_node = scene_instance.get_node(\"Passages\")
-		if(!passages_node):
-			printerr(\"There must be a node on the scene, direct child of root, named passages or Passages\")
-			return
-	var passage_children = passages_node.get_children()
-	#TODO: make reading passages and assigning them better
-	#ways to improve:
-	#- reuse the old connections if a name remains the same
-	#- if a passage name changes but it already had connections their connections are updated
-	#Point to think about:if there is a failure in reading the new passages, should the old ones be brought back?
-	current_room.passages = {}
-	for p in passage_children:
-		print(p.name)
-		if(current_room.passages.has(p.name)):
-			printerr(\"There is more than one passage with the same name\")
-			current_room.passages = {}
-			return
-		current_room.passages[p.name]=[]
-	update_passages_text()
-	
-func update_passages_text()->void:
-	list_passages_text.clear()
-	for p in current_room.passages:
-		list_passages_text.append_text(\"- \"+str(p))
-		list_passages_text.newline()
-
-func _on_scene_selected(path: String) -> void:
-	current_room.scene_uid = ResourceUID.id_to_text(ResourceLoader.get_resource_uid(path))
-	scene_path_label.text = path
-	if(current_room.name.is_empty()):
-		if(path.ends_with(\".tscn\")):
-			current_room.name = path.get_file().trim_suffix(\".tscn\")
-		else:
-			current_room.name = path.get_file().trim_suffix(\".scn\")
-		room_name_input.text=current_room.name
-	set_passages_from_scene()
-
-func _on_room_name_changed() -> void:
-	current_room.name = room_name_input.text
-
-func _on_required_toggled(toggled_on: bool) -> void:
-	current_room.required = toggled_on
-	if(current_room.required==true):
-		current_room.max_passes = 1
-		max_passes_input.editable=false
-		max_passes_input.value = current_room.max_passes
-	else:
-		max_passes_input.editable=true
-	
-func _on_max_passes_value_changed(value: float) -> void:
-	current_room.max_passes = value
-
-func _on_save_room_button() -> void:
-	#TODO: add Data validation
-	#- validate that there is no room with the name already
-	if(current_room.name==\"\"):
-		printerr(\"The room must have a name\")
-		return
-	print_current_room()
-	match current_state:
-		State.CREATE:
-			RogueSys.add_new_room(current_room)
-		State.UPDATE:
-			RogueSys.update_room(current_room,room_old_name)
-	rooms_changed.emit()
-"
+[ext_resource type="Script" path="res://addons/roguelike_system/scripts/RoomProperties.gd" id="1_pw35i"]
+[ext_resource type="Script" path="res://addons/roguelike_system/scripts/RoomDetails.gd" id="1_une02"]
 
 [sub_resource type="GDScript" id="GDScript_5jpvo"]
 script/source = "@tool
@@ -185,7 +19,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = SubResource("GDScript_om7ie")
+script = ExtResource("1_une02")
 
 [node name="Container" type="PanelContainer" parent="."]
 custom_minimum_size = Vector2(250, 0)
@@ -223,48 +57,48 @@ layout_mode = 2
 [node name="RoomsContainer" type="VBoxContainer" parent="Container/ScrollContainer/List"]
 layout_mode = 2
 
-[node name="Details" type="PanelContainer" parent="."]
+[node name="RoomProperties" type="PanelContainer" parent="."]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 size_flags_horizontal = 3
-script = SubResource("GDScript_50bse")
+script = ExtResource("1_pw35i")
 
-[node name="ScrollContainer" type="ScrollContainer" parent="Details"]
+[node name="ScrollContainer" type="ScrollContainer" parent="RoomProperties"]
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Details/ScrollContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="RoomProperties/ScrollContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Name" type="HBoxContainer" parent="Details/ScrollContainer/VBoxContainer"]
+[node name="Name" type="HBoxContainer" parent="RoomProperties/ScrollContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="RoomNameLabel" type="Label" parent="Details/ScrollContainer/VBoxContainer/Name"]
+[node name="RoomNameLabel" type="Label" parent="RoomProperties/ScrollContainer/VBoxContainer/Name"]
 layout_mode = 2
 text = "Room name:
 "
 
-[node name="RoomNameInput" type="TextEdit" parent="Details/ScrollContainer/VBoxContainer/Name"]
+[node name="RoomNameInput" type="TextEdit" parent="RoomProperties/ScrollContainer/VBoxContainer/Name"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "defaults to scene name if empty"
 scroll_fit_content_height = true
 
-[node name="Scene" type="HBoxContainer" parent="Details/ScrollContainer/VBoxContainer"]
+[node name="Scene" type="HBoxContainer" parent="RoomProperties/ScrollContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="SceneLabel" type="Label" parent="Details/ScrollContainer/VBoxContainer/Scene"]
+[node name="SceneLabel" type="Label" parent="RoomProperties/ScrollContainer/VBoxContainer/Scene"]
 layout_mode = 2
 text = "Room scene:
 "
 
-[node name="SceneButton" type="Button" parent="Details/ScrollContainer/VBoxContainer/Scene"]
+[node name="SceneButton" type="Button" parent="RoomProperties/ScrollContainer/VBoxContainer/Scene"]
 layout_mode = 2
 text = "Select Scene"
 script = SubResource("GDScript_5jpvo")
 
-[node name="FileSelection" type="FileDialog" parent="Details/ScrollContainer/VBoxContainer/Scene/SceneButton"]
+[node name="FileSelection" type="FileDialog" parent="RoomProperties/ScrollContainer/VBoxContainer/Scene/SceneButton"]
 title = "Open a File"
 position = Vector2i(0, 36)
 size = Vector2i(392, 159)
@@ -272,29 +106,29 @@ ok_button_text = "Open"
 file_mode = 0
 filters = PackedStringArray("*.tscn", "*.scn")
 
-[node name="ScenePathLabel" type="Label" parent="Details/ScrollContainer/VBoxContainer/Scene"]
+[node name="ScenePathLabel" type="Label" parent="RoomProperties/ScrollContainer/VBoxContainer/Scene"]
 layout_mode = 2
 
-[node name="Required" type="HBoxContainer" parent="Details/ScrollContainer/VBoxContainer"]
+[node name="Required" type="HBoxContainer" parent="RoomProperties/ScrollContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="RequiredLabel" type="Label" parent="Details/ScrollContainer/VBoxContainer/Required"]
+[node name="RequiredLabel" type="Label" parent="RoomProperties/ScrollContainer/VBoxContainer/Required"]
 layout_mode = 2
 text = "Required:
 "
 
-[node name="RequiredButton" type="CheckButton" parent="Details/ScrollContainer/VBoxContainer/Required"]
+[node name="RequiredButton" type="CheckButton" parent="RoomProperties/ScrollContainer/VBoxContainer/Required"]
 layout_mode = 2
 
-[node name="MaxPasses" type="HBoxContainer" parent="Details/ScrollContainer/VBoxContainer"]
+[node name="MaxPasses" type="HBoxContainer" parent="RoomProperties/ScrollContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="MaxPassesLabel" type="Label" parent="Details/ScrollContainer/VBoxContainer/MaxPasses"]
+[node name="MaxPassesLabel" type="Label" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses"]
 layout_mode = 2
 text = "max passes:
 "
 
-[node name="MaxPassesInput" type="SpinBox" parent="Details/ScrollContainer/VBoxContainer/MaxPasses"]
+[node name="MaxPassesInput" type="SpinBox" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -302,32 +136,105 @@ min_value = 1.0
 value = 1.0
 update_on_text_changed = true
 
-[node name="ListPassages" type="HBoxContainer" parent="Details/ScrollContainer/VBoxContainer"]
+[node name="AdjacencySelection" type="Window" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses"]
+position = Vector2i(425, 95)
+size = Vector2i(700, 400)
+visible = false
+
+[node name="Background" type="ColorRect" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.211765, 0.239216, 0.290196, 1)
+
+[node name="SelectionContainer" type="VBoxContainer" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 3
+
+[node name="CurrentPassageHolder" type="CenterContainer" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer"]
 layout_mode = 2
 
-[node name="ListPassagesLabel" type="Label" parent="Details/ScrollContainer/VBoxContainer/ListPassages"]
+[node name="CurrentPassageLabel" type="Label" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer/CurrentPassageHolder"]
 layout_mode = 2
-text = "List of passages:
-"
+text = "room_name: passage"
 
-[node name="ListPassagesText" type="RichTextLabel" parent="Details/ScrollContainer/VBoxContainer/ListPassages"]
-custom_minimum_size = Vector2(300, 0)
+[node name="Filter" type="TextEdit" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer"]
+custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 size_flags_horizontal = 3
-fit_content = true
+placeholder_text = "filter"
+scroll_fit_content_height = true
 
-[node name="SaveRoom" type="CenterContainer" parent="Details/ScrollContainer/VBoxContainer"]
+[node name="HSeparator" type="HSeparator" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer"]
 layout_mode = 2
 
-[node name="SaveRoomButton" type="Button" parent="Details/ScrollContainer/VBoxContainer/SaveRoom"]
+[node name="MainContent" type="HBoxContainer" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="OtherRoomsHolder" type="VBoxContainer" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer/MainContent"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VSeparator" type="VSeparator" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer/MainContent"]
+layout_mode = 2
+
+[node name="SelectedOtherRoomPassagesHolder" type="VBoxContainer" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer/MainContent"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ConfirmAndCancelHolder" type="HBoxContainer" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer"]
+layout_mode = 2
+alignment = 2
+
+[node name="ConfirmPassagesButton" type="Button" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer/ConfirmAndCancelHolder"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Confirm selection
+"
+
+[node name="CancelButton" type="Button" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer/ConfirmAndCancelHolder"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Cancel selection
+"
+
+[node name="ListPassages" type="VBoxContainer" parent="RoomProperties/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ListPassagesLabel" type="Label" parent="RoomProperties/ScrollContainer/VBoxContainer/ListPassages"]
+layout_mode = 2
+text = "Passages:
+"
+
+[node name="HSeparator" type="HSeparator" parent="RoomProperties/ScrollContainer/VBoxContainer/ListPassages"]
+layout_mode = 2
+
+[node name="PassagesHolder" type="VBoxContainer" parent="RoomProperties/ScrollContainer/VBoxContainer/ListPassages"]
+layout_mode = 2
+
+[node name="SaveRoom" type="CenterContainer" parent="RoomProperties/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="SaveRoomButton" type="Button" parent="RoomProperties/ScrollContainer/VBoxContainer/SaveRoom"]
 layout_mode = 2
 text = "save room"
 
 [connection signal="button_down" from="Container/ScrollContainer/List/AddRemoveRoom/NewRoom" to="." method="_on_new_room_button_down"]
-[connection signal="rooms_changed" from="Details" to="." method="_on_rooms_changed"]
-[connection signal="text_changed" from="Details/ScrollContainer/VBoxContainer/Name/RoomNameInput" to="Details" method="_on_room_name_changed"]
-[connection signal="button_down" from="Details/ScrollContainer/VBoxContainer/Scene/SceneButton" to="Details/ScrollContainer/VBoxContainer/Scene/SceneButton" method="_on_button_down"]
-[connection signal="file_selected" from="Details/ScrollContainer/VBoxContainer/Scene/SceneButton/FileSelection" to="Details" method="_on_scene_selected"]
-[connection signal="toggled" from="Details/ScrollContainer/VBoxContainer/Required/RequiredButton" to="Details" method="_on_required_toggled"]
-[connection signal="value_changed" from="Details/ScrollContainer/VBoxContainer/MaxPasses/MaxPassesInput" to="Details" method="_on_max_passes_value_changed"]
-[connection signal="button_down" from="Details/ScrollContainer/VBoxContainer/SaveRoom/SaveRoomButton" to="Details" method="_on_save_room_button"]
+[connection signal="rooms_changed" from="RoomProperties" to="." method="_on_rooms_changed"]
+[connection signal="text_changed" from="RoomProperties/ScrollContainer/VBoxContainer/Name/RoomNameInput" to="RoomProperties" method="_on_room_name_changed"]
+[connection signal="button_down" from="RoomProperties/ScrollContainer/VBoxContainer/Scene/SceneButton" to="RoomProperties/ScrollContainer/VBoxContainer/Scene/SceneButton" method="_on_button_down"]
+[connection signal="file_selected" from="RoomProperties/ScrollContainer/VBoxContainer/Scene/SceneButton/FileSelection" to="RoomProperties" method="_on_scene_selected"]
+[connection signal="toggled" from="RoomProperties/ScrollContainer/VBoxContainer/Required/RequiredButton" to="RoomProperties" method="_on_required_toggled"]
+[connection signal="value_changed" from="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/MaxPassesInput" to="RoomProperties" method="_on_max_passes_value_changed"]
+[connection signal="close_requested" from="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection" to="RoomProperties" method="_on_adjacency_selection_close_requested"]
+[connection signal="button_down" from="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer/ConfirmAndCancelHolder/ConfirmPassagesButton" to="RoomProperties" method="_on_confirm_passages_button_down"]
+[connection signal="button_down" from="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer/ConfirmAndCancelHolder/CancelButton" to="RoomProperties" method="_on_adjacency_selection_close_requested"]
+[connection signal="button_down" from="RoomProperties/ScrollContainer/VBoxContainer/SaveRoom/SaveRoomButton" to="RoomProperties" method="_on_save_room_button"]
