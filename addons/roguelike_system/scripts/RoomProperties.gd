@@ -18,8 +18,8 @@ var current_state:State
 var current_room:Room;
 var current_passage:String;
 var room_old_name:String;
-var connections_to_add:Dictionary #Array[Room.Connection]
-var connections_to_remove:Dictionary #Array[Room.Connection]
+var connections_to_add:Dictionary #Array[Connection]
+var connections_to_remove:Dictionary #Array[Connection]
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	create_new_empty_room()
@@ -136,12 +136,12 @@ func update_passages()->void:
 		passage_container.add_child(separator)
 		passages_holder.add_child(passage_container)
 
-func check_connection_array_has_element(arr:Array, element:Room.Connection) -> bool:
+func check_connection_array_has_element(arr:Array, element:Connection) -> bool:
 	for i in arr:
 		if element.equals(i): return true
 	return false
 
-func delete_connection_from_array(arr:Array, element:Room.Connection) -> bool:
+func delete_connection_from_array(arr:Array, element:Connection) -> bool:
 	for i in arr:
 		if(element.equals(i)):
 			arr.erase(i)
@@ -177,7 +177,7 @@ func _on_other_room_button_down(other_room:Room):
 	for p in other_room.passages:
 		var other_room_passage_button:=Button.new()
 		other_room_passage_button.text = p
-		var connection:= Room.Connection.new()
+		var connection:= Connection.new()
 		connection.room = other_room
 		connection.connected_passage = p
 		if(check_connection_array_has_element(connections_to_remove[current_passage], connection)):
@@ -192,7 +192,7 @@ func _on_other_room_button_down(other_room:Room):
 			)
 		selected_other_room_passages_holder.add_child(other_room_passage_button)
 
-func _on_other_room_passage_button_down(connection: Room.Connection, other_room_passage_button:Button):
+func _on_other_room_passage_button_down(connection: Connection, other_room_passage_button:Button):
 	var current_connections:Array = current_room.passages[current_passage]
 	var conn_remove_array:Array = connections_to_remove[current_passage]
 	var conn_add_array:Array = connections_to_add[current_passage]
