@@ -14,6 +14,10 @@ signal rooms_changed
 @onready var other_rooms_holder: VBoxContainer = $ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer/MainContent/OtherRoomsHolder
 @onready var selected_other_room_passages_holder: VBoxContainer = $ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer/MainContent/SelectedOtherRoomPassagesHolder
 @onready var delete_room_confirmation: ConfirmationDialog = $DeleteRoomConfirmation
+@onready var starter_room_holder: HBoxContainer = $ScrollContainer/VBoxContainer/Required/StarterRoomHolder
+@onready var starter_room_button: CheckButton = $ScrollContainer/VBoxContainer/Required/StarterRoomHolder/StarterRoomButton
+@onready var current_starter_room: Label = $ScrollContainer/VBoxContainer/Required/StarterRoomHolder/CurrentStarterRoom
+
 enum State {CREATE, UPDATE}
 var current_state:State
 var current_room:Room;
@@ -21,6 +25,7 @@ var current_passage:String;
 var room_old_name:String;
 var connections_to_add:Dictionary #Array[Connection]
 var connections_to_remove:Dictionary #Array[Connection]
+var is_current_room_starter_room:bool = false
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	create_new_empty_room()
@@ -61,6 +66,10 @@ func fill_interface() -> void:
 	room_name_input.text = current_room.name
 	max_passes_input.value = current_room.max_passes
 	required_button.set_pressed_no_signal(current_room.required)
+	starter_room_holder.visible = current_room.required
+	_set_current_starter_room_label(RogueSys.get_starter_room().name)
+	is_current_room_starter_room = RogueSys.get_starter_room().equals(current_room)
+	starter_room_button.set_pressed_no_signal(RogueSys.get_starter_room().equals(current_room))
 	update_passages()
 
 #func print_current_room() -> void:
@@ -97,7 +106,7 @@ func set_passages_from_scene() -> void:
 	#Point to think about:if there is a failure in reading the new passages, should the old ones be brought back?
 	current_room.passages = {}
 	for p in passage_children:
-		print(p.name)
+		#print(p.name)
 		if(current_room.passages.has(p.name)):
 			printerr("There is more than one passage with the same name")
 			current_room.passages = {}
@@ -235,10 +244,12 @@ func _on_scene_selected(path: String) -> void:
 		else:
 			current_room.name = path.get_file().trim_suffix(".scn")
 		room_name_input.text=current_room.name
+		_set_current_starter_room_label(current_room.name)
 	set_passages_from_scene()
 
 func _on_room_name_changed() -> void:
 	current_room.name = room_name_input.text
+	_set_current_starter_room_label(current_room.name)
 
 func _on_required_toggled(toggled_on: bool) -> void:
 	current_room.required = toggled_on
@@ -248,6 +259,7 @@ func _on_required_toggled(toggled_on: bool) -> void:
 		max_passes_input.value = current_room.max_passes
 	else:
 		max_passes_input.editable=true
+	starter_room_holder.visible = current_room.required
 
 func _on_max_passes_value_changed(value: float) -> void:
 	current_room.max_passes = value
@@ -264,7 +276,7 @@ func _on_save_room_button() -> void:
 				return
 			RogueSys.add_new_room(current_room, connections_to_add)
 		State.UPDATE:
-			RogueSys.update_room(current_room,room_old_name, connections_to_add, connections_to_remove)
+			RogueSys.update_room(current_room, room_old_name, connections_to_add, connections_to_remove)
 	rooms_changed.emit()
 
 
@@ -280,3 +292,19 @@ func _on_delete_room_confirmation_confirmed() -> void:
 	current_room.name = room_old_name
 	RogueSys.delete_room(current_room)
 	rooms_changed.emit()
+
+
+func _on_starter_room_button_toggled(toggled_on: bool) -> void:
+	if(toggled_on && current_room.name == null):
+		starter_room_button.set_pressed_no_signal(false)
+		return
+	is_current_room_starter_room = toggled_on
+	if(toggled_on):
+		RogueSys.set_starter_room(current_room)
+		_set_current_starter_room_label(current_room.name)
+	else:
+		RogueSys.set_starter_room(null)
+		_set_current_starter_room_label("null")
+
+func _set_current_starter_room_label(room_name:String) -> void:
+	current_starter_room.text = "Current Starter room: "+room_name

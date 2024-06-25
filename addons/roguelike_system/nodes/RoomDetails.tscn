@@ -112,13 +112,22 @@ layout_mode = 2
 [node name="Required" type="HBoxContainer" parent="RoomProperties/ScrollContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="RequiredLabel" type="Label" parent="RoomProperties/ScrollContainer/VBoxContainer/Required"]
-layout_mode = 2
-text = "Required:
-"
-
 [node name="RequiredButton" type="CheckButton" parent="RoomProperties/ScrollContainer/VBoxContainer/Required"]
 layout_mode = 2
+text = "Required: 
+"
+
+[node name="StarterRoomHolder" type="HBoxContainer" parent="RoomProperties/ScrollContainer/VBoxContainer/Required"]
+visible = false
+layout_mode = 2
+
+[node name="StarterRoomButton" type="CheckButton" parent="RoomProperties/ScrollContainer/VBoxContainer/Required/StarterRoomHolder"]
+layout_mode = 2
+text = "Set as starter room"
+
+[node name="CurrentStarterRoom" type="Label" parent="RoomProperties/ScrollContainer/VBoxContainer/Required/StarterRoomHolder"]
+layout_mode = 2
+text = "Current Starter room: null"
 
 [node name="MaxPasses" type="HBoxContainer" parent="RoomProperties/ScrollContainer/VBoxContainer"]
 layout_mode = 2
@@ -228,8 +237,9 @@ layout_mode = 2
 text = "save room"
 
 [node name="DeleteRoomConfirmation" type="ConfirmationDialog" parent="RoomProperties"]
-size = Vector2i(259, 100)
+title = "Delete room"
 ok_button_text = "Delete"
+dialog_autowrap = true
 
 [connection signal="button_down" from="Container/ScrollContainer/List/AddRemoveRoom/NewRoom" to="." method="_on_new_room_button_down"]
 [connection signal="button_down" from="Container/ScrollContainer/List/AddRemoveRoom/DeleteRoom" to="." method="_on_delete_room_button_down"]
@@ -238,6 +248,7 @@ ok_button_text = "Delete"
 [connection signal="button_down" from="RoomProperties/ScrollContainer/VBoxContainer/Scene/SceneButton" to="RoomProperties/ScrollContainer/VBoxContainer/Scene/SceneButton" method="_on_button_down"]
 [connection signal="file_selected" from="RoomProperties/ScrollContainer/VBoxContainer/Scene/SceneButton/FileSelection" to="RoomProperties" method="_on_scene_selected"]
 [connection signal="toggled" from="RoomProperties/ScrollContainer/VBoxContainer/Required/RequiredButton" to="RoomProperties" method="_on_required_toggled"]
+[connection signal="toggled" from="RoomProperties/ScrollContainer/VBoxContainer/Required/StarterRoomHolder/StarterRoomButton" to="RoomProperties" method="_on_starter_room_button_toggled"]
 [connection signal="value_changed" from="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/MaxPassesInput" to="RoomProperties" method="_on_max_passes_value_changed"]
 [connection signal="close_requested" from="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection" to="RoomProperties" method="_on_adjacency_selection_close_requested"]
 [connection signal="button_down" from="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer/ConfirmAndCancelHolder/ConfirmPassagesButton" to="RoomProperties" method="_on_confirm_passages_button_down"]

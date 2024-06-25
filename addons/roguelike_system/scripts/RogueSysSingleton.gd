@@ -38,6 +38,12 @@ func delete_room(room:Room) -> void:
 	_remove_passages(room, room.passages)
 	current_map.rooms.erase(room.name)
 	
+func set_starter_room(room:Room) -> void:
+	current_map.starter_room = room
+
+func get_starter_room() -> Room:
+	return current_map.starter_room
+
 func _add_passages(room:Room, connections_to_add: Dictionary) -> void:
 	for passage_name in connections_to_add:
 		var connections: Array = connections_to_add[passage_name]
@@ -75,4 +81,4 @@ func _get_connection_from_array(arr: Array, connection_to_find: Connection) -> C
 class MapData:
 	var rooms:Dictionary = {}#Room name will be key and the room will be the value
 	var default_room_folder:String#add the option on settings to register a default folder for the rooms
-	
+	var starter_room:Room

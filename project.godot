@@ -18,6 +18,10 @@ config/icon="res://icon.svg"
 
 RogueSys="*res://addons/roguelike_system/scripts/RogueSysSingleton.gd"
 
+[debug]
+
+gdscript/warnings/untyped_declaration=2
+
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/roguelike_system/plugin.cfg")
