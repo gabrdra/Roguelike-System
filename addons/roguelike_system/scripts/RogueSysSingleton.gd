@@ -1,48 +1,47 @@
 @tool
 class_name RogueSysSingleton extends Node
 
-var maps: Dictionary = {}
-var current_map_name:String
-var current_map:MapData
-
+var levels: Dictionary = {}
+var current_level:LevelData
+var current_level_name:String
 func _init() -> void:
-	if maps.size()==0:
-		current_map_name = "first map"
-		maps[current_map_name]=MapData.new()
-	current_map=maps[current_map_name]
+	if levels.size()==0:
+		current_level_name = "Level 1"
+		levels[current_level_name]=LevelData.new()
+		current_level=levels[current_level_name]
 
 func get_rooms()->Dictionary:
-	return current_map.rooms
+	return current_level.rooms
 
 func get_room_by_name(name:String) -> Room:
-	if(current_map.rooms.has(name)):
-		return current_map.rooms[name]
+	if(current_level.rooms.has(name)):
+		return current_level.rooms[name]
 	return null
 
 func add_new_room(room:Room, connections_to_add:Dictionary = {})-> void:
-	current_map.rooms[room.name]=room
+	current_level.rooms[room.name]=room
 	_add_passages(room, connections_to_add)
 	
 func update_room(room:Room, old_room_name:String,
 	connections_to_add:Dictionary = {},
 	connections_to_remove:Dictionary = {})->void:
 	if room.name==old_room_name:
-		current_map.rooms[room.name]=room
+		current_level.rooms[room.name]=room
 	else:
-		current_map.rooms.erase(old_room_name)
-		current_map.rooms[room.name]=room
+		current_level.rooms.erase(old_room_name)
+		current_level.rooms[room.name]=room
 	_add_passages(room,connections_to_add)
 	_remove_passages(room, connections_to_remove)
 
 func delete_room(room:Room) -> void:
 	_remove_passages(room, room.passages)
-	current_map.rooms.erase(room.name)
+	current_level.rooms.erase(room.name)
 	
 func set_starter_room(room:Room) -> void:
-	current_map.starter_room = room
+	current_level.starter_room = room
 
 func get_starter_room() -> Room:
-	return current_map.starter_room
+	return current_level.starter_room
 
 func _add_passages(room:Room, connections_to_add: Dictionary) -> void:
 	for passage_name in connections_to_add:
@@ -78,7 +77,7 @@ func _get_connection_from_array(arr: Array, connection_to_find: Connection) -> C
 			return conn
 	return null
 
-class MapData:
+class LevelData:
 	var rooms:Dictionary = {}#Room name will be key and the room will be the value
 	var default_room_folder:String#add the option on settings to register a default folder for the rooms
 	var starter_room:Room
