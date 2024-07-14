@@ -146,6 +146,7 @@ value = 1.0
 update_on_text_changed = true
 
 [node name="AdjacencySelection" type="Window" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses"]
+title = "Adjacency selection"
 position = Vector2i(425, 95)
 size = Vector2i(700, 400)
 visible = false

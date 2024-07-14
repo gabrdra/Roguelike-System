@@ -6,9 +6,7 @@ var current_level:LevelData
 var current_level_name:String
 func _init() -> void:
 	if levels.size()==0:
-		current_level_name = "Level 1"
-		levels[current_level_name]=LevelData.new()
-		current_level=levels[current_level_name]
+		create_new_level("Level 1")
 
 func get_rooms()->Dictionary:
 	return current_level.rooms
@@ -42,6 +40,32 @@ func set_starter_room(room:Room) -> void:
 
 func get_starter_room() -> Room:
 	return current_level.starter_room
+
+func create_new_level(level_name:String) -> void:
+	if(levels.has(level_name)):
+		printerr("A level with name "+level_name+" already exists!")
+		return
+	levels[level_name]=LevelData.new()
+	set_current_level(level_name)
+
+func rename_current_level(new_level_name:String)->void:
+	levels[new_level_name]=current_level
+	levels.erase(current_level_name)
+	current_level_name=new_level_name
+	
+func delete_current_level():
+	if(levels.size()==1):
+		levels.clear()
+		create_new_level("Level 1")
+		return
+	levels.erase(current_level_name)
+	set_current_level(levels.keys()[0])
+
+func set_current_level(level_name:String) -> void:
+	if(!levels.has(level_name)):
+		printerr("A level with the name of "+level_name+" doesn't exist!")
+	current_level=levels[level_name]
+	current_level_name=level_name
 
 func _add_passages(room:Room, connections_to_add: Dictionary) -> void:
 	for passage_name in connections_to_add:
