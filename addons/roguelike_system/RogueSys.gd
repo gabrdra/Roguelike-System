@@ -10,6 +10,7 @@ func _enter_tree():
 	EditorInterface.get_editor_main_screen().add_child(main_panel_instance)
 	add_autoload_singleton("RogueSys", "res://addons/roguelike_system/scripts/RogueSysSingleton.gd")
 	_make_visible(false)
+	RogueSys.load_plugin_data()
 	#see how to restart the project whenever the plugin is activated
 	#OS.set_restart_on_exit(true)
 
@@ -34,3 +35,6 @@ func _get_plugin_name():
 
 func _get_plugin_icon():
 	return EditorInterface.get_editor_theme().get_icon("Node", "EditorIcons")
+
+func _save_external_data() -> void:
+	RogueSys.save_plugin_data()

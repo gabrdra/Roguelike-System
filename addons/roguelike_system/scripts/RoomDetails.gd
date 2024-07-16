@@ -24,9 +24,9 @@ func fill_rooms_list() -> void:
 	for r in rooms_container.get_children():
 		r.queue_free()
 	var rooms := RogueSys.get_rooms()
-	print(rooms)
+	#print(rooms)
 	for name in rooms:
-		print(name)
+		#print(name)
 		var button := Button.new()
 		button.text = name
 		button.button_down.connect(_on_room_selected.bind(button.text))

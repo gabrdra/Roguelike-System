@@ -4,9 +4,17 @@ class_name RogueSysSingleton extends Node
 var levels: Dictionary = {}
 var current_level:LevelData
 var current_level_name:String
+
 func _init() -> void:
 	if levels.size()==0:
 		create_new_level("Level 1")
+
+func save_plugin_data() -> void:
+	var path := "user://test.res"
+	SaveLoadData.save_plugin_data(path)
+
+func load_plugin_data() -> void:
+	pass
 
 func get_rooms()->Dictionary:
 	return current_level.rooms
@@ -101,7 +109,4 @@ func _get_connection_from_array(arr: Array, connection_to_find: Connection) -> C
 			return conn
 	return null
 
-class LevelData:
-	var rooms:Dictionary = {}#Room name will be key and the room will be the value
-	var default_room_folder:String#add the option on settings to register a default folder for the rooms
-	var starter_room:Room
+
