@@ -9,13 +9,6 @@ func _init() -> void:
 	if levels.size()==0:
 		create_new_level("Level 1")
 
-func save_plugin_data() -> void:
-	var path := "user://test.res"
-	SaveLoadData.save_plugin_data(path)
-
-func load_plugin_data() -> void:
-	pass
-
 func get_rooms()->Dictionary:
 	return current_level.rooms
 

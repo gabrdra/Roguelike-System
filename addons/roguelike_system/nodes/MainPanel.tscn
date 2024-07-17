@@ -50,4 +50,5 @@ visible = false
 layout_mode = 2
 
 [connection signal="tab_changed" from="TabContainer" to="." method="_on_tab_container_tab_changed"]
+[connection signal="visibility_changed" from="TabContainer/Room Details" to="TabContainer/Room Details" method="_on_visibility_changed"]
 [connection signal="visibility_changed" from="TabContainer/Levels Manager" to="TabContainer/Levels Manager" method="_on_visibility_changed"]

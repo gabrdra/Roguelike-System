@@ -32,3 +32,9 @@ func fill_rooms_list() -> void:
 		button.button_down.connect(_on_room_selected.bind(button.text))
 		rooms_container.add_child(button)
 		
+
+
+func _on_visibility_changed() -> void:
+	print("visibility changed")
+	_on_rooms_changed()
+

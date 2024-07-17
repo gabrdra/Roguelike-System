@@ -45,7 +45,37 @@ static func save_plugin_data(path:String) -> void:
 		save_dict["levels"].append(level_dict)
 	#print(JSON.stringify(save_dict))
 	save.store_string(JSON.stringify(save_dict))
-
+	load_plugin_data(path)
 
 static func load_plugin_data(path: String) -> void:
-	pass
+	var file = FileAccess.open(path, FileAccess.READ)
+	if file == null:
+		printerr("Failed to open file for reading")
+		return
+	var file_content = file.get_as_text()
+	file.close()
+	var data_dict = JSON.parse_string(file_content)
+	RogueSys.current_level_name = data_dict["current_level_name"]
+	var levels_array: Array = data_dict["levels"]
+	for level_dict in levels_array:
+		var level := LevelData.new()
+		for room_dict in level_dict["rooms"]:
+			var room := Room.new()
+			room.name = room_dict["name"]
+			room.scene_uid = room_dict["scene_uid"]
+			room.required = room_dict["required"]
+			room.max_passes = room_dict["max_passes"]
+			level.rooms[room.name]=room
+		for  room_dict in level_dict["rooms"]:
+			for passage_dict in room_dict["passages"]:
+				var connections:Array[Connection]
+				for connection_dict in passage_dict["connections"]:
+					var connection := Connection.new(
+						level.rooms[connection_dict["name"]],
+						connection_dict["connected_passage"]
+					)
+					connections.append(connection)
+				level.rooms[room_dict["name"]].passages[passage_dict["name"]] = connections
+		#level.starter_room
+		RogueSys.levels[level_dict.name]=level
+		

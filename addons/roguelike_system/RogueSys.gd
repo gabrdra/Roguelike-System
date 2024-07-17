@@ -2,7 +2,7 @@
 extends EditorPlugin
 
 const MainPanel = preload("res://addons/roguelike_system/nodes/MainPanel.tscn")
-
+const path := "res://addons/roguelike_system/save/savedata.json"
 var main_panel_instance
 
 func _enter_tree():
@@ -10,7 +10,7 @@ func _enter_tree():
 	EditorInterface.get_editor_main_screen().add_child(main_panel_instance)
 	add_autoload_singleton("RogueSys", "res://addons/roguelike_system/scripts/RogueSysSingleton.gd")
 	_make_visible(false)
-	RogueSys.load_plugin_data()
+	SaveLoadData.load_plugin_data(path)
 	#see how to restart the project whenever the plugin is activated
 	#OS.set_restart_on_exit(true)
 
@@ -37,4 +37,4 @@ func _get_plugin_icon():
 	return EditorInterface.get_editor_theme().get_icon("Node", "EditorIcons")
 
 func _save_external_data() -> void:
-	RogueSys.save_plugin_data()
+	SaveLoadData.save_plugin_data(path)
