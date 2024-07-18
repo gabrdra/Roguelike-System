@@ -43,9 +43,7 @@ static func save_plugin_data(path:String) -> void:
 				room_dict["passages"].append(passage_dict)
 			level_dict["rooms"].append(room_dict)
 		save_dict["levels"].append(level_dict)
-	#print(JSON.stringify(save_dict))
 	save.store_string(JSON.stringify(save_dict))
-	load_plugin_data(path)
 
 static func load_plugin_data(path: String) -> void:
 	var file = FileAccess.open(path, FileAccess.READ)
@@ -55,7 +53,6 @@ static func load_plugin_data(path: String) -> void:
 	var file_content = file.get_as_text()
 	file.close()
 	var data_dict = JSON.parse_string(file_content)
-	RogueSys.current_level_name = data_dict["current_level_name"]
 	var levels_array: Array = data_dict["levels"]
 	for level_dict in levels_array:
 		var level := LevelData.new()
@@ -78,4 +75,5 @@ static func load_plugin_data(path: String) -> void:
 				level.rooms[room_dict["name"]].passages[passage_dict["name"]] = connections
 		#level.starter_room
 		RogueSys.levels[level_dict.name]=level
-		
+		RogueSys.set_current_level(data_dict["current_level_name"])
+
