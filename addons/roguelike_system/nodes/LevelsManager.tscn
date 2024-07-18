@@ -55,7 +55,7 @@ layout_mode = 2
 [node name="VSplitContainer" type="HSeparator" parent="VBoxContainer"]
 layout_mode = 2
 
-[node name="ExportLevelsHolder" type="Button" parent="VBoxContainer"]
+[node name="ExportLevelsButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 text = "Export levels"
 
@@ -126,6 +126,7 @@ layout_mode = 2
 [connection signal="button_down" from="VBoxContainer/DeleteLevelButton" to="." method="_on_delete_level_button_button_down"]
 [connection signal="item_selected" from="VBoxContainer/CurrentLevelHolder/CurrentLevelButton" to="." method="_on_current_level_button_item_selected"]
 [connection signal="item_selected" from="VBoxContainer/StarterRoomHolder/StarterRoomButton" to="." method="_on_starter_room_button_item_selected"]
+[connection signal="button_down" from="VBoxContainer/ExportLevelsButton" to="." method="_on_export_levels_button_button_down"]
 [connection signal="confirmed" from="DeleteLevelConfirmation" to="." method="_on_confirm_button_button_down"]
 [connection signal="close_requested" from="CreateRenameLevelWindow" to="." method="_on_create_rename_level_window_close_requested"]
 [connection signal="focus_exited" from="CreateRenameLevelWindow" to="." method="_on_create_rename_level_window_close_requested"]
