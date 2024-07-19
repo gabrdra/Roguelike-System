@@ -1,4 +1,4 @@
-class_name Connection
+class_name Connection extends Resource
 
 var room:Room
 var connected_passage:String

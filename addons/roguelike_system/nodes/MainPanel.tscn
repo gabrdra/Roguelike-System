@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://dvis5r7ijqlb"]
+[gd_scene load_steps=6 format=3 uid="uid://dvis5r7ijqlb"]
 
 [ext_resource type="PackedScene" uid="uid://dmiy2qk1j8u3w" path="res://addons/roguelike_system/nodes/RoomDetails.tscn" id="1_7ysua"]
 [ext_resource type="PackedScene" uid="uid://b8x37u1dmaqn" path="res://addons/roguelike_system/nodes/PossibilitiesGraph.tscn" id="2_fw4mo"]
 [ext_resource type="PackedScene" uid="uid://bsckecu25liqr" path="res://addons/roguelike_system/nodes/LevelsManager.tscn" id="3_yihq6"]
+[ext_resource type="PackedScene" uid="uid://ch4ufd7ll4w2o" path="res://addons/roguelike_system/nodes/InstanceVisualizer.tscn" id="4_t0u23"]
 
 [sub_resource type="GDScript" id="GDScript_ss06m"]
 script/source = "extends Control
@@ -46,6 +47,10 @@ visible = false
 layout_mode = 2
 
 [node name="Levels Manager" parent="TabContainer" instance=ExtResource("3_yihq6")]
+visible = false
+layout_mode = 2
+
+[node name="Instance Visualizer" parent="TabContainer" instance=ExtResource("4_t0u23")]
 visible = false
 layout_mode = 2
 

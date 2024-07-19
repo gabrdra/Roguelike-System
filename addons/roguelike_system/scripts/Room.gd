@@ -1,4 +1,4 @@
-class_name Room
+class_name Room extends Resource
 
 var name: String
 var scene_uid: String

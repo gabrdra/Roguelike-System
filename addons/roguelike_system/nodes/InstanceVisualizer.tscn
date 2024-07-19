@@ -1,0 +1,50 @@
+[gd_scene load_steps=2 format=3 uid="uid://ch4ufd7ll4w2o"]
+
+[ext_resource type="Script" path="res://addons/roguelike_system/scripts/InstanceVisualizer.gd" id="1_grw2p"]
+
+[node name="InstanceVisualizer" type="VBoxContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_grw2p")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+alignment = 1
+
+[node name="ExportDataSelectionButton" type="Button" parent="HBoxContainer"]
+layout_mode = 2
+text = "Select exported data file"
+
+[node name="SeedLabel" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+text = "Input seed: (0 is a random seed)"
+
+[node name="SeedInput" type="SpinBox" parent="HBoxContainer"]
+layout_mode = 2
+max_value = 999999.0
+rounded = true
+allow_greater = true
+
+[node name="GenerateButton" type="Button" parent="HBoxContainer"]
+layout_mode = 2
+text = "Generate"
+
+[node name="VSplitContainer" type="VSplitContainer" parent="."]
+layout_mode = 2
+
+[node name="GraphEdit" type="GraphEdit" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ExportDataSelection" type="FileDialog" parent="."]
+title = "Open a File"
+size = Vector2i(312, 159)
+ok_button_text = "Open"
+file_mode = 0
+filters = PackedStringArray("*.json")
+
+[connection signal="button_down" from="HBoxContainer/ExportDataSelectionButton" to="." method="_on_export_data_selection_button_button_down"]
+[connection signal="button_down" from="HBoxContainer/GenerateButton" to="." method="_on_generate_button_button_down"]
