@@ -151,3 +151,50 @@ static func read_exported_data(path: String) -> Dictionary:
 				level.rooms[room_dict["name"]].passages[passage_dict["name"]] = connections
 		return_levels[level_dict.name]=level
 	return return_levels
+
+
+static func save_level_data_json(level_data:LevelData, level_name:String, path:String) ->void:
+	var save := FileAccess.open(path,FileAccess.WRITE)
+	if save == null:
+		printerr("Failed to open file")
+		return
+	var level:LevelData = level_data
+	var level_dict := {
+		"name":level_name,
+		"starter_room_name": null
+	}
+	if(level.starter_room!=null):
+		level_dict["starter_room_name"] = level.starter_room.name
+	level_dict["rooms"]=[]
+	for room_name in level.rooms:
+		var room:Room = level.rooms[room_name]
+		var room_dict :={
+			"name":room_name,
+			"scene_uid":room.scene_uid,
+			"required":room.required,
+			"max_passes":room.max_passes,
+			"passages":[]
+		}
+		for passage in room.passages:
+			var connections = room.passages[passage]
+			var passage_dict={
+				"name":passage,
+				"connections":[],
+				"type":""
+			}
+			if(typeof(connections)==TYPE_ARRAY):
+				for connection in connections:
+					passage_dict["connections"].append({
+						"name":connection.room.name,
+						"connected_passage":connection.connected_passage
+					})
+				passage_dict["type"]="array"
+			else:
+				passage_dict["connections"].append({
+					"name":connections.room.name,
+					"connected_passage":connections.connected_passage
+				})
+				passage_dict["type"]="element"
+			room_dict["passages"].append(passage_dict)
+		level_dict["rooms"].append(room_dict)
+	save.store_string(JSON.stringify(level_dict))
