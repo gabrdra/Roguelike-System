@@ -150,6 +150,7 @@ static func read_exported_data(path: String) -> Dictionary:
 					)
 					connections.append(connection)
 				level.rooms[room_dict["name"]].passages[passage_dict["name"]] = connections
+		level.starter_room = level.rooms[level_dict["starter_room_name"]]
 		return_levels[level_dict.name]=level
 	return return_levels
 
@@ -180,22 +181,12 @@ static func save_level_data_json(level_data:LevelData, level_name:String, path:S
 			var connections = room.passages[passage]
 			var passage_dict={
 				"name":passage,
-				"connections":[],
-				"type":""
+				"connections":[]
 			}
-			if(typeof(connections)==TYPE_ARRAY):
-				for connection in connections:
-					passage_dict["connections"].append({
-						"name":connection.room.name,
-						"connected_passage":connection.connected_passage
-					})
-				passage_dict["type"]="array"
-			else:
-				passage_dict["connections"].append({
-					"name":connections.room.name,
-					"connected_passage":connections.connected_passage
-				})
-				passage_dict["type"]="element"
+			passage_dict["connections"].append({
+				"name":connections.room.name,
+				"connected_passage":connections.connected_passage
+			})
 			room_dict["passages"].append(passage_dict)
 		level_dict["rooms"].append(room_dict)
 	save.store_string(JSON.stringify(level_dict))

@@ -7,7 +7,7 @@ func _init(_room = Room.new(), _connected_passage = ""):
 	room = _room
 	connected_passage = _connected_passage
 
-func _to_string():
+func _to_string() -> String:
 	return room.name +": "+ connected_passage
 	
 func equals(other_connection:Connection) -> bool:

@@ -47,5 +47,6 @@ file_mode = 0
 filters = PackedStringArray("*.json")
 
 [connection signal="button_down" from="HBoxContainer/ExportDataSelectionButton" to="." method="_on_export_data_selection_button_button_down"]
+[connection signal="value_changed" from="HBoxContainer/SeedInput" to="." method="_on_seed_input_value_changed"]
 [connection signal="button_down" from="HBoxContainer/GenerateButton" to="." method="_on_generate_button_button_down"]
 [connection signal="file_selected" from="ExportDataSelection" to="." method="_on_export_data_selection_file_selected"]

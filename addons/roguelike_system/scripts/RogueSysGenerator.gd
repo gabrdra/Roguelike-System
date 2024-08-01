@@ -15,20 +15,30 @@ func print_dict_keys(dict:Dictionary) -> void:
 
 #For now, max_passes will be ignored and every room will be considered as having it set to 1
 
-func _get_all_uncollapsed_passages(rooms:Dictionary) -> Array[OutgoingPassage]:
-	var outgoing_passages:Array[OutgoingPassage] = []
-	for room_name in rooms:
-		var room:Room = rooms[room_name]
-		for passage_name in room.passages:
-			var passage = room.passages[passage_name]
-			if typeof(passage) == TYPE_ARRAY:
-				outgoing_passages.append(OutgoingPassage.new(room,passage_name))
-	return outgoing_passages
+func create_used_room(room:Room)->Room:
+	var used_room := Room.new()
+	used_room.name = room.name
+	used_room.scene_uid = room.scene_uid
+	for passage_name in room.passages:
+		used_room.passages[passage_name]=null
+	return used_room
 
 func _choose_random_element_array(array:Array):
 	return array[random.randi_range(0,array.size()-1)]
 
-
+func _get_unused_connections_from_room(room:Room) -> SimpleQueue:
+	var passages_names:Array[String]
+	for passage_name in room.passages:
+		if room.passages[passage_name]==null:
+			passages_names.append(passage_name)
+	var queue = SimpleQueue.new()
+	while not passages_names.is_empty():
+		var index = random.randi_range(0,passages_names.size()-1)
+		var passage_name := passages_names[index]
+		passages_names.remove_at(index)
+		queue.insert(Connection.new(room, passage_name))
+	return queue
+	
 func generate_level(input_level:LevelData, input_seed:int, attempts:int) -> LevelData:
 	random = RandomNumberGenerator.new()
 	if input_seed != 0:
@@ -36,85 +46,78 @@ func generate_level(input_level:LevelData, input_seed:int, attempts:int) -> Leve
 	if attempts == 0:
 		attempts = 9223372036854775807
 	for i in range(attempts):
-		var level:=input_level #needs to duplicate the input_level in order to not mess with it during attempts
-		var rooms:Dictionary = level.rooms
-		var used_rooms:Dictionary
-		#adds all required rooms to used_rooms dictionary
-		for room_name in rooms:
-			var room:Room = rooms[room_name]
-			if room.required:
-				used_rooms[room_name]=room
-		
-		var passages_to_collapse:Array[OutgoingPassage] = _get_all_uncollapsed_passages(used_rooms)
-		var passages_with_single_element:Array[OutgoingPassage] = []
-		for out_passage in passages_to_collapse:
-			if out_passage.room.passages[out_passage.passage_name].size() == 1:
-				passages_with_single_element.append(out_passage)
-		while !passages_with_single_element.is_empty():
-			var chosen_passage:OutgoingPassage = passages_with_single_element.pop_back()
-			var other_side_passage:Connection = chosen_passage.room.passages[chosen_passage.passage_name][0]
-			chosen_passage.room.passages[chosen_passage.passage_name] = other_side_passage
-			other_side_passage.room.passages[other_side_passage.connected_passage]=chosen_passage.as_connection()
-			used_rooms[other_side_passage.room.name] = other_side_passage.room
-			for passage_name in other_side_passage.room.passages:
-				var passage = other_side_passage.room.passages[passage_name]
-				if typeof(passage) == TYPE_ARRAY:
-					if passage.size()==1:
-						passages_with_single_element.append(OutgoingPassage.new(passage[0].room, passage[0].connected_passage))
+		var input_rooms:Dictionary = input_level.rooms
+		var used_rooms:= {}
+		used_rooms[input_level.starter_room.name] = create_used_room(input_level.starter_room)
+		var queue = _get_unused_connections_from_room(used_rooms[input_level.starter_room.name])
 		var successful := true
 		while successful:
-			#gets all uncollapsed passages that belong to the required rooms
-			passages_to_collapse = _get_all_uncollapsed_passages(used_rooms)
-			if passages_to_collapse.is_empty():
+			if queue.is_empty():
 				break
-			var chosen_passage_to_collapse:OutgoingPassage = passages_to_collapse[random.randi_range(0,passages_to_collapse.size()-1)]
-			#Performs a random walk until reaches a dead end or another room that already is on the used_rooms dictionary
-			while(true):
-				var destination:Connection =_choose_random_element_array(chosen_passage_to_collapse.room.passages[chosen_passage_to_collapse.passage_name])
-				#sets the passages between the rooms to have only the collapsed connection
-				chosen_passage_to_collapse.room.passages[chosen_passage_to_collapse.passage_name] = destination
-				destination.room.passages[destination.connected_passage] = chosen_passage_to_collapse.as_connection()
-				if(used_rooms.has(destination.room.name)):
-					break #found a room that was already in use
-				used_rooms[destination.room.name] = destination.room #adds room as being used
-				#I'm not really sure about this whole passages_with_single_element part...
-				var possible_next_outgoing_passage:Array[OutgoingPassage]=[]
-				for passage_name in destination.room.passages:
-					var passage = destination.room.passages[passage_name]
-					if typeof(passage) == TYPE_ARRAY:
-						if passage.size()==1:
-							passages_with_single_element.append(OutgoingPassage.new(passage[0].room, passage[0].connected_passage))
-						else:
-							for p:Connection in passage:
-								possible_next_outgoing_passage.append(OutgoingPassage.new(p.room,p.connected_passage))
-				while !passages_with_single_element.is_empty():
-					var chosen_passage:OutgoingPassage = passages_with_single_element.pop_back()
-					var other_side_passage:Connection = chosen_passage.room.passages[chosen_passage.passage_name][0]
-					chosen_passage.room.passages[chosen_passage.passage_name] = other_side_passage
-					other_side_passage.room.passages[other_side_passage.connected_passage]=chosen_passage.as_connection()
-					used_rooms[other_side_passage.room.name] = other_side_passage.room
-					for passage_name in other_side_passage.room.passages:
-						var passage = other_side_passage.room.passages[passage_name]
-						if typeof(passage) == TYPE_ARRAY:
-							if passage.size()==1:
-								passages_with_single_element.append(OutgoingPassage.new(passage[0].room, passage[0].connected_passage))
-				if possible_next_outgoing_passage.size()==0:
-					break
-				chosen_passage_to_collapse = _choose_random_element_array(possible_next_outgoing_passage)
-		var return_level:LevelData = LevelData.new()
-		return_level.rooms = used_rooms
-		return_level.starter_room = input_level.starter_room
-		return return_level
+			var outgoing_connection:Connection = queue.pop_front()
+			if outgoing_connection.room.passages[outgoing_connection.connected_passage]!=null:
+				#this connection was already used
+				continue
+			var possible_connections:Array[Connection] = input_rooms[outgoing_connection.room.name].passages[outgoing_connection.connected_passage].filter(
+				func (c:Connection):
+					#a connection is only possible the other side is not already being used
+					if used_rooms.has(c.room.name):
+						return used_rooms[c.room.name].passages[c.connected_passage] == null
+					return true
+			)
+			if possible_connections.size() == 0:
+				#there was no correspondent to the outgoing_connection, 
+				#meaning a invalid state was created aborts generation and tries again
+				successful = false
+				break
+			var incomming_connection:Connection = _choose_random_element_array(possible_connections)
+			if not used_rooms.has(incomming_connection.room.name):
+				#if a room isn't on used_rooms yet it should be inserted
+				# and it's passages added to the queue
+				var new_used_room:Room = create_used_room(incomming_connection.room)
+				used_rooms[new_used_room.name] = new_used_room
+				new_used_room.passages[incomming_connection.connected_passage] = outgoing_connection
+				outgoing_connection.room.passages[outgoing_connection.connected_passage] = Connection.new(new_used_room, incomming_connection.connected_passage)
+				queue.insert_queue(_get_unused_connections_from_room(new_used_room))
+			else:
+				incomming_connection.room.passages[incomming_connection.connected_passage] = outgoing_connection
+				outgoing_connection.room.passages[outgoing_connection.connected_passage] = incomming_connection
+		if successful:
+			var return_level = LevelData.new()
+			return_level.rooms = used_rooms
+			return_level.starter_room = used_rooms[input_level.starter_room.name]
+			return return_level
 	return LevelData.new()
 
-
-class OutgoingPassage:
-	#This is basically the same as a connection but the room is the room where the passage is leading out of
-	# and the passage is the outgoing passage
-	var room:Room
-	var passage_name:String
-	func _init(_room = Room.new(), _passage_name = ""):
-		room = _room
-		passage_name = _passage_name
-	func as_connection() -> Connection:
-		return Connection.new(room,passage_name)
+class SimpleQueue:
+	var first:Element
+	var last:Element
+	func insert(element) -> void:
+		var new_element = Element.new(element)
+		if(first==null):
+			first = new_element
+			last = new_element
+		else:
+			last.next = new_element
+		last = new_element
+		
+	func insert_queue(queue:SimpleQueue)  -> void:
+		if queue.is_empty():
+			return
+		last.next = queue.first
+		last = queue.last
+		
+	func pop_front():
+		if first == null:
+			return null
+		var return_element = first
+		first = first.next
+		return return_element.value
+	
+	func is_empty() -> bool:
+		return first==null
+	class Element:
+		var value
+		var next:Element
+		func _init(_value):
+			value = _value

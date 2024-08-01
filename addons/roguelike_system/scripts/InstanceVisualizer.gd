@@ -5,8 +5,8 @@ extends VBoxContainer
 @onready var seed_input: SpinBox = $HBoxContainer/SeedInput
 @onready var graph_edit: GraphEdit = $GraphEdit
 
-var file_path := "res://demo/export_data/map_data.json"
-
+var file_path := ""
+var seed := 0
 var node_colors := [Color.WHITE, Color.LIME_GREEN,Color.INDIAN_RED,Color.REBECCA_PURPLE,
 	Color.LIGHT_YELLOW,Color.DARK_BLUE,Color.ORANGE,Color.ORCHID]
 
@@ -20,21 +20,26 @@ func _on_generate_button_button_down() -> void:
 	var generator:RogueSysGenerator = RogueSysGenerator.new()
 	var read_dict = SaveLoadData.read_exported_data(file_path)
 	var input_data:LevelData = read_dict["Level 1"]
-	var generated_level:LevelData = generator.generate_level(input_data,1,100)
+	var generated_level:LevelData = generator.generate_level(input_data,seed,100)
 	SaveLoadData.save_level_data_json(generated_level, "Level 1", "res://demo/export_data/Level1testjson.json")
 	_create_visualization(generated_level)
 func _on_export_data_selection_file_selected(path: String) -> void:
 	file_path = path
 
 func _create_visualization(level:LevelData):
+	_clear_visualization()
 	var portIndexes = _spawn_rooms(level.rooms)
 	_spawn_connections(level.rooms, portIndexes)
 	graph_edit.arrange_nodes()
 func _spawn_connections(rooms:Dictionary, portIndexes:Dictionary) -> void:
+	var already_used = {}
 	for room_name in rooms:
+		already_used[room_name]=true
 		var room:Room = rooms[room_name]
 		for passage_name in room.passages:
 			var conn:Connection = room.passages[passage_name]
+			if already_used.has(conn.room.name):
+				continue
 			graph_edit.connect_node(room_name,portIndexes[room_name][passage_name], conn.room.name,portIndexes[conn.room.name][conn.connected_passage])
 
 func _spawn_rooms(rooms:Dictionary) -> Dictionary:
@@ -63,3 +68,12 @@ func _spawn_rooms(rooms:Dictionary) -> Dictionary:
 		node.size = Vector2(100,100)
 		graph_edit.add_child(node)
 	return portIndexes
+
+func _clear_visualization() -> void:
+	graph_edit.clear_connections()
+	for child in graph_edit.get_children():
+		if child is GraphNode:
+			graph_edit.remove_child(child)
+
+func _on_seed_input_value_changed(value: float) -> void:
+	seed = value
