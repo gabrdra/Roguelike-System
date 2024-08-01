@@ -73,8 +73,9 @@ static func load_plugin_data(path: String) -> void:
 					)
 					connections.append(connection)
 				level.rooms[room_dict["name"]].passages[passage_dict["name"]] = connections
+		level.starter_room = level.rooms[level_dict["starter_room_name"]]
 		RogueSys.levels[level_dict.name]=level
-		RogueSys.set_current_level(data_dict["current_level_name"])
+	RogueSys.set_current_level(data_dict["current_level_name"])
 
 static func export_data(path:String) -> void:
 	var save := FileAccess.open(path,FileAccess.WRITE)
