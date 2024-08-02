@@ -104,7 +104,10 @@ class SimpleQueue:
 	func insert_queue(queue:SimpleQueue)  -> void:
 		if queue.is_empty():
 			return
-		last.next = queue.first
+		if is_empty():
+			first = queue.first
+		else:
+			last.next = queue.first
 		last = queue.last
 		
 	func pop_front():
