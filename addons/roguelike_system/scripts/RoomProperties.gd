@@ -64,14 +64,6 @@ func fill_interface() -> void:
 	required_button.set_pressed_no_signal(current_room.required)
 	update_passages()
 
-#func print_current_room() -> void:
-	#print(current_room.name)
-	#print(current_room.scene_uid)
-	#print(current_room.required)
-	#print(current_room.max_passes)
-	#for p in current_room.passages:
-		#print(p+" = "+str(current_room.passages[p]))
-
 func set_passages_from_scene() -> void:
 	if(current_room.scene_uid.is_empty()):
 		printerr("Scene hasn't been selected yet")
@@ -91,11 +83,6 @@ func set_passages_from_scene() -> void:
 			printerr("There must be a node on the scene, direct child of root, named passages or Passages")
 			return
 	var passage_children = passages_node.get_children()
-	#TODO: make reading passages and assigning them better
-	#ways to improve:
-	#- reuse the old connections if a name remains the same
-	#- if a passage name changes but it already had connections their connections are updated
-	#Point to think about:if there is a failure in reading the new passages, should the old ones be brought back?
 	current_room.passages = {}
 	for p in passage_children:
 		#print(p.name)

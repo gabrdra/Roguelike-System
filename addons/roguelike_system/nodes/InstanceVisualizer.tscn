@@ -18,6 +18,13 @@ alignment = 1
 layout_mode = 2
 text = "Select exported data file"
 
+[node name="ChosenLevelLabel" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+text = "Choose a level:"
+
+[node name="ChosenLevelButton" type="OptionButton" parent="HBoxContainer"]
+layout_mode = 2
+
 [node name="SeedLabel" type="Label" parent="HBoxContainer"]
 layout_mode = 2
 text = "Input seed: (0 is a random seed)"
@@ -47,6 +54,7 @@ file_mode = 0
 filters = PackedStringArray("*.json")
 
 [connection signal="button_down" from="HBoxContainer/ExportDataSelectionButton" to="." method="_on_export_data_selection_button_button_down"]
+[connection signal="item_selected" from="HBoxContainer/ChosenLevelButton" to="." method="_on_chosen_level_button_item_selected"]
 [connection signal="value_changed" from="HBoxContainer/SeedInput" to="." method="_on_seed_input_value_changed"]
 [connection signal="button_down" from="HBoxContainer/GenerateButton" to="." method="_on_generate_button_button_down"]
 [connection signal="file_selected" from="ExportDataSelection" to="." method="_on_export_data_selection_file_selected"]

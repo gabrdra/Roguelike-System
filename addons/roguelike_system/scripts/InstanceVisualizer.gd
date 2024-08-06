@@ -4,9 +4,13 @@ extends VBoxContainer
 @onready var export_data_selection: FileDialog = $ExportDataSelection
 @onready var seed_input: SpinBox = $HBoxContainer/SeedInput
 @onready var graph_edit: GraphEdit = $GraphEdit
+@onready var chosen_level_button: OptionButton = $HBoxContainer/ChosenLevelButton
 
 var file_path := ""
+var possible_levels := []
+var levels_dict := {}
 var seed := 0
+var possible_level_chosen := 0
 var node_colors := [Color.WHITE, Color.LIME_GREEN,Color.INDIAN_RED,Color.REBECCA_PURPLE,
 	Color.LIGHT_YELLOW,Color.DARK_BLUE,Color.ORANGE,Color.ORCHID]
 
@@ -18,13 +22,22 @@ func _on_generate_button_button_down() -> void:
 		printerr("no file was chosen")
 		return
 	var generator:RogueSysGenerator = RogueSysGenerator.new()
-	var read_dict = SaveLoadData.read_exported_data(file_path)
-	var input_data:LevelData = read_dict["Level 1"]
-	var generated_level:LevelData = generator.generate_level(input_data,seed,100)
-	SaveLoadData.save_level_data_json(generated_level, "Level 1", "res://demo/export_data/Level1testjson.json")
+	
+	var generated_level:LevelData = generator.generate_level(levels_dict[possible_levels[possible_level_chosen]],seed,100)
+	#SaveLoadData.save_level_data_json(generated_level, "Level 1", "res://demo/export_data/Level1testjson.json")
 	_create_visualization(generated_level)
 func _on_export_data_selection_file_selected(path: String) -> void:
 	file_path = path
+	levels_dict = SaveLoadData.read_exported_data(file_path)
+	possible_levels = levels_dict.keys()
+	_fill_chosen_level_button()
+
+func _fill_chosen_level_button() -> void:
+	possible_level_chosen = 0
+	chosen_level_button.clear()
+	for level_name in possible_levels:
+		chosen_level_button.add_item(level_name)
+	chosen_level_button.select(possible_level_chosen)
 
 func _create_visualization(level:LevelData):
 	_clear_visualization()
@@ -77,3 +90,6 @@ func _clear_visualization() -> void:
 
 func _on_seed_input_value_changed(value: float) -> void:
 	seed = value
+
+func _on_chosen_level_button_item_selected(index: int) -> void:
+	possible_level_chosen = index
