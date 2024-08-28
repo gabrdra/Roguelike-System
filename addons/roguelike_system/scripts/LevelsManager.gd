@@ -117,5 +117,5 @@ func _on_starter_room_button_item_selected(index: int) -> void:
 
 
 func _on_export_levels_button_button_down() -> void:
-	var path = "res://demo/export_data/map_data.json"
+	var path = "res://demo_2D/export_data/map_data.json"
 	SaveLoadData.export_data(path)

@@ -101,5 +101,3 @@ func _get_connection_from_array(arr: Array, connection_to_find: Connection) -> C
 		if conn.equals(connection_to_find):
 			return conn
 	return null
-
-
