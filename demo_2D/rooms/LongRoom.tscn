@@ -1,0 +1,54 @@
+[gd_scene load_steps=4 format=3 uid="uid://c87buw0eafniv"]
+
+[ext_resource type="Script" path="res://demo_2D/scripts/Passage.gd" id="1_5o7ay"]
+[ext_resource type="Texture2D" uid="uid://lh15htj6erf0" path="res://icon.svg" id="2_ab1iu"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bbwdl"]
+size = Vector2(8, 51)
+
+[node name="Room" type="Node2D"]
+
+[node name="passages" type="Node2D" parent="."]
+
+[node name="up" type="Node2D" parent="passages"]
+script = ExtResource("1_5o7ay")
+
+[node name="Area2D" type="Area2D" parent="passages/up"]
+position = Vector2(10, -1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="passages/up/Area2D"]
+shape = SubResource("RectangleShape2D_bbwdl")
+
+[node name="Sprite2D" type="Sprite2D" parent="passages/up"]
+position = Vector2(-7.15256e-07, 4.17233e-07)
+scale = Vector2(0.0390625, 0.0390625)
+texture = ExtResource("2_ab1iu")
+
+[node name="right" type="Node2D" parent="passages"]
+position = Vector2(242, 91)
+script = ExtResource("1_5o7ay")
+
+[node name="Area2D" type="Area2D" parent="passages/right"]
+position = Vector2(18, -1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="passages/right/Area2D"]
+shape = SubResource("RectangleShape2D_bbwdl")
+
+[node name="Sprite2D" type="Sprite2D" parent="passages/right"]
+position = Vector2(-7.15256e-07, 4.17233e-07)
+scale = Vector2(0.0390625, 0.0390625)
+texture = ExtResource("2_ab1iu")
+
+[node name="down" type="Node2D" parent="passages"]
+script = ExtResource("1_5o7ay")
+
+[node name="Area2D" type="Area2D" parent="passages/down"]
+position = Vector2(10, -1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="passages/down/Area2D"]
+shape = SubResource("RectangleShape2D_bbwdl")
+
+[node name="Sprite2D" type="Sprite2D" parent="passages/down"]
+position = Vector2(-7.15256e-07, 4.17233e-07)
+scale = Vector2(0.0390625, 0.0390625)
+texture = ExtResource("2_ab1iu")

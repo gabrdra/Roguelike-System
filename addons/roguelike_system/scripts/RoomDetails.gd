@@ -36,4 +36,3 @@ func fill_rooms_list() -> void:
 
 func _on_visibility_changed() -> void:
 	_on_rooms_changed()
-

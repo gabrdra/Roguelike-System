@@ -2,20 +2,9 @@ class_name RogueSysGenerator extends Node
 
 var random: RandomNumberGenerator
 
-func print_passages(passages:Dictionary) -> void:
-	for passage_name in passages:
-		print(passage_name+":")
-		print(passages[passage_name])
-
-func print_dict_keys(dict:Dictionary) -> void:
-	print("print_dict_keys")
-	for d in dict.keys():
-		print(d)
-	print("end print_dict_keys")
-
 #For now, max_passes will be ignored and every room will be considered as having it set to 1
 
-func create_used_room(room:Room)->Room:
+func _create_used_room(room:Room)->Room:
 	var used_room := Room.new()
 	used_room.name = room.name
 	used_room.scene_uid = room.scene_uid
@@ -39,16 +28,12 @@ func _get_unused_connections_from_room(room:Room) -> SimpleQueue:
 		queue.insert(Connection.new(room, passage_name))
 	return queue
 	
-func generate_level(input_level:LevelData, input_seed:int, attempts:int) -> LevelData:
+func generate_level(input_level:LevelData, input_seed:int = 0, attempts:int = 1000000) -> LevelData:
 	random = RandomNumberGenerator.new()
-	if input_seed != 0:
-		random.seed = input_seed
-	if attempts == 0:
-		attempts = 9223372036854775807
 	for i in range(attempts):
 		var input_rooms:Dictionary = input_level.rooms
 		var used_rooms:= {}
-		used_rooms[input_level.starter_room.name] = create_used_room(input_level.starter_room)
+		used_rooms[input_level.starter_room.name] = _create_used_room(input_level.starter_room)
 		var queue = _get_unused_connections_from_room(used_rooms[input_level.starter_room.name])
 		var successful := true
 		while successful:
@@ -74,7 +59,7 @@ func generate_level(input_level:LevelData, input_seed:int, attempts:int) -> Leve
 			if not used_rooms.has(incomming_connection.room.name):
 				#if a room isn't on used_rooms yet it should be inserted
 				# and it's passages added to the queue
-				var new_used_room:Room = create_used_room(incomming_connection.room)
+				var new_used_room:Room = _create_used_room(incomming_connection.room)
 				used_rooms[new_used_room.name] = new_used_room
 				new_used_room.passages[incomming_connection.connected_passage] = outgoing_connection
 				outgoing_connection.room.passages[outgoing_connection.connected_passage] = Connection.new(new_used_room, incomming_connection.connected_passage)

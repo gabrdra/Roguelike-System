@@ -100,7 +100,6 @@ horizontal_alignment = 1
 vertical_alignment = 2
 
 [node name="CreateRenameInput" type="TextEdit" parent="CreateRenameLevelWindow/Background/VBoxContainer"]
-clip_contents = true
 layout_mode = 2
 placeholder_text = "level name"
 scroll_fit_content_height = true
