@@ -1,6 +1,8 @@
 @tool
 class_name RogueSysSingleton extends Node
 
+signal throw_error
+
 var levels: Dictionary = {}
 var current_level:LevelData
 var current_level_name:String
