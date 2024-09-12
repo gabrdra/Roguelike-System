@@ -36,9 +36,9 @@ text = "Create new map"
 layout_mode = 2
 text = "Rename current map"
 
-[node name="SelectMapButton" type="Button" parent="VBoxContainer"]
+[node name="LoadMapButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
-text = "Open a map"
+text = "Load map file"
 
 [node name="ChangePassagesButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
@@ -110,6 +110,7 @@ cancel_button_text = "No"
 
 [connection signal="button_down" from="VBoxContainer/NewMapButton" to="." method="_on_new_map_button_button_down"]
 [connection signal="button_down" from="VBoxContainer/RenameMapButton" to="." method="_on_rename_map_button_button_down"]
+[connection signal="button_down" from="VBoxContainer/LoadMapButton" to="." method="_on_load_map_button_button_down"]
 [connection signal="text_changed" from="PassagesHolderWindow/Background/VBoxContainer/PassagesHolderInput" to="." method="_on_create_rename_input_text_changed"]
 [connection signal="button_down" from="PassagesHolderWindow/Background/VBoxContainer/HBoxContainer/PassagesHolderConfirmButton" to="." method="_on_confirm_button_button_down"]
 [connection signal="button_down" from="PassagesHolderWindow/Background/VBoxContainer/HBoxContainer/PassagesHolderCancelButton" to="." method="_on_create_rename_level_window_close_requested"]

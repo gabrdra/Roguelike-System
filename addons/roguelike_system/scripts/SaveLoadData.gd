@@ -46,27 +46,27 @@ static func save_plugin_data(path:String) -> void:
 		save_dict["levels"].append(level_dict)
 	save.store_string(JSON.stringify(save_dict))
 
-static func load_plugin_data(path: String) -> void:
+static func load_plugin_data(path: String) -> bool:
 	var file = FileAccess.open(path, FileAccess.READ)
 	if file == null:
 		RogueSys.throw_error.emit("Failed to open file for reading")
 		printerr("Failed to open file for reading")
-		return
+		return false
 	var file_content = file.get_as_text()
 	file.close()
 	var data_dict = JSON.parse_string(file_content)
 	if data_dict == null:
 		RogueSys.throw_error.emit("Error with plugin save file")
 		printerr("Error with plugin save file")
-		return
+		return false
 	if !data_dict.has("file_type"):
 		RogueSys.throw_error.emit("Error with plugin save file")
 		printerr("Error with plugin save file")
-		return
+		return false
 	if data_dict["file_type"] != "save_data":
 		RogueSys.throw_error.emit("Error with plugin save file")
 		printerr("Error with plugin save file")
-		return
+		return false
 	var levels_array: Array = data_dict["levels"]
 	for level_dict in levels_array:
 		var level := LevelData.new()
@@ -91,6 +91,7 @@ static func load_plugin_data(path: String) -> void:
 			level.starter_room = level.rooms[level_dict["starter_room_name"]]
 		RogueSys.levels[level_dict.name]=level
 	RogueSys.set_current_level(data_dict["current_level_name"])
+	return true
 
 static func export_data(path:String) -> void:
 	var save := FileAccess.open(path,FileAccess.WRITE)
