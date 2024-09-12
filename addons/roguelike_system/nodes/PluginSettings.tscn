@@ -97,7 +97,7 @@ text = "Confirm"
 layout_mode = 2
 text = "Cancel"
 
-[node name="CreateMapDialog" type="FileDialog" parent="."]
+[node name="MapFileDialog" type="FileDialog" parent="."]
 title = "Create a new map"
 size = Vector2i(303, 180)
 filters = PackedStringArray("*.json")
@@ -109,11 +109,10 @@ dialog_text = "Save current map before creating/opening a new one?"
 cancel_button_text = "No"
 
 [connection signal="button_down" from="VBoxContainer/NewMapButton" to="." method="_on_new_map_button_button_down"]
-[connection signal="close_requested" from="PassagesHolderWindow" to="." method="_on_create_rename_level_window_close_requested"]
-[connection signal="focus_exited" from="PassagesHolderWindow" to="." method="_on_create_rename_level_window_close_requested"]
+[connection signal="button_down" from="VBoxContainer/RenameMapButton" to="." method="_on_rename_map_button_button_down"]
 [connection signal="text_changed" from="PassagesHolderWindow/Background/VBoxContainer/PassagesHolderInput" to="." method="_on_create_rename_input_text_changed"]
 [connection signal="button_down" from="PassagesHolderWindow/Background/VBoxContainer/HBoxContainer/PassagesHolderConfirmButton" to="." method="_on_confirm_button_button_down"]
 [connection signal="button_down" from="PassagesHolderWindow/Background/VBoxContainer/HBoxContainer/PassagesHolderCancelButton" to="." method="_on_create_rename_level_window_close_requested"]
-[connection signal="file_selected" from="CreateMapDialog" to="." method="_on_create_map_dialog_file_selected"]
+[connection signal="file_selected" from="MapFileDialog" to="." method="_on_map_file_dialog_file_selected"]
 [connection signal="canceled" from="SaveCurrentMapDialog" to="." method="_on_save_current_map_dialog_canceled"]
 [connection signal="confirmed" from="SaveCurrentMapDialog" to="." method="_on_save_current_map_dialog_confirmed"]

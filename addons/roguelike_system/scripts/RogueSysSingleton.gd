@@ -9,8 +9,6 @@ var user_settings := UserRogueSysSettings.new()
 var levels: Dictionary = {}
 var current_level:LevelData
 var current_level_name:String
-var current_map_path := "res://addons/roguelike_system/save/savedata.json"
-#continue from here, it this along side other variables will be saved on the user://
 
 func _init() -> void:
 	if levels.size()==0:

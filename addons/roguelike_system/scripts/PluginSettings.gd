@@ -1,6 +1,6 @@
 @tool
 extends MarginContainer
-@onready var create_map_dialog: FileDialog = $CreateMapDialog
+@onready var map_file_dialog: FileDialog = $MapFileDialog
 @onready var passages_holder_window: Window = $PassagesHolderWindow
 @onready var save_current_map_dialog: ConfirmationDialog = $SaveCurrentMapDialog
 
@@ -14,13 +14,7 @@ func create_new_map() -> void:
 		RogueSys.throw_error.emit(message)
 	RogueSys.create_new_map(map_path)
 
-func _on_new_map_button_button_down() -> void:
-	current_action = Actions.CREATE
-	create_map_dialog.popup_centered_ratio(0.5)
-	if DirAccess.dir_exists_absolute("res://addons/roguelike_system/save/"):
-		create_map_dialog.current_path = "res://addons/roguelike_system/save/"
-
-func _on_create_map_dialog_file_selected(path: String) -> void:
+func new_map_dialog(path:String) -> void:
 	if FileAccess.file_exists(path):
 		var message := "A file with the given name already exists";
 		printerr(message)
@@ -31,17 +25,21 @@ func _on_create_map_dialog_file_selected(path: String) -> void:
 	save_current_map_dialog.dialog_text = "Save current map before creating a new one?"
 	save_current_map_dialog.popup_centered()
 
-func _on_create_rename_level_window_close_requested() -> void:
-	pass # Replace with function body.
+func rename_current_map(path:String) -> void:
+	DirAccess.rename_absolute(RogueSys.get_current_map_path(), path)
+	RogueSys.set_current_map_path(path)
 
+func _on_new_map_button_button_down() -> void:
+	current_action = Actions.CREATE
+	map_file_dialog.popup_centered_ratio(0.5)
+	if DirAccess.dir_exists_absolute("res://addons/roguelike_system/save/"):
+		map_file_dialog.current_path = "res://addons/roguelike_system/save/"
 
-func _on_confirm_button_button_down() -> void:
-	pass # Replace with function body.
-
-
-func _on_create_rename_input_text_changed() -> void:
-	pass # Replace with function body.
-
+func _on_map_file_dialog_file_selected(path: String) -> void:
+	if current_action == Actions.CREATE:
+		new_map_dialog(path)
+	if current_action == Actions.RENAME:
+		rename_current_map(path)
 
 func _on_save_current_map_dialog_confirmed() -> void:
 	SaveLoadData.save_plugin_data(RogueSys.get_current_map_path())
@@ -51,3 +49,8 @@ func _on_save_current_map_dialog_confirmed() -> void:
 func _on_save_current_map_dialog_canceled() -> void:
 	if current_action == Actions.CREATE:
 		create_new_map()
+
+func _on_rename_map_button_button_down() -> void:
+	current_action = Actions.RENAME
+	map_file_dialog.popup_centered_ratio(0.5)
+	map_file_dialog.current_path = RogueSys.get_current_map_path()
