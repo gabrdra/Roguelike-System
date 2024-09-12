@@ -1,1 +1,0 @@
-{"current_level_name":"Level 1","file_type":"save_data","levels":[{"name":"Level 1","rooms":[{"max_passes":1,"name":"BossRoom","passages":[{"connections":[],"name":"left"},{"connections":[],"name":"right"}],"required":false,"scene_uid":"uid://6mmw8fwkksq6"}],"starter_room_name":null}]}

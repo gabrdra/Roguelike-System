@@ -20,6 +20,15 @@ func load_user_settings() -> void:
 	else:
 		ResourceSaver.save(user_settings, user_settings_path)
 
+func save_user_settings() -> void:
+	ResourceSaver.save(user_settings, user_settings_path)
+
+func get_show_errors() -> bool:
+	return user_settings.show_errors
+	
+func set_show_errors(value: bool) -> void:
+	user_settings.show_errors = value
+
 func get_current_map_path() -> String:
 	return user_settings.current_map_path
 

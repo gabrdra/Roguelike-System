@@ -38,3 +38,4 @@ func _get_plugin_icon():
 
 func _save_external_data() -> void:
 	SaveLoadData.save_plugin_data(RogueSys.get_current_map_path())
+	RogueSys.save_user_settings()

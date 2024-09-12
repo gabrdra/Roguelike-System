@@ -23,7 +23,7 @@ layout_mode = 2
 text = "Map Settings:"
 horizontal_alignment = 1
 
-[node name="CurrentMapFileNameLabel" type="Label" parent="VBoxContainer"]
+[node name="CurrentMapFilePathLabel" type="Label" parent="VBoxContainer"]
 layout_mode = 2
 text = "Current map file name: "
 horizontal_alignment = 1
@@ -44,7 +44,7 @@ text = "Load map file"
 layout_mode = 2
 text = "Change passages holder node name"
 
-[node name="CheckButton" type="CheckButton" parent="VBoxContainer"]
+[node name="PopupErrorsToggle" type="CheckButton" parent="VBoxContainer"]
 layout_mode = 2
 button_pressed = true
 text = "Popup errors"
@@ -111,6 +111,7 @@ cancel_button_text = "No"
 [connection signal="button_down" from="VBoxContainer/NewMapButton" to="." method="_on_new_map_button_button_down"]
 [connection signal="button_down" from="VBoxContainer/RenameMapButton" to="." method="_on_rename_map_button_button_down"]
 [connection signal="button_down" from="VBoxContainer/LoadMapButton" to="." method="_on_load_map_button_button_down"]
+[connection signal="toggled" from="VBoxContainer/PopupErrorsToggle" to="." method="_on_popup_errors_toggle_toggled"]
 [connection signal="text_changed" from="PassagesHolderWindow/Background/VBoxContainer/PassagesHolderInput" to="." method="_on_create_rename_input_text_changed"]
 [connection signal="button_down" from="PassagesHolderWindow/Background/VBoxContainer/HBoxContainer/PassagesHolderConfirmButton" to="." method="_on_confirm_button_button_down"]
 [connection signal="button_down" from="PassagesHolderWindow/Background/VBoxContainer/HBoxContainer/PassagesHolderCancelButton" to="." method="_on_create_rename_level_window_close_requested"]
