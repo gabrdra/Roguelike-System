@@ -1,13 +1,15 @@
-[gd_scene load_steps=6 format=3 uid="uid://dvis5r7ijqlb"]
+[gd_scene load_steps=7 format=3 uid="uid://dvis5r7ijqlb"]
 
 [ext_resource type="PackedScene" uid="uid://dmiy2qk1j8u3w" path="res://addons/roguelike_system/nodes/RoomDetails.tscn" id="1_7ysua"]
 [ext_resource type="PackedScene" uid="uid://b8x37u1dmaqn" path="res://addons/roguelike_system/nodes/PossibilitiesGraph.tscn" id="2_fw4mo"]
 [ext_resource type="PackedScene" uid="uid://bsckecu25liqr" path="res://addons/roguelike_system/nodes/LevelsManager.tscn" id="3_yihq6"]
 [ext_resource type="PackedScene" uid="uid://ch4ufd7ll4w2o" path="res://addons/roguelike_system/nodes/InstanceVisualizer.tscn" id="4_t0u23"]
+[ext_resource type="PackedScene" uid="uid://dldg8mem261ms" path="res://addons/roguelike_system/nodes/PluginSettings.tscn" id="5_xcqav"]
 
 [sub_resource type="GDScript" id="GDScript_ss06m"]
 script/source = "@tool
 extends Control
+@onready var room_details: HBoxContainer = $\"TabContainer/Room Details\"
 @onready var possibilities_graph: HBoxContainer = $\"TabContainer/Possibilities Graph\"
 @onready var levels_manager: MarginContainer = $\"TabContainer/Levels Manager\"
 @onready var tab_container: TabContainer = $TabContainer
@@ -17,6 +19,8 @@ func _ready() -> void:
 	RogueSys.throw_error.connect(on_throw_error)
 
 func _on_tab_container_tab_changed(tab: int) -> void:
+	if(tab_container.get_current_tab_control()==room_details):
+		room_details.fill_rooms_list()
 	if(tab_container.get_current_tab_control()==possibilities_graph):
 		possibilities_graph.fill_rooms_list()
 	if(tab_container.get_current_tab_control()==levels_manager):
@@ -25,8 +29,6 @@ func _on_tab_container_tab_changed(tab: int) -> void:
 
 func on_throw_error(message:String) -> void:
 	if error_dialog.visible:
-		printerr(\"while the error screen was active there was also the following error:\")
-		printerr(message)
 		return
 	error_dialog.dialog_text = message
 	error_dialog.popup_centered()
@@ -72,7 +74,13 @@ visible = false
 layout_mode = 2
 metadata/_tab_index = 3
 
+[node name="Plugin Settings" parent="TabContainer" instance=ExtResource("5_xcqav")]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 4
+
 [node name="ErrorDialog" type="AcceptDialog" parent="."]
+dialog_text = "Path for new map empty."
 
 [connection signal="tab_changed" from="TabContainer" to="." method="_on_tab_container_tab_changed"]
 [connection signal="visibility_changed" from="TabContainer/Room Details" to="TabContainer/Room Details" method="_on_visibility_changed"]

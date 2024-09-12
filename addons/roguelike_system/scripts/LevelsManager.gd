@@ -111,11 +111,9 @@ func _on_current_level_button_item_selected(index: int) -> void:
 	RogueSys.set_current_level(levels_names[index])
 	_set_starter_room_button()
 
-
 func _on_starter_room_button_item_selected(index: int) -> void:
 	RogueSys.set_starter_room(current_level_required_rooms[index])
 
-
-func _on_export_levels_button_button_down() -> void:
+func _on_export_map_button_button_down() -> void:
 	var path = "res://demo_2D/export_data/map_data.json"
 	SaveLoadData.export_data(path)

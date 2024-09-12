@@ -1,0 +1,119 @@
+[gd_scene load_steps=2 format=3 uid="uid://dldg8mem261ms"]
+
+[ext_resource type="Script" path="res://addons/roguelike_system/scripts/PluginSettings.gd" id="1_0jhi2"]
+
+[node name="PluginSettings" type="MarginContainer"]
+anchors_preset = 13
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -68.0
+offset_right = 68.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_0jhi2")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+custom_minimum_size = Vector2(350, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="MapSettingsLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Map Settings:"
+horizontal_alignment = 1
+
+[node name="CurrentMapFileNameLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Current map file name: "
+horizontal_alignment = 1
+
+[node name="NewMapButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Create new map"
+
+[node name="RenameMapButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Rename current map"
+
+[node name="SelectMapButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Open a map"
+
+[node name="ChangePassagesButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Change passages holder node name"
+
+[node name="CheckButton" type="CheckButton" parent="VBoxContainer"]
+layout_mode = 2
+button_pressed = true
+text = "Popup errors"
+
+[node name="PassagesHolderWindow" type="Window" parent="."]
+auto_translate_mode = 1
+size = Vector2i(400, 180)
+visible = false
+
+[node name="Background" type="ColorRect" parent="PassagesHolderWindow"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.211765, 0.239216, 0.290196, 1)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PassagesHolderWindow/Background"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="PassagesHolderLabel" type="Label" parent="PassagesHolderWindow/Background/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 1
+text = "Insert name for the node that holds the passages:"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="PassagesHolderInput" type="TextEdit" parent="PassagesHolderWindow/Background/VBoxContainer"]
+layout_mode = 2
+text = "Passages"
+placeholder_text = "passages holder name"
+scroll_fit_content_height = true
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PassagesHolderWindow/Background/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="PassagesHolderConfirmButton" type="Button" parent="PassagesHolderWindow/Background/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+disabled = true
+text = "Confirm"
+
+[node name="PassagesHolderCancelButton" type="Button" parent="PassagesHolderWindow/Background/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Cancel"
+
+[node name="CreateMapDialog" type="FileDialog" parent="."]
+title = "Create a new map"
+size = Vector2i(303, 180)
+filters = PackedStringArray("*.json")
+
+[node name="SaveCurrentMapDialog" type="ConfirmationDialog" parent="."]
+size = Vector2i(366, 100)
+ok_button_text = "Yes"
+dialog_text = "Save current map before creating/opening a new one?"
+cancel_button_text = "No"
+
+[connection signal="button_down" from="VBoxContainer/NewMapButton" to="." method="_on_new_map_button_button_down"]
+[connection signal="close_requested" from="PassagesHolderWindow" to="." method="_on_create_rename_level_window_close_requested"]
+[connection signal="focus_exited" from="PassagesHolderWindow" to="." method="_on_create_rename_level_window_close_requested"]
+[connection signal="text_changed" from="PassagesHolderWindow/Background/VBoxContainer/PassagesHolderInput" to="." method="_on_create_rename_input_text_changed"]
+[connection signal="button_down" from="PassagesHolderWindow/Background/VBoxContainer/HBoxContainer/PassagesHolderConfirmButton" to="." method="_on_confirm_button_button_down"]
+[connection signal="button_down" from="PassagesHolderWindow/Background/VBoxContainer/HBoxContainer/PassagesHolderCancelButton" to="." method="_on_create_rename_level_window_close_requested"]
+[connection signal="file_selected" from="CreateMapDialog" to="." method="_on_create_map_dialog_file_selected"]
+[connection signal="canceled" from="SaveCurrentMapDialog" to="." method="_on_save_current_map_dialog_canceled"]
+[connection signal="confirmed" from="SaveCurrentMapDialog" to="." method="_on_save_current_map_dialog_confirmed"]

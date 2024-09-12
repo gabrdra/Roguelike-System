@@ -19,7 +19,7 @@ func _on_rooms_changed() -> void:
 
 func _on_room_selected(name:String) -> void:
 	room_properties.retrieve_existing_room(name)
-
+	
 func fill_rooms_list() -> void:
 	for r in rooms_container.get_children():
 		r.queue_free()

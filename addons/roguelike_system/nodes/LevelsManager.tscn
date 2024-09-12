@@ -7,8 +7,8 @@ anchors_preset = 13
 anchor_left = 0.5
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -68.0
-offset_right = 68.0
+offset_left = -175.0
+offset_right = 175.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_fx200")
@@ -17,6 +17,11 @@ script = ExtResource("1_fx200")
 custom_minimum_size = Vector2(350, 0)
 layout_mode = 2
 size_flags_horizontal = 4
+
+[node name="LevelsSettingsLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Levels Settings:"
+horizontal_alignment = 1
 
 [node name="CreateNewLevelButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
@@ -52,12 +57,12 @@ text = "Starter room:"
 [node name="StarterRoomButton" type="OptionButton" parent="VBoxContainer/StarterRoomHolder"]
 layout_mode = 2
 
-[node name="VSplitContainer" type="HSeparator" parent="VBoxContainer"]
+[node name="VSplitContainer2" type="HSeparator" parent="VBoxContainer"]
 layout_mode = 2
 
-[node name="ExportLevelsButton" type="Button" parent="VBoxContainer"]
+[node name="ExportMapButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
-text = "Export levels"
+text = "Export Map"
 
 [node name="ExportReport" type="RichTextLabel" parent="VBoxContainer"]
 layout_mode = 2
@@ -125,7 +130,7 @@ layout_mode = 2
 [connection signal="button_down" from="VBoxContainer/DeleteLevelButton" to="." method="_on_delete_level_button_button_down"]
 [connection signal="item_selected" from="VBoxContainer/CurrentLevelHolder/CurrentLevelButton" to="." method="_on_current_level_button_item_selected"]
 [connection signal="item_selected" from="VBoxContainer/StarterRoomHolder/StarterRoomButton" to="." method="_on_starter_room_button_item_selected"]
-[connection signal="button_down" from="VBoxContainer/ExportLevelsButton" to="." method="_on_export_levels_button_button_down"]
+[connection signal="button_down" from="VBoxContainer/ExportMapButton" to="." method="_on_export_map_button_button_down"]
 [connection signal="confirmed" from="DeleteLevelConfirmation" to="." method="_on_confirm_button_button_down"]
 [connection signal="close_requested" from="CreateRenameLevelWindow" to="." method="_on_create_rename_level_window_close_requested"]
 [connection signal="focus_exited" from="CreateRenameLevelWindow" to="." method="_on_create_rename_level_window_close_requested"]

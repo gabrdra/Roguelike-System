@@ -3,13 +3,36 @@ class_name RogueSysSingleton extends Node
 
 signal throw_error
 
+const user_settings_path := "user://roguesysplugin_user_settings.res"
+var user_settings := UserRogueSysSettings.new()
+
 var levels: Dictionary = {}
 var current_level:LevelData
 var current_level_name:String
+var current_map_path := "res://addons/roguelike_system/save/savedata.json"
+#continue from here, it this along side other variables will be saved on the user://
 
 func _init() -> void:
 	if levels.size()==0:
 		create_new_level("Level 1")
+
+func load_user_settings() -> void:
+	if ResourceLoader.exists(user_settings_path):
+		user_settings = ResourceLoader.load(user_settings_path)
+	else:
+		ResourceSaver.save(user_settings, user_settings_path)
+
+func get_current_map_path() -> String:
+	return user_settings.current_map_path
+
+func set_current_map_path(path:String) -> void:
+	user_settings.current_map_path = path
+
+func create_new_map(path:String) -> void:
+	levels = {}
+	create_new_level("Level 1")
+	set_current_map_path(path)
+	SaveLoadData.save_plugin_data(get_current_map_path())
 
 func get_rooms()->Dictionary:
 	return current_level.rooms
