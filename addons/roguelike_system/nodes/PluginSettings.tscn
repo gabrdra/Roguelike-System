@@ -51,6 +51,7 @@ text = "Popup errors"
 
 [node name="PassagesHolderWindow" type="Window" parent="."]
 auto_translate_mode = 1
+position = Vector2i(0, 36)
 size = Vector2i(400, 180)
 visible = false
 
@@ -78,11 +79,10 @@ text = "Insert name for the node that holds the passages:"
 horizontal_alignment = 1
 vertical_alignment = 2
 
-[node name="PassagesHolderInput" type="TextEdit" parent="PassagesHolderWindow/Background/VBoxContainer"]
+[node name="PassagesHolderInput" type="LineEdit" parent="PassagesHolderWindow/Background/VBoxContainer"]
 layout_mode = 2
 text = "Passages"
 placeholder_text = "passages holder name"
-scroll_fit_content_height = true
 
 [node name="HBoxContainer" type="HBoxContainer" parent="PassagesHolderWindow/Background/VBoxContainer"]
 layout_mode = 2
@@ -90,7 +90,6 @@ alignment = 1
 
 [node name="PassagesHolderConfirmButton" type="Button" parent="PassagesHolderWindow/Background/VBoxContainer/HBoxContainer"]
 layout_mode = 2
-disabled = true
 text = "Confirm"
 
 [node name="PassagesHolderCancelButton" type="Button" parent="PassagesHolderWindow/Background/VBoxContainer/HBoxContainer"]
@@ -111,10 +110,14 @@ cancel_button_text = "No"
 [connection signal="button_down" from="VBoxContainer/NewMapButton" to="." method="_on_new_map_button_button_down"]
 [connection signal="button_down" from="VBoxContainer/RenameMapButton" to="." method="_on_rename_map_button_button_down"]
 [connection signal="button_down" from="VBoxContainer/LoadMapButton" to="." method="_on_load_map_button_button_down"]
+[connection signal="button_down" from="VBoxContainer/ChangePassagesButton" to="." method="_on_change_passages_button_button_down"]
 [connection signal="toggled" from="VBoxContainer/PopupErrorsToggle" to="." method="_on_popup_errors_toggle_toggled"]
-[connection signal="text_changed" from="PassagesHolderWindow/Background/VBoxContainer/PassagesHolderInput" to="." method="_on_create_rename_input_text_changed"]
-[connection signal="button_down" from="PassagesHolderWindow/Background/VBoxContainer/HBoxContainer/PassagesHolderConfirmButton" to="." method="_on_confirm_button_button_down"]
-[connection signal="button_down" from="PassagesHolderWindow/Background/VBoxContainer/HBoxContainer/PassagesHolderCancelButton" to="." method="_on_create_rename_level_window_close_requested"]
+[connection signal="close_requested" from="PassagesHolderWindow" to="." method="_on_passages_holder_window_close_requested"]
+[connection signal="focus_exited" from="PassagesHolderWindow" to="." method="_on_passages_holder_window_close_requested"]
+[connection signal="text_changed" from="PassagesHolderWindow/Background/VBoxContainer/PassagesHolderInput" to="." method="_on_passages_holder_input_text_changed"]
+[connection signal="text_submitted" from="PassagesHolderWindow/Background/VBoxContainer/PassagesHolderInput" to="." method="_on_passages_holder_confirm_button_button_down"]
+[connection signal="button_down" from="PassagesHolderWindow/Background/VBoxContainer/HBoxContainer/PassagesHolderConfirmButton" to="." method="_on_passages_holder_confirm_button_button_down"]
+[connection signal="button_down" from="PassagesHolderWindow/Background/VBoxContainer/HBoxContainer/PassagesHolderCancelButton" to="." method="_on_passages_holder_window_close_requested"]
 [connection signal="file_selected" from="MapFileDialog" to="." method="_on_map_file_dialog_file_selected"]
 [connection signal="canceled" from="SaveCurrentMapDialog" to="." method="_on_save_current_map_dialog_canceled"]
 [connection signal="confirmed" from="SaveCurrentMapDialog" to="." method="_on_save_current_map_dialog_confirmed"]

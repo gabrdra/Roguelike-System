@@ -70,18 +70,22 @@ func set_passages_from_scene() -> void:
 		return
 	var scene_loaded := ResourceLoader.load(current_room.scene_uid)
 	if !scene_loaded:
-		printerr("Error loading resource")
+		var message := "Error loading resource"
+		RogueSys.throw_error.emit(message)
+		printerr(message)
 		return
 	var scene_instance = scene_loaded.instantiate()
 	if(!scene_instance):
-		printerr("Error instancing scene")
+		var message := "Error instancing scene"
+		RogueSys.throw_error.emit(message)
+		printerr(message)
 		return
-	var passages_node = scene_instance.get_node("passages")
+	var passages_node = scene_instance.get_node(RogueSys.passages_holder_name)
 	if(!passages_node):
-		passages_node = scene_instance.get_node("Passages")
-		if(!passages_node):
-			printerr("There must be a node on the scene, direct child of root, named passages or Passages")
-			return
+		var message := "There must be a node on the scene, direct child of root, named "+ RogueSys.passages_holder_name
+		RogueSys.throw_error.emit(message)
+		printerr(message)
+		return
 	var passage_children = passages_node.get_children()
 	current_room.passages = {}
 	for p in passage_children:

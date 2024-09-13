@@ -5,6 +5,8 @@ extends MarginContainer
 @onready var save_current_map_dialog: ConfirmationDialog = $SaveCurrentMapDialog
 @onready var popup_errors_toggle: CheckButton = $VBoxContainer/PopupErrorsToggle
 @onready var current_map_file_path_label: Label = $VBoxContainer/CurrentMapFilePathLabel
+@onready var passages_holder_confirm_button: Button = $PassagesHolderWindow/Background/VBoxContainer/HBoxContainer/PassagesHolderConfirmButton
+@onready var passages_holder_input: LineEdit = $PassagesHolderWindow/Background/VBoxContainer/PassagesHolderInput
 
 enum Actions{CREATE, RENAME, LOAD}
 var current_action:Actions
@@ -102,3 +104,25 @@ func _on_popup_errors_toggle_toggled(toggled_on: bool) -> void:
 	RogueSys.set_show_errors(toggled_on)
 	display_current_values()
 	RogueSys.save_user_settings()
+
+
+func _on_change_passages_button_button_down() -> void:
+	passages_holder_input.text = RogueSys.passages_holder_name
+	passages_holder_window.popup_centered()
+
+
+func _on_passages_holder_window_close_requested() -> void:
+	passages_holder_confirm_button.disabled = false
+	passages_holder_window.hide()
+
+
+func _on_passages_holder_input_text_changed() -> void:
+	if passages_holder_input.text == "":
+		printerr("Node name cannot be empty")
+		passages_holder_confirm_button.disabled = true
+		return
+	passages_holder_confirm_button.disabled = false
+
+func _on_passages_holder_confirm_button_button_down() -> void:
+	RogueSys.passages_holder_name = passages_holder_input.text
+	passages_holder_window.hide()

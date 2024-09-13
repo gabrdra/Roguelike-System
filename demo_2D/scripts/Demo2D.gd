@@ -28,12 +28,10 @@ func _ready() -> void:
 	_on_room_changed()
 	
 func _on_room_changed() -> void:
-	var passages_node:Node2D = current_room_scene.get_node("passages")
+	var passages_node:Node2D = current_room_scene.get_node(passages_holder_name)
 	if(!passages_node):
-		passages_node = current_room_scene.get_node("Passages")
-		if(!passages_node):
-			printerr("There must be a node on the room, direct child of root, named passages or Passages")
-			return
+		printerr("There must be a node on the room, direct child of root, named "+passages_holder_name)
+		return
 	for child in passages_node.get_children():
 		child.passage_entered.connect(_on_passage_entered)
 		if child.name == entered_passage_name:

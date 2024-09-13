@@ -9,6 +9,7 @@ var user_settings := UserRogueSysSettings.new()
 var levels: Dictionary = {}
 var current_level:LevelData
 var current_level_name:String
+var passages_holder_name:="Passages"
 
 func _init() -> void:
 	if levels.size()==0:

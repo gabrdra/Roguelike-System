@@ -7,6 +7,7 @@ static func save_plugin_data(path:String) -> void:
 		return
 	var save_dict:={
 		"file_type":"save_data",
+		"passages_holder_name":RogueSys.passages_holder_name,
 		"current_level_name":RogueSys.current_level_name,
 		"levels":[]
 	}
@@ -67,6 +68,10 @@ static func load_plugin_data(path: String) -> bool:
 		RogueSys.throw_error.emit("Error with plugin save file")
 		printerr("Error with plugin save file")
 		return false
+	if !data_dict.has("passages_holder_name"):
+		RogueSys.throw_error.emit("Error with plugin save file")
+		printerr("Error with plugin save file")
+		return false
 	var levels_array: Array = data_dict["levels"]
 	for level_dict in levels_array:
 		var level := LevelData.new()
@@ -91,6 +96,7 @@ static func load_plugin_data(path: String) -> bool:
 			level.starter_room = level.rooms[level_dict["starter_room_name"]]
 		RogueSys.levels[level_dict.name]=level
 	RogueSys.set_current_level(data_dict["current_level_name"])
+	RogueSys.passages_holder_name = data_dict["passages_holder_name"]
 	return true
 
 static func export_data(path:String) -> void:
@@ -99,7 +105,9 @@ static func export_data(path:String) -> void:
 		printerr("Failed to open file for writing the export data")
 		return
 	var save_dict:={
-		"levels":[]
+		"levels":[],
+		"file_type":"exported_map_data",
+		"passages_holder_name":RogueSys.passages_holder_name,
 	}
 	var levels_names:= RogueSys.levels.keys()
 	
@@ -146,6 +154,18 @@ static func read_exported_data(path: String) -> Dictionary:
 	file.close()
 	var return_levels = {}
 	var data_dict = JSON.parse_string(file_content)
+	if data_dict == null:
+		printerr("Error with exported map file")
+		return {}
+	if !data_dict.has("file_type"):
+		printerr("Error with exported map file")
+		return {}
+	if data_dict["file_type"] != "exported_map_data":
+		printerr("Error with exported map file")
+		return {}
+	if !data_dict.has("passages_holder_name"):
+		printerr("Error with exported map file")
+		return {}
 	var levels_array: Array = data_dict["levels"]
 	for level_dict in levels_array:
 		var level := LevelData.new()
@@ -168,41 +188,42 @@ static func read_exported_data(path: String) -> Dictionary:
 				level.rooms[room_dict["name"]].passages[passage_dict["name"]] = connections
 		level.starter_room = level.rooms[level_dict["starter_room_name"]]
 		return_levels[level_dict.name]=level
+	return_levels["passages_holder_name"] = data_dict["passages_holder_name"]
 	return return_levels
 
-
-static func save_level_data_json(level_data:LevelData, level_name:String, path:String) ->void:
-	var save := FileAccess.open(path,FileAccess.WRITE)
-	if save == null:
-		printerr("Failed to open file")
-		return
-	var level:LevelData = level_data
-	var level_dict := {
-		"name":level_name,
-		"starter_room_name": null
-	}
-	if(level.starter_room!=null):
-		level_dict["starter_room_name"] = level.starter_room.name
-	level_dict["rooms"]=[]
-	for room_name in level.rooms:
-		var room:Room = level.rooms[room_name]
-		var room_dict :={
-			"name":room_name,
-			"scene_uid":room.scene_uid,
-			"required":room.required,
-			"max_passes":room.max_passes,
-			"passages":[]
-		}
-		for passage in room.passages:
-			var connections = room.passages[passage]
-			var passage_dict={
-				"name":passage,
-				"connections":[]
-			}
-			passage_dict["connections"].append({
-				"name":connections.room.name,
-				"connected_passage":connections.connected_passage
-			})
-			room_dict["passages"].append(passage_dict)
-		level_dict["rooms"].append(room_dict)
-	save.store_string(JSON.stringify(level_dict))
+#This method is commented because it's use is only for debugging
+#static func save_level_data_json(level_data:LevelData, level_name:String, path:String) ->void:
+	#var save := FileAccess.open(path,FileAccess.WRITE)
+	#if save == null:
+		#printerr("Failed to open file")
+		#return
+	#var level:LevelData = level_data
+	#var level_dict := {
+		#"name":level_name,
+		#"starter_room_name": null
+	#}
+	#if(level.starter_room!=null):
+		#level_dict["starter_room_name"] = level.starter_room.name
+	#level_dict["rooms"]=[]
+	#for room_name in level.rooms:
+		#var room:Room = level.rooms[room_name]
+		#var room_dict :={
+			#"name":room_name,
+			#"scene_uid":room.scene_uid,
+			#"required":room.required,
+			#"max_passes":room.max_passes,
+			#"passages":[]
+		#}
+		#for passage in room.passages:
+			#var connections = room.passages[passage]
+			#var passage_dict={
+				#"name":passage,
+				#"connections":[]
+			#}
+			#passage_dict["connections"].append({
+				#"name":connections.room.name,
+				#"connected_passage":connections.connected_passage
+			#})
+			#room_dict["passages"].append(passage_dict)
+		#level_dict["rooms"].append(room_dict)
+	#save.store_string(JSON.stringify(level_dict))
