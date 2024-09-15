@@ -18,8 +18,13 @@ func duplicate_level_data() -> LevelData:
 	for origin_room_name:String in rooms:
 		var origin_room:Room = rooms[origin_room_name]
 		for origin_room_passage_name in origin_room.passages:
-			var origin_room_passage:Connection = origin_room.passages[origin_room_passage_name]
-			duplicated_rooms[origin_room.name].passages[origin_room_passage_name] = Connection.new(
-				duplicated_rooms[origin_room_passage.room.name], origin_room_passage.connected_passage 
-			)
+			var origin_room_conns:Array[Connection] = origin_room.passages[origin_room_passage_name]
+			var duplicated_connections:Array[Connection] = []
+			for origin_conn:Connection in origin_room_conns:
+				duplicated_connections.append(
+					Connection.new(
+						duplicated_rooms[origin_conn.room.name], origin_conn.connected_passage
+					)
+				)
+			duplicated_rooms[origin_room.name].passages[origin_room_passage_name]=duplicated_connections
 	return LevelData.new(duplicated_rooms,duplicated_rooms[starter_room.name])
