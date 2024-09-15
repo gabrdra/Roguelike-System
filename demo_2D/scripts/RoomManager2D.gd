@@ -19,6 +19,7 @@ func _ready() -> void:
 		return
 	raw_map_data = SaveLoadData.read_exported_data(map_data_path)
 	passages_holder_name = raw_map_data["passages_holder_name"]
+	raw_map_data = raw_map_data["levels"]
 
 #Generates a level if it doesn't exist already
 func generate_level(level_name:String, random_seed:int = 0) -> void:

@@ -188,8 +188,11 @@ static func read_exported_data(path: String) -> Dictionary:
 				level.rooms[room_dict["name"]].passages[passage_dict["name"]] = connections
 		level.starter_room = level.rooms[level_dict["starter_room_name"]]
 		return_levels[level_dict.name]=level
-	return_levels["passages_holder_name"] = data_dict["passages_holder_name"]
-	return return_levels
+	var return_dict={
+		"passages_holder_name":data_dict["passages_holder_name"],
+		"levels":return_levels
+	}
+	return return_dict
 
 #This method is commented because it's use is only for debugging
 #static func save_level_data_json(level_data:LevelData, level_name:String, path:String) ->void:

@@ -29,6 +29,7 @@ func _on_generate_button_button_down() -> void:
 func _on_export_data_selection_file_selected(path: String) -> void:
 	file_path = path
 	levels_dict = SaveLoadData.read_exported_data(file_path)
+	levels_dict = levels_dict["levels"]
 	possible_levels = levels_dict.keys()
 	_fill_chosen_level_button()
 
