@@ -145,27 +145,28 @@ static func export_data(path:String) -> void:
 		save_dict["levels"].append(level_dict)
 	save.store_string(JSON.stringify(save_dict))
 
-static func read_exported_data(path: String) -> Dictionary:
+static func read_exported_data(path: String) -> MapData:
 	var file = FileAccess.open(path, FileAccess.READ)
+	var return_map_data = null
 	if file == null:
 		printerr("Failed to open file for reading")
-		return {}
+		return return_map_data
 	var file_content = file.get_as_text()
 	file.close()
 	var return_levels = {}
 	var data_dict = JSON.parse_string(file_content)
 	if data_dict == null:
 		printerr("Error with exported map file")
-		return {}
+		return return_map_data
 	if !data_dict.has("file_type"):
 		printerr("Error with exported map file")
-		return {}
+		return return_map_data
 	if data_dict["file_type"] != "exported_map_data":
 		printerr("Error with exported map file")
-		return {}
+		return return_map_data
 	if !data_dict.has("passages_holder_name"):
 		printerr("Error with exported map file")
-		return {}
+		return return_map_data
 	var levels_array: Array = data_dict["levels"]
 	for level_dict in levels_array:
 		var level := LevelData.new()
@@ -188,11 +189,8 @@ static func read_exported_data(path: String) -> Dictionary:
 				level.rooms[room_dict["name"]].passages[passage_dict["name"]] = connections
 		level.starter_room = level.rooms[level_dict["starter_room_name"]]
 		return_levels[level_dict.name]=level
-	var return_dict={
-		"passages_holder_name":data_dict["passages_holder_name"],
-		"levels":return_levels
-	}
-	return return_dict
+	return_map_data = MapData.new(return_levels,data_dict["passages_holder_name"])
+	return return_map_data
 
 #This method is commented because it's use is only for debugging
 #static func save_level_data_json(level_data:LevelData, level_name:String, path:String) ->void:

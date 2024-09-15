@@ -17,9 +17,9 @@ func _ready() -> void:
 	if map_data_path=="":
 		printerr("map data location needs to be assigned in the inspector")
 		return
-	raw_map_data = SaveLoadData.read_exported_data(map_data_path)
-	passages_holder_name = raw_map_data["passages_holder_name"]
-	raw_map_data = raw_map_data["levels"]
+	var exported_map_data := SaveLoadData.read_exported_data(map_data_path)
+	passages_holder_name = exported_map_data.passages_holder_name
+	raw_map_data = exported_map_data.levels
 
 #Generates a level if it doesn't exist already
 func generate_level(level_name:String, random_seed:int = 0) -> void:
