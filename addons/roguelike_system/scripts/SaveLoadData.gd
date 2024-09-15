@@ -7,14 +7,14 @@ static func save_plugin_data(path:String) -> void:
 		return
 	var save_dict:={
 		"file_type":"save_data",
-		"passages_holder_name":RogueSys.passages_holder_name,
+		"passages_holder_name":RogueSys.map_data.passages_holder_name,
 		"current_level_name":RogueSys.current_level_name,
 		"levels":[]
 	}
-	var levels_names := RogueSys.levels.keys()
+	var levels_names := RogueSys.map_data.levels.keys()
 	
 	for level_name in levels_names:
-		var level:LevelData = RogueSys.levels[level_name]
+		var level:LevelData = RogueSys.map_data.levels[level_name]
 		var level_dict := {
 			"name":level_name,
 			"starter_room_name": null
@@ -94,9 +94,9 @@ static func load_plugin_data(path: String) -> bool:
 				level.rooms[room_dict["name"]].passages[passage_dict["name"]] = connections
 		if level_dict["starter_room_name"] != null:
 			level.starter_room = level.rooms[level_dict["starter_room_name"]]
-		RogueSys.levels[level_dict.name]=level
+		RogueSys.map_data.levels[level_dict.name]=level
 	RogueSys.set_current_level(data_dict["current_level_name"])
-	RogueSys.passages_holder_name = data_dict["passages_holder_name"]
+	RogueSys.map_data.passages_holder_name = data_dict["passages_holder_name"]
 	return true
 
 static func export_data(path:String) -> void:
@@ -107,12 +107,12 @@ static func export_data(path:String) -> void:
 	var save_dict:={
 		"levels":[],
 		"file_type":"exported_map_data",
-		"passages_holder_name":RogueSys.passages_holder_name,
+		"passages_holder_name":RogueSys.map_data.passages_holder_name,
 	}
-	var levels_names:= RogueSys.levels.keys()
+	var levels_names:= RogueSys.map_data.levels.keys()
 	
 	for level_name in levels_names:
-		var level:LevelData = RogueSys.levels[level_name]
+		var level:LevelData = RogueSys.map_data.levels[level_name]
 		var level_dict := {
 			"name":level_name,
 			"starter_room_name": null

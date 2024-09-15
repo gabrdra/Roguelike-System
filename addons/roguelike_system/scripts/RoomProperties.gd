@@ -80,9 +80,9 @@ func set_passages_from_scene() -> void:
 		RogueSys.throw_error.emit(message)
 		printerr(message)
 		return
-	var passages_node = scene_instance.get_node(RogueSys.passages_holder_name)
+	var passages_node = scene_instance.get_node(RogueSys.map_data.passages_holder_name)
 	if(!passages_node):
-		var message := "There must be a node on the scene, direct child of root, named "+ RogueSys.passages_holder_name
+		var message := "There must be a node on the scene, direct child of root, named "+ RogueSys.map_data.passages_holder_name
 		RogueSys.throw_error.emit(message)
 		printerr(message)
 		return

@@ -8,6 +8,7 @@ extends MarginContainer
 @onready var create_rename_input: TextEdit = $CreateRenameLevelWindow/Background/VBoxContainer/CreateRenameInput
 @onready var create_rename_confirm_button: Button = $CreateRenameLevelWindow/Background/VBoxContainer/HBoxContainer/CreateRenameConfirmButton
 @onready var create_rename_warning_label: Label = $CreateRenameLevelWindow/Background/VBoxContainer/CreateRenameWarningLabel
+@onready var export_map_file_dialog: FileDialog = $ExportMapFileDialog
 
 var levels_names: Array[String]
 var current_level_required_rooms: Array[Room]
@@ -22,7 +23,7 @@ func fill_levels_manager_fields() -> void:
 func _set_current_level_button() -> void:
 	levels_names.clear()
 	current_level_button.clear()
-	for level_name in RogueSys.levels:
+	for level_name in RogueSys.map_data.levels:
 		current_level_button.add_item(level_name)
 		levels_names.append(level_name)
 		if level_name==RogueSys.current_level_name:
@@ -91,7 +92,7 @@ func _on_create_rename_input_text_changed() -> void:
 		create_rename_warning_label.text = "Level name cannot be empty"
 		
 		return
-	elif RogueSys.levels.has(new_text):
+	elif RogueSys.map_data.levels.has(new_text):
 		if current_action==Actions.CREATE:
 			create_rename_confirm_button.disabled=true
 			create_rename_warning_label.text = "A new level cannot have the same name as a existing level"
@@ -115,5 +116,9 @@ func _on_starter_room_button_item_selected(index: int) -> void:
 	RogueSys.set_starter_room(current_level_required_rooms[index])
 
 func _on_export_map_button_button_down() -> void:
-	var path = "res://demo_2D/export_data/map_data.json"
-	SaveLoadData.export_data(path)
+	export_map_file_dialog.popup_centered_ratio(0.5)
+	#var path = "res://demo_2D/export_data/map_data.json"
+	#SaveLoadData.export_data(path)
+	
+func _on_export_map_file_dialog_file_selected(path: String) -> void:
+	pass # Replace with function body.

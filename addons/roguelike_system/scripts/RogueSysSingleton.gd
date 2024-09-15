@@ -6,13 +6,13 @@ signal throw_error
 const user_settings_path := "user://roguesysplugin_user_settings.res"
 var user_settings := UserRogueSysSettings.new()
 
-var levels: Dictionary = {}
+var map_data:= MapData.new()
 var current_level:LevelData
 var current_level_name:String
-var passages_holder_name:="Passages"
+
 
 func _init() -> void:
-	if levels.size()==0:
+	if map_data.levels.size()==0:
 		create_new_level("Level 1")
 
 func load_user_settings() -> void:
@@ -37,7 +37,7 @@ func set_current_map_path(path:String) -> void:
 	user_settings.current_map_path = path
 
 func create_new_map(path:String) -> void:
-	levels = {}
+	map_data = MapData.new()
 	create_new_level("Level 1")
 	set_current_map_path(path)
 	SaveLoadData.save_plugin_data(get_current_map_path())
@@ -76,29 +76,29 @@ func get_starter_room() -> Room:
 	return current_level.starter_room
 
 func create_new_level(level_name:String) -> void:
-	if(levels.has(level_name)):
+	if(map_data.levels.has(level_name)):
 		printerr("A level with name "+level_name+" already exists!")
 		return
-	levels[level_name]=LevelData.new()
+	map_data.levels[level_name]=LevelData.new()
 	set_current_level(level_name)
 
 func rename_current_level(new_level_name:String)->void:
-	levels[new_level_name]=current_level
-	levels.erase(current_level_name)
+	map_data.levels[new_level_name]=current_level
+	map_data.levels.erase(current_level_name)
 	current_level_name=new_level_name
 	
 func delete_current_level():
-	if(levels.size()==1):
-		levels.clear()
+	if(map_data.levels.size()==1):
+		map_data.levels.clear()
 		create_new_level("Level 1")
 		return
-	levels.erase(current_level_name)
-	set_current_level(levels.keys()[0])
+	map_data.levels.erase(current_level_name)
+	set_current_level(map_data.levels.keys()[0])
 
 func set_current_level(level_name:String) -> void:
-	if(!levels.has(level_name)):
+	if(!map_data.levels.has(level_name)):
 		printerr("A level with the name of "+level_name+" doesn't exist!")
-	current_level=levels[level_name]
+	current_level=map_data.levels[level_name]
 	current_level_name=level_name
 
 func _add_passages(room:Room, connections_to_add: Dictionary) -> void:
