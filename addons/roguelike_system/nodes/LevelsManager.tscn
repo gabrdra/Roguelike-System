@@ -128,6 +128,7 @@ layout_mode = 2
 [node name="ExportMapFileDialog" type="FileDialog" parent="."]
 title = "Exported map location"
 size = Vector2i(303, 180)
+filters = PackedStringArray("*.json")
 
 [connection signal="button_down" from="VBoxContainer/CreateNewLevelButton" to="." method="_on_create_new_level_button_button_down"]
 [connection signal="button_down" from="VBoxContainer/RenameLevelButton" to="." method="_on_rename_level_button_button_down"]

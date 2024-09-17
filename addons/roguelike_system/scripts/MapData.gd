@@ -12,4 +12,5 @@ func duplicate_map_data() -> MapData:
 	var duplicated_levels := {}
 	for origin_level_name in levels:
 		var duplicated_level:LevelData = levels[origin_level_name].duplicate_level_data()
+		duplicated_levels[origin_level_name] = duplicated_level
 	return MapData.new(duplicated_levels, passages_holder_name)

@@ -99,7 +99,7 @@ static func load_plugin_data(path: String) -> bool:
 	RogueSys.map_data.passages_holder_name = data_dict["passages_holder_name"]
 	return true
 
-static func export_data(path:String) -> void:
+static func export_data(map_data:MapData, path:String) -> void:
 	var save := FileAccess.open(path,FileAccess.WRITE)
 	if save == null:
 		printerr("Failed to open file for writing the export data")
@@ -107,12 +107,12 @@ static func export_data(path:String) -> void:
 	var save_dict:={
 		"levels":[],
 		"file_type":"exported_map_data",
-		"passages_holder_name":RogueSys.map_data.passages_holder_name,
+		"passages_holder_name":map_data.passages_holder_name,
 	}
-	var levels_names:= RogueSys.map_data.levels.keys()
+	var levels_names:= map_data.levels.keys()
 	
 	for level_name in levels_names:
-		var level:LevelData = RogueSys.map_data.levels[level_name]
+		var level:LevelData = map_data.levels[level_name]
 		var level_dict := {
 			"name":level_name,
 			"starter_room_name": null
