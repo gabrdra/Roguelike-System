@@ -107,7 +107,7 @@ func _on_popup_errors_toggle_toggled(toggled_on: bool) -> void:
 
 
 func _on_change_passages_button_button_down() -> void:
-	passages_holder_input.text = RogueSys.passages_holder_name
+	passages_holder_input.text = RogueSys.map_data.passages_holder_name
 	passages_holder_window.popup_centered()
 
 
@@ -124,5 +124,5 @@ func _on_passages_holder_input_text_changed() -> void:
 	passages_holder_confirm_button.disabled = false
 
 func _on_passages_holder_confirm_button_button_down() -> void:
-	RogueSys.passages_holder_name = passages_holder_input.text
+	RogueSys.map_data.passages_holder_name = passages_holder_input.text
 	passages_holder_window.hide()

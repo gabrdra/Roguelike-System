@@ -2,6 +2,6 @@
 
 [node name="Room" type="Node2D"]
 
-[node name="passages" type="Node2D" parent="."]
+[node name="Passages" type="Node2D" parent="."]
 
-[node name="left" type="Node2D" parent="passages"]
+[node name="Left" type="Node2D" parent="Passages"]

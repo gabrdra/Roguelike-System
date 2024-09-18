@@ -73,39 +73,3 @@ func generate_level(input_level:LevelData, input_seed:int = 0, attempts:int = 10
 			return_level.starter_room = used_rooms[input_level.starter_room.name]
 			return return_level
 	return LevelData.new()
-
-class SimpleQueue:
-	var first:Element
-	var last:Element
-	func insert(element) -> void:
-		var new_element = Element.new(element)
-		if(first==null):
-			first = new_element
-			last = new_element
-		else:
-			last.next = new_element
-		last = new_element
-		
-	func insert_queue(queue:SimpleQueue)  -> void:
-		if queue.is_empty():
-			return
-		if is_empty():
-			first = queue.first
-		else:
-			last.next = queue.first
-		last = queue.last
-		
-	func pop_front():
-		if first == null:
-			return null
-		var return_element = first
-		first = first.next
-		return return_element.value
-	
-	func is_empty() -> bool:
-		return first==null
-	class Element:
-		var value
-		var next:Element
-		func _init(_value):
-			value = _value

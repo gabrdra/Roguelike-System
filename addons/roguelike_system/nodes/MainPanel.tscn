@@ -18,6 +18,7 @@ extends Control
 
 func _ready() -> void:
 	RogueSys.throw_error.connect(on_throw_error)
+	error_dialog.hide()
 
 func _on_tab_container_tab_changed(tab: int) -> void:
 	if tab_container.get_current_tab_control()==room_details:
@@ -34,8 +35,8 @@ func on_throw_error(message:String) -> void:
 	if error_dialog.visible or not RogueSys.get_show_errors():
 		return
 	error_dialog.dialog_text = message
+	await get_tree().create_timer(0.1).timeout
 	error_dialog.popup_centered()
-	
 "
 
 [node name="MainPanel" type="Control"]
@@ -83,6 +84,8 @@ layout_mode = 2
 metadata/_tab_index = 4
 
 [node name="ErrorDialog" type="AcceptDialog" parent="."]
+position = Vector2i(635, 265)
+size = Vector2i(634, 100)
 dialog_text = "There must be a node on the scene, direct child of root, named Passages"
 
 [connection signal="tab_changed" from="TabContainer" to="." method="_on_tab_container_tab_changed"]
