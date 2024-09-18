@@ -57,7 +57,7 @@ static func validate_map(map_data:MapData) -> MapData:
 				#if they aren't equal, remove the room that wasn't visited and set keep_looping to true
 				if level.rooms.size() == visited_rooms.size():
 					continue
-				var rooms_names_to_remove:Array[String] = []
+				var rooms_names_to_remove:Array = []
 				for room_name:String in level.rooms.keys():
 					if visited_rooms.has(room_name):
 						continue
@@ -75,9 +75,9 @@ static func validate_map(map_data:MapData) -> MapData:
 					return null
 				if !keep_looping:
 					continue
-				for room_name:String in rooms_names_to_remove:
+				while !rooms_names_to_remove.is_empty():
+					var room_name:String = rooms_names_to_remove.pop_back()
 					#TODO?: after removing a room, remove it's neighboor if one of it's passages now has 0 connections
-					#var modified_rooms:Dictionary = {}
 					var room_to_remove:Room = level.rooms[room_name]
 					for passage_name:String in room_to_remove.passages:
 						while !room_to_remove.passages[passage_name].is_empty():
@@ -89,9 +89,17 @@ static func validate_map(map_data:MapData) -> MapData:
 							conn_to_remove.room.passages[conn_to_remove.connected_passage].erase(other_end_connection)
 							room_to_remove.passages[passage_name].erase(conn_to_remove)
 							level.rooms.erase(room_name)
-							#if !modified_rooms.has(conn_to_remove.room):
-								#modified_rooms[conn_to_remove.room.name] =conn_to_remove.room
-							
+							if !rooms_names_to_remove.has(conn_to_remove.room):
+								var modified_room:Room = conn_to_remove.room
+								if !_validate_room_passages(modified_room, false):
+									if modified_room.required:
+										var message := "Map validation error: The required rooms "+room_name+ " and "+required_room_name+" are currently incompatible in terms of accessibility"
+										printerr(message)
+										still_valid = false
+										keep_looping = false
+										break
+									if level.rooms.has(modified_room.name) and !rooms_names_to_remove.has(modified_room.name):
+										rooms_names_to_remove.append(modified_room.name)
 				for room_name:String in level.rooms:
 					still_valid = still_valid and _validate_room_passages(level.rooms[room_name])
 				if !still_valid:
