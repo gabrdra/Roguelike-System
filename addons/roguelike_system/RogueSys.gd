@@ -11,6 +11,7 @@ func _enter_tree():
 	_make_visible(false)
 	RogueSys.load_user_settings()
 	SaveLoadData.load_plugin_data(RogueSys.get_current_map_path())
+	RogueSys.finished_loading_plugin_data.emit()
 	#see how to restart the project whenever the plugin is activated
 	#OS.set_restart_on_exit(true)
 

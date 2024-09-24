@@ -2,6 +2,7 @@
 class_name RogueSysSingleton extends Node
 
 signal throw_error
+signal finished_loading_plugin_data
 
 const user_settings_path := "user://roguesysplugin_user_settings.res"
 var user_settings := UserRogueSysSettings.new()
@@ -9,11 +10,6 @@ var user_settings := UserRogueSysSettings.new()
 var map_data:= MapData.new()
 var current_level:LevelData
 var current_level_name:String
-
-
-func _init() -> void:
-	if map_data.levels.size()==0:
-		create_new_level("Level 1")
 
 func load_user_settings() -> void:
 	if ResourceLoader.exists(user_settings_path):

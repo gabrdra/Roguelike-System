@@ -1,43 +1,11 @@
 [gd_scene load_steps=7 format=3 uid="uid://dvis5r7ijqlb"]
 
 [ext_resource type="PackedScene" uid="uid://dmiy2qk1j8u3w" path="res://addons/roguelike_system/nodes/RoomDetails.tscn" id="1_7ysua"]
+[ext_resource type="Script" path="res://addons/roguelike_system/scripts/MainPanel.gd" id="1_u0bip"]
 [ext_resource type="PackedScene" uid="uid://b8x37u1dmaqn" path="res://addons/roguelike_system/nodes/PossibilitiesGraph.tscn" id="2_fw4mo"]
 [ext_resource type="PackedScene" uid="uid://bsckecu25liqr" path="res://addons/roguelike_system/nodes/LevelsManager.tscn" id="3_yihq6"]
 [ext_resource type="PackedScene" uid="uid://ch4ufd7ll4w2o" path="res://addons/roguelike_system/nodes/InstanceVisualizer.tscn" id="4_t0u23"]
 [ext_resource type="PackedScene" uid="uid://dldg8mem261ms" path="res://addons/roguelike_system/nodes/PluginSettings.tscn" id="5_xcqav"]
-
-[sub_resource type="GDScript" id="GDScript_ss06m"]
-script/source = "@tool
-extends Control
-@onready var room_details: HBoxContainer = $\"TabContainer/Room Details\"
-@onready var possibilities_graph: HBoxContainer = $\"TabContainer/Possibilities Graph\"
-@onready var levels_manager: MarginContainer = $\"TabContainer/Levels Manager\"
-@onready var tab_container: TabContainer = $TabContainer
-@onready var error_dialog: AcceptDialog = $ErrorDialog
-@onready var plugin_settings: MarginContainer = $\"TabContainer/Plugin Settings\"
-
-func _ready() -> void:
-	RogueSys.throw_error.connect(on_throw_error)
-	error_dialog.hide()
-
-func _on_tab_container_tab_changed(tab: int) -> void:
-	if tab_container.get_current_tab_control()==room_details:
-		room_details.fill_rooms_list()
-	elif tab_container.get_current_tab_control()==possibilities_graph:
-		possibilities_graph.fill_rooms_list()
-	elif tab_container.get_current_tab_control()==levels_manager:
-		levels_manager.fill_levels_manager_fields()
-	elif tab_container.get_current_tab_control()==plugin_settings:
-		plugin_settings.display_current_values()
-
-
-func on_throw_error(message:String) -> void:
-	if error_dialog.visible or not RogueSys.get_show_errors():
-		return
-	error_dialog.dialog_text = message
-	await get_tree().create_timer(0.1).timeout
-	error_dialog.popup_centered()
-"
 
 [node name="MainPanel" type="Control"]
 layout_mode = 3
@@ -47,7 +15,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_vertical = 3
-script = SubResource("GDScript_ss06m")
+script = ExtResource("1_u0bip")
 
 [node name="TabContainer" type="TabContainer" parent="."]
 layout_mode = 1

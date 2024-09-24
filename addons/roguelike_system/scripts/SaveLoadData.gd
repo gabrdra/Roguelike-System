@@ -73,6 +73,7 @@ static func load_plugin_data(path: String) -> bool:
 		printerr("Error with plugin save file")
 		return false
 	var levels_array: Array = data_dict["levels"]
+	var local_map_data := MapData.new()
 	for level_dict in levels_array:
 		var level := LevelData.new()
 		for room_dict in level_dict["rooms"]:
@@ -94,9 +95,10 @@ static func load_plugin_data(path: String) -> bool:
 				level.rooms[room_dict["name"]].passages[passage_dict["name"]] = connections
 		if level_dict["starter_room_name"] != null:
 			level.starter_room = level.rooms[level_dict["starter_room_name"]]
-		RogueSys.map_data.levels[level_dict.name]=level
+		local_map_data.levels[level_dict.name]=level
+	local_map_data.passages_holder_name = data_dict["passages_holder_name"]
+	RogueSys.map_data = local_map_data
 	RogueSys.set_current_level(data_dict["current_level_name"])
-	RogueSys.map_data.passages_holder_name = data_dict["passages_holder_name"]
 	return true
 
 static func export_data(map_data:MapData, path:String) -> void:

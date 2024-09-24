@@ -44,9 +44,9 @@ func fill_rooms_list() -> void:
 		button.button_down.connect(_on_room_selected.bind(button))
 		rooms_container.add_child(button)
 
-func _on_visibility_changed() -> void:
-	if is_visible() == true:
-		fill_rooms_list()
+#func _on_visibility_changed() -> void:
+	#if is_visible() == true:
+		#fill_rooms_list()
 
 func _on_connection_request(from_node: StringName, from_port: int, to_node: StringName, to_port: int) -> void:
 	graph_edit.connect_node(from_node,from_port,to_node,to_port)

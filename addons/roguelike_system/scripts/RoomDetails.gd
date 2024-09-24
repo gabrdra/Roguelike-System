@@ -4,9 +4,6 @@ extends HBoxContainer
 @onready var rooms_container: VBoxContainer = $Container/ScrollContainer/List/RoomsContainer
 
 #create a new scene that has a a button with the name of the room, connect all the buttons to this script with them passing their name when button_down
-func _ready() -> void:
-	fill_rooms_list()
-	
 func _on_new_room_button_down() -> void:
 	room_properties.create_new_empty_room()
 
@@ -34,5 +31,5 @@ func fill_rooms_list() -> void:
 		
 
 
-func _on_visibility_changed() -> void:
-	_on_rooms_changed()
+#func _on_visibility_changed() -> void:
+	#_on_rooms_changed()
