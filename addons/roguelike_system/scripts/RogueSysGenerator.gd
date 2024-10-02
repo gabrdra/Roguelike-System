@@ -46,15 +46,14 @@ func _check_level_validity(used_rooms:Dictionary, input_rooms:Dictionary, requir
 			continue #will check in the used_rooms loop
 		var room:Room = input_rooms[room_name]
 		for passage_name in room.passages:
-			if room.passages[passage_name]==null:
-				var possible_connections:Array[Connection] = input_rooms[room_name].passages[passage_name].filter(
-					func (c:Connection):
-						if used_rooms.has(c.room.name):
-							return used_rooms[c.room.name].room.passages[c.connected_passage] == null
-						return true
-				)
-				if possible_connections.size() == 0:
-					return false
+			var possible_connections:Array[Connection] = input_rooms[room_name].passages[passage_name].filter(
+				func (c:Connection):
+					if used_rooms.has(c.room.name):
+						return used_rooms[c.room.name].room.passages[c.connected_passage] == null
+					return true
+			)
+			if possible_connections.size() == 0:
+				return false
 		#Used_rooms
 	for room_name in used_rooms:
 		var room:Room = used_rooms[room_name].room
@@ -163,11 +162,11 @@ func generate_level(input_level:LevelData, input_seed:int = 0) -> LevelData:
 			unused_connections.append(latest_connection)
 			#check if the room that was just connected has another connection then the one that was just removed
 			#and if it doesn't, remove the room from used_rooms
-			var outgoing_connection_room = used_rooms[latest_connection.room.name]
+			var outgoing_connection_room:BacktrackData = used_rooms[latest_connection.room.name]
+			var incomming_connection_room:BacktrackData = used_rooms[outgoing_connection_room.room.passages[latest_connection.connected_passage].room.name]
 			outgoing_connection_room.room.passages[latest_connection.connected_passage] = null
-			var incomming_connection_room = used_rooms[outgoing_connection_room.room.passages[latest_connection.connected_passage].room.name]
 			var had_more_connections = false
-			for passages_names in incomming_connection_room:
+			for passages_names in incomming_connection_room.room.passages:
 				if passages_names == incomming_connection.connected_passage:
 					continue
 				if incomming_connection_room.room.passages[passages_names] != null:
