@@ -73,6 +73,33 @@ func _check_level_validity(used_rooms:Dictionary, input_rooms:Dictionary, requir
 					return false
 	return true
 
+func _dfs_validity(starter_room:BacktrackData, used_rooms:Dictionary, input_rooms:Dictionary, required_rooms_size:int) -> bool:
+	var stack:Array[Connection]
+	var rooms_visited:Dictionary #works as a set
+	var required_rooms_found:Dictionary #works as a set
+	required_rooms_found[starter_room.room.name]=true
+	for passage_name in starter_room.room.passages:
+		if(starter_room.room.passages[passage_name]!=null):
+			stack.append(starter_room.room.passages[passage_name])
+			continue
+		stack.append_array(input_rooms[starter_room.room.name].passages[passage_name])
+	rooms_visited[starter_room.room.name]=true
+	while !stack.is_empty():
+		var curr_conn := stack.pop_back()
+		if rooms_visited.has(curr_conn.room.name):
+			continue
+		for passage_name in curr_conn.room.passages:
+			if used_rooms.has(curr_conn.room.name):
+				if(starter_room.room.passages[passage_name]!=null):
+					stack.append(starter_room.room.passages[passage_name])
+					continue
+			stack.append_array(input_rooms[starter_room.room.name].passages[passage_name])
+		if input_rooms[curr_conn].required:
+			required_rooms_found[curr_conn.name]=true
+		if required_rooms_found.size()==required_rooms_size:
+			return true
+	return false
+
 func _remove_rooms_from_used_rooms(used_rooms:Dictionary, initial_room_to_erase:BacktrackData,
 	connections_order:Array[Connection],unused_connections:Array[Connection]) -> void:
 	var rooms_to_erase_array:=[]#works as a stack
