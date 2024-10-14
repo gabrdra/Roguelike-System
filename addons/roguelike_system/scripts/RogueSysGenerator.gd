@@ -81,7 +81,7 @@ func _check_level_validity(starter_room:BacktrackData, used_rooms:Dictionary, in
 	return required_rooms_found.size()==required_rooms_size
 
 func _remove_rooms_from_used_rooms(used_rooms:Dictionary, initial_room_to_erase:BacktrackData,
-	connections_order:Array[Connection],unused_connections:Array[Connection]) -> void:
+	connections_order:Array) -> void:#connections_order:Array,unused_connections:Array) -> void:
 	var rooms_to_erase_array:=[]#works as a stack
 	var erased_rooms:={}#works as a set
 	#have an array that stores all the rooms to be removed, it erases the connections it has, add it's children to the list and then erases the room from used_rooms
@@ -110,11 +110,37 @@ func _remove_rooms_from_used_rooms(used_rooms:Dictionary, initial_room_to_erase:
 			return !erased_rooms.has(c.room.name)
 	)
 	#filter unused_connections
-	unused_connections = unused_connections.filter(
-		func (c:Connection):
-			return !erased_rooms.has(c.room.name)
-	)
+	#unused_connections = unused_connections.filter(
+		#func (c:Connection):
+			#return !erased_rooms.has(c.room.name)
+	#)
 
+func _recreate_unused_connections(starter_room:BacktrackData, used_rooms:Dictionary) -> Array[Connection]:
+	if used_rooms.size() == 0:
+		return []
+	var unused_connections:Array[Connection] = []
+	var stack:Array[Connection] = []
+	var visited:Dictionary={}
+	for passage_name:String in starter_room.room.passages:
+		var conn:Connection = starter_room.room.passages[passage_name]
+		if conn == null:
+			unused_connections.append(Connection.new(starter_room.room, passage_name))
+		else:
+			stack.append(conn)
+	visited[starter_room.room.name]=true
+	while !stack.is_empty():
+		var curr_conn:Connection=stack.pop_back()
+		if visited.has(curr_conn.room.name):
+			continue
+		visited[curr_conn.room.name]=true
+		var curr_room:BacktrackData = used_rooms[curr_conn.room.name]
+		for passage_name:String in curr_room.room.passages:
+			var conn:Connection = curr_room.room.passages[passage_name]
+			if conn == null:
+				unused_connections.append(Connection.new(curr_room.room, passage_name))
+			else:
+				stack.append(conn)
+	return unused_connections
 func generate_level(input_level:LevelData, input_seed:int = 0) -> LevelData:
 	random = RandomNumberGenerator.new()
 	if input_seed!=0:
@@ -143,15 +169,19 @@ func generate_level(input_level:LevelData, input_seed:int = 0) -> LevelData:
 			func (c:Connection):
 				#a connection is only possible the other side is not already being used
 				#missing filter by attempt as well
+				var valid_room := true
 				if used_rooms.has(c.room.name):
-					return used_rooms[c.room.name].room.passages[c.connected_passage] == null
-				return true
+					valid_room = used_rooms[c.room.name].room.passages[c.connected_passage] == null
+				valid_room = !used_rooms[outgoing_connection.room.name].passages_attempts[outgoing_connection.connected_passage].has(c.to_string()) and valid_room
+				return valid_room
 		)
 		if possible_connections.size() == 0:
 			#there was no correspondent to the outgoing_connection, 
 			#meaning a invalid state was created, in order to correct it, it's necessary to remove the current room, and it's children
 			#also necessary to remove all the connections from the rooms that are being removed
-			_remove_rooms_from_used_rooms(used_rooms, used_rooms[outgoing_connection.room.name], connections_order, unused_connections)
+			_remove_rooms_from_used_rooms(used_rooms, used_rooms[outgoing_connection.room.name], connections_order)
+			unused_connections = _recreate_unused_connections(starter_room, used_rooms)
+			continue
 		var incomming_connection:Connection = _choose_random_element_array(possible_connections)
 		used_rooms[outgoing_connection.room.name].passages_attempts[outgoing_connection.connected_passage][incomming_connection.to_string()] = incomming_connection
 		if !used_rooms.has(incomming_connection.room.name):
@@ -164,7 +194,8 @@ func generate_level(input_level:LevelData, input_seed:int = 0) -> LevelData:
 			outgoing_connection.room.passages[outgoing_connection.connected_passage] = Connection.new(new_used_room, incomming_connection.connected_passage)
 			unused_connections.append_array(_get_unused_connections_from_room(new_used_room))
 		else:
-			incomming_connection.room.passages[incomming_connection.connected_passage] = outgoing_connection
+			#If the room in incomming_connection is used as is then the room that would be altered is the one in input_rooms instead of the one in used_rooms
+			used_rooms[incomming_connection.room.name].room.passages[incomming_connection.connected_passage] = outgoing_connection
 			outgoing_connection.room.passages[outgoing_connection.connected_passage] = incomming_connection
 		#check validity and roll back if necessary
 		if !_check_level_validity(starter_room, used_rooms, input_rooms, required_rooms_names.size()):
@@ -183,6 +214,10 @@ func generate_level(input_level:LevelData, input_seed:int = 0) -> LevelData:
 					had_more_connections = true
 					break
 			if !had_more_connections:
+				unused_connections = unused_connections.filter(
+					func (c:Connection):
+						return c.room.name != incomming_connection_room.room.name
+				)
 				used_rooms.erase(incomming_connection_room.room.name)
 	if used_rooms.is_empty():
 		return LevelData.new() #couldn't generate a valid level
