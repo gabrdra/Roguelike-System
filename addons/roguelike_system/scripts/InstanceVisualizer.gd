@@ -23,7 +23,7 @@ func _on_generate_button_button_down() -> void:
 		return
 	var generator:RogueSysGenerator = RogueSysGenerator.new()
 	
-	var generated_level:LevelData = generator.generate_level(levels_dict[possible_levels[possible_level_chosen]],seed,100)
+	var generated_level:LevelData = generator.generate_level(levels_dict[possible_levels[possible_level_chosen]],seed)
 	#SaveLoadData.save_level_data_json(generated_level, "Level 1", "res://demo/export_data/Level1testjson.json")
 	_create_visualization(generated_level)
 func _on_export_data_selection_file_selected(path: String) -> void:

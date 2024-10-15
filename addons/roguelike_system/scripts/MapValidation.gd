@@ -29,7 +29,7 @@ static func validate_map(map_data:MapData) -> MapData:
 			keep_looping = false
 			for required_room_name:String in required_rooms_names:
 				var required_room:Room = level.rooms[required_room_name]
-				var queue := SimpleQueue.new()
+				var deque := SimpleDeque.new()
 				var visited_rooms := {} 
 				#visited_rooms has 2 uses, first it keeps the rooms that were already reached 
 				#and second it keeps the name of the passage from where that room was reached
@@ -39,11 +39,11 @@ static func validate_map(map_data:MapData) -> MapData:
 					for conn in conns_passage:
 						if visited_rooms.has(conn.room.name):
 							continue
-						queue.insert(conn.room)
+						deque.insert_back(conn.room)
 						visited_rooms[conn.room.name] = conn.connected_passage
 				#A slightly modified bfs search 
-				while !queue.is_empty():
-					var current_room:Room = queue.pop_front()
+				while !deque.is_empty():
+					var current_room:Room = deque.pop_front()
 					for passage_name:String in current_room.passages:
 						if passage_name == visited_rooms[current_room.name]:
 							continue
@@ -51,7 +51,7 @@ static func validate_map(map_data:MapData) -> MapData:
 						for conn in conns_passage:
 							if visited_rooms.has(conn.room.name):
 								continue
-							queue.insert(conn.room)
+							deque.insert_back(conn.room)
 							visited_rooms[conn.room.name] = conn.connected_passage
 				#compares all rooms with rooms current on visited_rooms, if they are equal do nothing
 				#if they aren't equal, remove the room that wasn't visited and set keep_looping to true
