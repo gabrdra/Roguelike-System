@@ -16,7 +16,7 @@ func _on_tab_container_tab_changed(tab: int) -> void:
 	if tab_container.get_current_tab_control()==room_details:
 		room_details.fill_rooms_list()
 	elif tab_container.get_current_tab_control()==possibilities_graph:
-		possibilities_graph.fill_rooms_list()
+		possibilities_graph.fill_possibilities_graph()
 	elif tab_container.get_current_tab_control()==levels_manager:
 		levels_manager.fill_levels_manager_fields()
 	elif tab_container.get_current_tab_control()==plugin_settings:
@@ -32,5 +32,5 @@ func on_throw_error(message:String) -> void:
 
 func fill_children_data() -> void:
 	room_details.fill_rooms_list()
-	possibilities_graph.fill_rooms_list()
+	possibilities_graph.fill_possibilities_graph()
 	levels_manager.fill_levels_manager_fields()

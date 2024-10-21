@@ -48,7 +48,7 @@ func get_room_by_name(name:String) -> Room:
 
 func add_new_room(room:Room, connections_to_add:Dictionary = {})-> void:
 	current_level.rooms[room.name]=room
-	_add_passages(room, connections_to_add)
+	_add_connections(room, connections_to_add)
 	
 func update_room(room:Room, old_room_name:String,
 	connections_to_add:Dictionary = {},
@@ -58,11 +58,11 @@ func update_room(room:Room, old_room_name:String,
 	else:
 		current_level.rooms.erase(old_room_name)
 		current_level.rooms[room.name]=room
-	_add_passages(room,connections_to_add)
-	_remove_passages(room, connections_to_remove)
+	_add_connections(room,connections_to_add)
+	_remove_connections(room, connections_to_remove)
 
 func delete_room(room:Room) -> void:
-	_remove_passages(room, room.passages)
+	_remove_connections(room, room.passages)
 	current_level.rooms.erase(room.name)
 	
 func set_starter_room(room:Room) -> void:
@@ -97,7 +97,7 @@ func set_current_level(level_name:String) -> void:
 	current_level=map_data.levels[level_name]
 	current_level_name=level_name
 
-func _add_passages(room:Room, connections_to_add: Dictionary) -> void:
+func _add_connections(room:Room, connections_to_add: Dictionary) -> void:
 	for passage_name in connections_to_add:
 		var connections: Array = connections_to_add[passage_name]
 		room.passages[passage_name].append_array(connections)
@@ -105,8 +105,7 @@ func _add_passages(room:Room, connections_to_add: Dictionary) -> void:
 			var other_end_connection = Connection.new(room,passage_name)
 			connection.room.passages[connection.connected_passage].append(other_end_connection)
 			
-func _remove_passages(room:Room, connections_to_remove: Dictionary) -> void:
-	#TODO?: A doubly linked list instead of arrays would improve complexity on removal of connection
+func _remove_connections(room:Room, connections_to_remove: Dictionary) -> void:
 	for passage_name in connections_to_remove:
 		var connections: Array = connections_to_remove[passage_name]
 		var remaining_room_connections:Array = room.passages[passage_name].filter(
@@ -124,6 +123,21 @@ func _remove_passages(room:Room, connections_to_remove: Dictionary) -> void:
 				)
 			connection.room.passages[connection.connected_passage].erase(other_end_connection)
 	
+
+func add_connection(room:Room, connection_to_add:Connection, passage_name:String) -> void:
+	room.passages[passage_name].append(connection_to_add)
+	var other_end_connection = Connection.new(room,passage_name)
+	connection_to_add.room.passages[connection_to_add.connected_passage].append(other_end_connection)
+
+func remove_connection(room:Room, connection_to_remove:Connection, passage_name:String) -> void:
+	var removable_conn := _get_connection_from_array(room.passages[passage_name], connection_to_remove)
+	room.passages[passage_name].erase(removable_conn)
+	var other_side_conn = Connection.new(room, passage_name)
+	var other_side_removable_conn := _get_connection_from_array(connection_to_remove.room.passages[connection_to_remove.connected_passage], other_side_conn)
+	connection_to_remove.room.passages[connection_to_remove.connected_passage].erase(other_side_removable_conn)
+
+func check_if_connection_exists(room:Room, connection:Connection, passage_name:String) -> bool:
+	return _get_connection_from_array(room.passages[passage_name], connection) != null
 
 func _get_connection_from_array(arr: Array, connection_to_find: Connection) -> Connection:
 	for conn in arr:

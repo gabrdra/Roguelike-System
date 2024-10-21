@@ -11,7 +11,7 @@ var possible_levels := []
 var levels_dict := {}
 var seed := 0
 var possible_level_chosen := 0
-var node_colors := [Color.WHITE, Color.LIME_GREEN,Color.INDIAN_RED,Color.REBECCA_PURPLE,
+const node_colors := [Color.WHITE, Color.LIME_GREEN,Color.INDIAN_RED,Color.REBECCA_PURPLE,
 	Color.LIGHT_YELLOW,Color.DARK_BLUE,Color.ORANGE,Color.ORCHID]
 
 func _on_export_data_selection_button_button_down() -> void:
@@ -42,10 +42,11 @@ func _fill_chosen_level_button() -> void:
 
 func _create_visualization(level:LevelData):
 	_clear_visualization()
-	var portIndexes = _spawn_rooms(level.rooms)
-	_spawn_connections(level.rooms, portIndexes)
+	var port_indexes := _spawn_rooms(level.rooms)
+	_spawn_connections(level.rooms, port_indexes)
 	graph_edit.arrange_nodes()
-func _spawn_connections(rooms:Dictionary, portIndexes:Dictionary) -> void:
+	
+func _spawn_connections(rooms:Dictionary, port_indexes:Dictionary) -> void:
 	var already_used = {}
 	for room_name in rooms:
 		already_used[room_name]=true
@@ -54,19 +55,19 @@ func _spawn_connections(rooms:Dictionary, portIndexes:Dictionary) -> void:
 			var conn:Connection = room.passages[passage_name]
 			if already_used.has(conn.room.name):
 				continue
-			graph_edit.connect_node(room_name,portIndexes[room_name][passage_name], conn.room.name,portIndexes[conn.room.name][conn.connected_passage])
+			graph_edit.connect_node(room_name,port_indexes[room_name][passage_name], conn.room.name,port_indexes[conn.room.name][conn.connected_passage])
 
 func _spawn_rooms(rooms:Dictionary) -> Dictionary:
-	var portIndexes:= {}
+	var port_indexes:= {}
 	for room_name in rooms:
 		var room:Room = rooms[room_name]
 		var node:= GraphNode.new()
 		node.title = room.name
 		node.name = room.name
-		portIndexes[room_name]={}
+		port_indexes[room_name]={}
 		var i := 0
 		for p in room.passages:
-			portIndexes[room_name][p]=i
+			port_indexes[room_name][p]=i
 			var node_color:Color = node_colors[(i+1)%node_colors.size()]
 			node.set_slot(i,true,Variant.Type.TYPE_NIL,node_color,true,Variant.Type.TYPE_NIL,node_color)
 			var slot_node := Label.new()
@@ -81,7 +82,7 @@ func _spawn_rooms(rooms:Dictionary) -> Dictionary:
 		node.resizable = true
 		node.size = Vector2(100,100)
 		graph_edit.add_child(node)
-	return portIndexes
+	return port_indexes
 
 func _clear_visualization() -> void:
 	graph_edit.clear_connections()
