@@ -14,7 +14,7 @@ func _ready() -> void:
 
 func _on_tab_container_tab_changed(tab: int) -> void:
 	if tab_container.get_current_tab_control()==room_details:
-		room_details.fill_rooms_list()
+		room_details.on_rooms_changed()
 	elif tab_container.get_current_tab_control()==possibilities_graph:
 		possibilities_graph.fill_possibilities_graph()
 	elif tab_container.get_current_tab_control()==levels_manager:

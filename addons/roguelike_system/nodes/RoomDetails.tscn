@@ -220,10 +220,17 @@ text = "Cancel selection
 [node name="ListPassages" type="VBoxContainer" parent="RoomProperties/ScrollContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="ListPassagesLabel" type="Label" parent="RoomProperties/ScrollContainer/VBoxContainer/ListPassages"]
+[node name="HBoxContainer" type="HBoxContainer" parent="RoomProperties/ScrollContainer/VBoxContainer/ListPassages"]
+layout_mode = 2
+
+[node name="ListPassagesLabel" type="Label" parent="RoomProperties/ScrollContainer/VBoxContainer/ListPassages/HBoxContainer"]
 layout_mode = 2
 text = "Passages:
 "
+
+[node name="ReimportPassagesButton" type="Button" parent="RoomProperties/ScrollContainer/VBoxContainer/ListPassages/HBoxContainer"]
+layout_mode = 2
+text = "Reimport passages"
 
 [node name="HSeparator" type="HSeparator" parent="RoomProperties/ScrollContainer/VBoxContainer/ListPassages"]
 layout_mode = 2
@@ -245,7 +252,7 @@ dialog_autowrap = true
 
 [connection signal="button_down" from="Container/ScrollContainer/List/AddRemoveRoom/NewRoom" to="." method="_on_new_room_button_down"]
 [connection signal="button_down" from="Container/ScrollContainer/List/AddRemoveRoom/DeleteRoom" to="." method="_on_delete_room_button_down"]
-[connection signal="rooms_changed" from="RoomProperties" to="." method="_on_rooms_changed"]
+[connection signal="rooms_changed" from="RoomProperties" to="." method="on_rooms_changed"]
 [connection signal="text_changed" from="RoomProperties/ScrollContainer/VBoxContainer/Name/RoomNameInput" to="RoomProperties" method="_on_room_name_changed"]
 [connection signal="button_down" from="RoomProperties/ScrollContainer/VBoxContainer/Scene/SceneButton" to="RoomProperties/ScrollContainer/VBoxContainer/Scene/SceneButton" method="_on_button_down"]
 [connection signal="file_selected" from="RoomProperties/ScrollContainer/VBoxContainer/Scene/SceneButton/FileSelection" to="RoomProperties" method="_on_scene_selected"]
@@ -255,5 +262,6 @@ dialog_autowrap = true
 [connection signal="close_requested" from="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection" to="RoomProperties" method="_on_adjacency_selection_close_requested"]
 [connection signal="button_down" from="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer/ConfirmAndCancelHolder/ConfirmPassagesButton" to="RoomProperties" method="_on_confirm_passages_button_down"]
 [connection signal="button_down" from="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer/ConfirmAndCancelHolder/CancelButton" to="RoomProperties" method="_on_adjacency_selection_close_requested"]
+[connection signal="button_down" from="RoomProperties/ScrollContainer/VBoxContainer/ListPassages/HBoxContainer/ReimportPassagesButton" to="RoomProperties" method="set_passages_from_scene"]
 [connection signal="button_down" from="RoomProperties/ScrollContainer/VBoxContainer/SaveRoom/SaveRoomButton" to="RoomProperties" method="_on_save_room_button"]
 [connection signal="confirmed" from="RoomProperties/DeleteRoomConfirmation" to="RoomProperties" method="_on_delete_room_confirmation_confirmed"]

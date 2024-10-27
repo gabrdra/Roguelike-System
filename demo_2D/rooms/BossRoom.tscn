@@ -4,6 +4,6 @@
 
 [node name="Passages" type="Node2D" parent="."]
 
-[node name="Left" type="Node2D" parent="Passages"]
+[node name="Leftteste3" type="Node2D" parent="Passages"]
 
 [node name="Right" type="Node2D" parent="Passages"]

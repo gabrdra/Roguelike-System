@@ -58,8 +58,9 @@ func update_room(room:Room, old_room_name:String,
 	else:
 		current_level.rooms.erase(old_room_name)
 		current_level.rooms[room.name]=room
-	_add_connections(room,connections_to_add)
+	_add_connections(room, connections_to_add)
 	_remove_connections(room, connections_to_remove)
+	
 
 func delete_room(room:Room) -> void:
 	_remove_connections(room, room.passages)
@@ -99,6 +100,8 @@ func set_current_level(level_name:String) -> void:
 
 func _add_connections(room:Room, connections_to_add: Dictionary) -> void:
 	for passage_name in connections_to_add:
+		if !room.passages.has(passage_name):
+			continue
 		var connections: Array = connections_to_add[passage_name]
 		room.passages[passage_name].append_array(connections)
 		for connection in connections:
@@ -108,14 +111,15 @@ func _add_connections(room:Room, connections_to_add: Dictionary) -> void:
 func _remove_connections(room:Room, connections_to_remove: Dictionary) -> void:
 	for passage_name in connections_to_remove:
 		var connections: Array = connections_to_remove[passage_name]
-		var remaining_room_connections:Array = room.passages[passage_name].filter(
-			func(c): 
-				for conn in connections:
-					if conn.equals(c):
-						return false
-				return true
-		)
-		room.passages[passage_name] = remaining_room_connections
+		if room.passages.has(passage_name):
+			var remaining_room_connections:Array = room.passages[passage_name].filter(
+				func(c): 
+					for conn in connections:
+						if conn.equals(c):
+							return false
+					return true
+			)
+			room.passages[passage_name] = remaining_room_connections
 		for connection in connections:
 			var other_end_connection = _get_connection_from_array(
 				connection.room.passages[connection.connected_passage],

@@ -55,7 +55,6 @@ layout_mode = 2
 [node name="GraphEdit" type="GraphEdit" parent="."]
 layout_mode = 2
 size_flags_horizontal = 3
-scroll_offset = Vector2(-32, 0)
 right_disconnects = true
 
 [connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]

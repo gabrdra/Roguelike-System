@@ -20,9 +20,8 @@ var current_state:State
 var current_room:Room;
 var current_passage:String;
 var room_old_name:String;
-var connections_to_add:Dictionary #Array[Connection]
-var connections_to_remove:Dictionary #Array[Connection]
-# Called when the node enters the scene tree for the first time.
+var connections_to_add:Dictionary 
+var connections_to_remove:Dictionary 
 func _ready() -> void:
 	create_new_empty_room()
 
@@ -33,6 +32,7 @@ func create_new_empty_room() -> void:
 	current_room = Room.new()
 	current_room.max_passes = 1
 	current_room.required = false
+	current_room.passages = {}
 	room_old_name = ""
 	fill_interface()
 
@@ -80,21 +80,36 @@ func set_passages_from_scene() -> void:
 		RogueSys.throw_error.emit(message)
 		printerr(message)
 		return
-	var passages_node = scene_instance.get_node(RogueSys.map_data.passages_holder_name)
+	var passages_node:Node = scene_instance.get_node(RogueSys.map_data.passages_holder_name)
 	if(!passages_node):
 		var message := "There must be a node on the scene, direct child of root, named "+ RogueSys.map_data.passages_holder_name
 		RogueSys.throw_error.emit(message)
 		printerr(message)
 		return
-	var passage_children = passages_node.get_children()
-	current_room.passages = {}
-	for p in passage_children:
-		#print(p.name)
-		if(current_room.passages.has(p.name)):
-			printerr("There is more than one passage with the same name")
-			current_room.passages = {}
-			return
-		current_room.passages[p.name]=[]
+	var passage_children:Array = passages_node.get_children()
+	if passage_children.is_empty():
+		var message := "There are no passages nodes"
+		RogueSys.throw_error.emit(message)
+		printerr(message)
+		return
+	if current_room.passages.is_empty():
+		for p in passage_children:
+			current_room.passages[p.name]=[]
+	else:
+		var remaining_passages_amount := 0
+		var former_passages := current_room.passages.keys()
+		var new_passages := {}
+		for p in passage_children:
+			if current_room.passages.has(p.name):
+				remaining_passages_amount+=1
+				new_passages[p.name] = current_room.passages[p.name]
+				continue
+			new_passages[p.name]=[]
+		if remaining_passages_amount < former_passages.size():
+			for passage_name:String in former_passages:
+				if !new_passages.has(passage_name):
+					connections_to_remove[passage_name].append_array(current_room.passages[passage_name])
+		current_room.passages = new_passages
 	update_passages()
 
 func update_passages()->void:
@@ -245,14 +260,27 @@ func _on_max_passes_value_changed(value: float) -> void:
 	current_room.max_passes = value
 
 func _on_save_room_button() -> void:
-	#TODO: add Data validation
-	if(current_room.name==""):
-		printerr("The room must have a name")
+	if current_room.name=="":
+		var message:="The room must have a name"
+		printerr(message)
+		RogueSys.throw_error.emit(message)
+		return
+	if current_room.scene_uid == "":
+		var message:="The room must have a attached scene"
+		printerr(message)
+		RogueSys.throw_error.emit(message)
+		return
+	if current_room.passages.is_empty():
+		var message:="The room must have at least one passage"
+		printerr(message)
+		RogueSys.throw_error.emit(message)
 		return
 	match current_state:
 		State.CREATE:
 			if(RogueSys.get_room_by_name(current_room.name) != null):
-				printerr("Room name must be unique")
+				var message:="Room name must be unique"
+				printerr(message)
+				RogueSys.throw_error.emit(message)
 				return
 			RogueSys.add_new_room(current_room, connections_to_add)
 		State.UPDATE:

@@ -10,7 +10,7 @@ func _on_new_room_button_down() -> void:
 func _on_delete_room_button_down() -> void:
 	room_properties.open_delete_current_room_dialog()
 
-func _on_rooms_changed() -> void:
+func on_rooms_changed() -> void:
 	fill_rooms_list()
 	room_properties.create_new_empty_room()
 
@@ -28,7 +28,7 @@ func fill_rooms_list() -> void:
 		button.text = name
 		button.button_down.connect(_on_room_selected.bind(button.text))
 		rooms_container.add_child(button)
-		
+	
 
 
 #func _on_visibility_changed() -> void:
