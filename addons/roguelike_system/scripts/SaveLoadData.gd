@@ -114,13 +114,13 @@ static func export_data(map_data:MapData, path:String) -> void:
 	var levels_names:= map_data.levels.keys()
 	
 	for level_name in levels_names:
-		var level:LevelData = map_data.levels[level_name]
+		var level:ValidatedLevelData = map_data.levels[level_name]
 		var level_dict := {
 			"name":level_name,
-			"starter_room_name": null
+			"starter_room_name": level.starter_room.name,
+			"possibilities": level.possibilities,
+			"connection_pairs":level.connectionPairs
 		}
-		if(level.starter_room!=null):
-			level_dict["starter_room_name"] = level.starter_room.name
 		level_dict["rooms"]=[]
 		for room_name in level.rooms:
 			var room:Room = level.rooms[room_name]
@@ -171,7 +171,7 @@ static func read_exported_data(path: String) -> MapData:
 		return return_map_data
 	var levels_array: Array = data_dict["levels"]
 	for level_dict in levels_array:
-		var level := LevelData.new()
+		var level := ValidatedLevelData.new()
 		for room_dict in level_dict["rooms"]:
 			var room := Room.new()
 			room.name = room_dict["name"]
@@ -190,6 +190,25 @@ static func read_exported_data(path: String) -> MapData:
 					connections.append(connection)
 				level.rooms[room_dict["name"]].passages[passage_dict["name"]] = connections
 		level.starter_room = level.rooms[level_dict["starter_room_name"]]
+		#print(level_dict["possibilities"].size())
+		level.possibilities = level_dict["possibilities"] as Array[Array]
+		var conn_pairs:Array[ConnectionPair] = []
+		for conn_pair_str in level_dict["connection_pairs"]:
+			var conn_pair_str_split:PackedStringArray = conn_pair_str.split(" - ")
+			var conn_pair_first_split:PackedStringArray  = conn_pair_str_split[0].split(": ")
+			var conn_pair_second_split:PackedStringArray = conn_pair_str_split[1].split(": ")
+			var conn_pair = ConnectionPair.new(
+				Connection.new(
+					level.rooms[conn_pair_first_split[0]],
+					conn_pair_first_split[1]
+				),
+				Connection.new(
+					level.rooms[conn_pair_second_split[0]],
+					conn_pair_second_split[1]
+				)
+			)
+			conn_pairs.append(conn_pair)
+		level.connectionPairs = conn_pairs
 		return_levels[level_dict.name]=level
 	return_map_data = MapData.new(return_levels,data_dict["passages_holder_name"])
 	return return_map_data
