@@ -62,6 +62,7 @@ func fill_interface() -> void:
 	room_name_input.text = current_room.name
 	max_passes_input.value = current_room.max_passes
 	required_button.set_pressed_no_signal(current_room.required)
+	max_passes_input.editable=!current_room.required
 	update_passages()
 
 func set_passages_from_scene() -> void:

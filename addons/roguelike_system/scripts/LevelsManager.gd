@@ -121,8 +121,7 @@ func _on_export_map_button_button_down() -> void:
 	#SaveLoadData.export_data(path)
 	
 func _on_export_map_file_dialog_file_selected(path: String) -> void:
-	var duplicated_map_data = RogueSys.map_data.duplicate_map_data()
-	var validated_map := MapValidation.validate_map(duplicated_map_data)
+	var validated_map := MapValidation.validate_map(RogueSys.map_data)
 	if validated_map == null:
 		#await get_tree().create_timer(0.1).timeout
 		#RogueSys.throw_error.emit("There were errors during map validation, check the output panel on the console")

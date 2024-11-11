@@ -10,21 +10,49 @@ class_name MapValidation extends Node
 static func validate_map(map_data:MapData) -> MapData:
 	var still_valid:=true
 	var validated_levels := {}
-	for level_name:String in map_data.levels:
-		var level:LevelData = map_data.levels[level_name]
+	var duplicated_map_data := map_data.duplicate_map_data()
+	for level_name:String in duplicated_map_data.levels:
+		var level:LevelData = duplicated_map_data.levels[level_name]
 		if level.starter_room == null:
 			var message:= "The "+level_name+" has no starter room"
 			printerr(message)
 			RogueSys.throw_error.emit(message)
 			return null
-		var validated_level := _validate_level(level, map_data.passages_holder_name)
+		var validated_level := _validate_level(level, duplicated_map_data.passages_holder_name)
 		if validated_level == null:
 			var message:= "The "+level_name+" couldn't generate at least one viable instance"
 			printerr(message)
 			RogueSys.throw_error.emit(message)
 			return null
 		validated_levels[level_name]=validated_level
-	return MapData.new(validated_levels, map_data.passages_holder_name)
+	return MapData.new(validated_levels, duplicated_map_data.passages_holder_name)
+
+static func _multiply_rooms(level:LevelData) -> void:
+	#This method is necessary in order to repeat the rooms where max_passes is > 1
+	for origin_room_name in level.rooms:
+		var origin_room:Room = level.rooms[origin_room_name]
+		if origin_room.max_passes == 1:
+			continue
+		for i in range(origin_room.max_passes-1):
+			var new_room:Room = Room.new(
+				origin_room.name+"_"+str(i+2),
+				origin_room.scene_uid,
+				origin_room.required,
+				1
+			)
+			level.rooms[new_room.name] = new_room
+			for passage_name in origin_room.passages:
+				var origin_room_conns:Array = origin_room.passages[passage_name]
+				var duplicated_connections:Array[Connection] = []
+				for origin_conn:Connection in origin_room_conns:
+					duplicated_connections.append(
+						Connection.new(
+							level.rooms[origin_conn.room.name], origin_conn.connected_passage
+						)
+					)
+					level.rooms[origin_conn.room.name].passages[origin_conn.connected_passage].append(Connection.new(new_room, passage_name))
+				new_room.passages[passage_name]=duplicated_connections
+		origin_room.max_passes = 1
 
 static func _validate_level(level:LevelData, passages_holder_name:String) -> ValidatedLevelData:
 	var still_valid:=true
@@ -39,9 +67,10 @@ static func _validate_level(level:LevelData, passages_holder_name:String) -> Val
 	return _generate_level_possibilities(level)
 
 static func _generate_level_possibilities(input_level:LevelData) -> ValidatedLevelData:
+	_multiply_rooms(input_level)
 	var input_rooms:Dictionary = input_level.rooms
-	var validatedLevel = ValidatedLevelData.new(input_level.rooms, input_level.starter_room)
-	var connectionsPairIndexes:={}
+	var validated_level = ValidatedLevelData.new(input_level.rooms, input_level.starter_room)
+	var connections_pair_indexes:={}
 	var used_rooms:= {}
 	var required_rooms_names:Array[String] = []
 	var connections_order:Array[Connection] = []
@@ -128,16 +157,16 @@ static func _generate_level_possibilities(input_level:LevelData) -> ValidatedLev
 			var other_side_conn = used_rooms[conn.room.name].room.passages[conn.connected_passage]
 			var conn_pair = ConnectionPair.new(conn, other_side_conn)
 			var index = -1
-			if connectionsPairIndexes.has(conn_pair.to_string()):
-				index = connectionsPairIndexes[conn_pair.to_string()]
-			if index == -1 and connectionsPairIndexes.has(conn_pair.inverted_to_string()):
-				index = connectionsPairIndexes[conn_pair.inverted_to_string()]
+			if connections_pair_indexes.has(conn_pair.to_string()):
+				index = connections_pair_indexes[conn_pair.to_string()]
+			if index == -1 and connections_pair_indexes.has(conn_pair.inverted_to_string()):
+				index = connections_pair_indexes[conn_pair.inverted_to_string()]
 			if index == -1:
-				connectionsPairIndexes[conn_pair.to_string()] = validatedLevel.connectionPairs.size()
-				index = validatedLevel.connectionPairs.size()
-				validatedLevel.connectionPairs.append(conn_pair)
+				connections_pair_indexes[conn_pair.to_string()] = validated_level.connectionPairs.size()
+				index = validated_level.connectionPairs.size()
+				validated_level.connectionPairs.append(conn_pair)
 			possibility.append(index)
-		validatedLevel.possibilities.append(possibility)
+		validated_level.possibilities.append(possibility)
 		
 		var incomming_connection = used_rooms[connections_order.back().room.name].room.passages[connections_order.back().connected_passage]
 		var latest_connection:Connection = connections_order.pop_back()
@@ -160,9 +189,9 @@ static func _generate_level_possibilities(input_level:LevelData) -> ValidatedLev
 					return c.room.name != incomming_connection_room.room.name
 			)
 			used_rooms.erase(incomming_connection_room.room.name)
-	if validatedLevel.possibilities.is_empty():
+	if validated_level.possibilities.is_empty():
 		return null
-	return validatedLevel
+	return validated_level
 
 static func _get_unused_connections_from_room(room:Room) -> Array:
 	var passages_names:Array[String]
