@@ -73,7 +73,11 @@ static func _generate_level_possibilities(input_level:LevelData) -> ValidatedLev
 	var connections_pair_indexes:={}
 	var used_rooms:= {}
 	var required_rooms_names:Array[String] = []
-	var connections_order:Array[Connection] = []
+	var connections_order:Array[Connection] = [] 
+	var end_node:ViablePathGraphNode = null
+	var node_counter = 0
+	validated_level.root_node = ViablePathGraphNode.new(node_counter) #-1 is the starter node for every path
+	node_counter+=1
 	for room_name:String in input_rooms:
 		if input_rooms[room_name].required:
 			required_rooms_names.append(room_name)
@@ -152,7 +156,7 @@ static func _generate_level_possibilities(input_level:LevelData) -> ValidatedLev
 					used_rooms.erase(incomming_connection_room.room.name)
 		if connections_order.is_empty() or !level_is_valid:
 			break
-		var possibility:Array[int] = []
+		var last_node = validated_level.root_node
 		for conn in connections_order:
 			var other_side_conn = used_rooms[conn.room.name].room.passages[conn.connected_passage]
 			var conn_pair = ConnectionPair.new(conn, other_side_conn)
@@ -165,9 +169,14 @@ static func _generate_level_possibilities(input_level:LevelData) -> ValidatedLev
 				connections_pair_indexes[conn_pair.to_string()] = validated_level.connectionPairs.size()
 				index = validated_level.connectionPairs.size()
 				validated_level.connectionPairs.append(conn_pair)
-			possibility.append(index)
-		validated_level.possibilities.append(possibility)
-		
+			last_node = last_node.add_child(node_counter,index)
+			node_counter+=1
+		last_node = last_node.add_child(node_counter,-2)#-2 is the id for the last node of every path
+		node_counter+=1
+		if end_node == null or end_node == last_node:
+			end_node = last_node
+		else:
+			_join_nodes(last_node, end_node)
 		var incomming_connection = used_rooms[connections_order.back().room.name].room.passages[connections_order.back().connected_passage]
 		var latest_connection:Connection = connections_order.pop_back()
 		unused_connections.append(latest_connection)
@@ -189,9 +198,51 @@ static func _generate_level_possibilities(input_level:LevelData) -> ValidatedLev
 					return c.room.name != incomming_connection_room.room.name
 			)
 			used_rooms.erase(incomming_connection_room.room.name)
-	if validated_level.possibilities.is_empty():
+	if validated_level.root_node.children.is_empty():
 		return null
 	return validated_level
+
+static func _join_nodes(last_node:ViablePathGraphNode, end_node:ViablePathGraphNode) -> void:
+	print("Joining nodes: last_node =", last_node, "end_node =", end_node)
+	var node_to_keep = end_node
+	var node_to_merge = last_node
+	var node_to_keep_parent:ViablePathGraphNode = null
+	var node_to_merge_parent = last_node.parents.keys()[0]
+	while true:
+		print("Current node_to_keep:", node_to_keep, "node_to_merge:", node_to_merge)
+		for parent in node_to_keep.parents:
+			if parent.connection_pair_id == node_to_merge_parent.connection_pair_id:
+				node_to_keep_parent = parent
+				break
+		node_to_merge_parent.children.clear()
+		node_to_merge_parent.children.append(node_to_keep)
+		if node_to_keep_parent == null:
+			print("No matching parent found, adding new parent")
+			node_to_keep.parents[node_to_merge_parent] = true
+			if node_to_keep == node_to_merge:
+				print("problem")
+			return
+		var found := false
+		for child_index in range(node_to_keep_parent.children.size()):
+			if node_to_keep_parent.children[child_index].connection_pair_id == node_to_merge.connection_pair_id:
+				node_to_keep_parent.children_frequency[child_index] += 1
+				found = true
+				break
+		if !found:
+			print("Appending new child to node_to_keep_parent")
+			node_to_keep_parent.children.append(node_to_merge)
+			node_to_keep_parent.children_frequency.append(1)
+		node_to_merge = node_to_merge_parent
+		node_to_keep = node_to_keep_parent
+		if node_to_merge.parents.is_empty():
+			print("Node to merge has no more parents, returning")
+			if node_to_keep == node_to_merge:
+				print("problem")
+			return
+		node_to_merge_parent = node_to_merge.parents.keys()[0]
+		node_to_keep_parent = null
+		if node_to_keep == node_to_merge:
+			print("problem")
 
 static func _get_unused_connections_from_room(room:Room) -> Array:
 	var passages_names:Array[String]

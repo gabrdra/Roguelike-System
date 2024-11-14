@@ -1,4 +1,4 @@
 class_name ValidatedLevelData extends LevelData
 
-var possibilities:Array
+var root_node:ViablePathGraphNode
 var connectionPairs:Array[ConnectionPair]

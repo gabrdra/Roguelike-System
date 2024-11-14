@@ -118,9 +118,23 @@ static func export_data(map_data:MapData, path:String) -> void:
 		var level_dict := {
 			"name":level_name,
 			"starter_room_name": level.starter_room.name,
-			"possibilities": level.possibilities,
+			"nodes":{},
 			"connection_pairs":level.connectionPairs
 		}
+		var node_stack:= [level.root_node]
+		while !node_stack.is_empty():
+			var node:ViablePathGraphNode = node_stack.pop_back()
+			if level_dict["nodes"].has(node.id):
+				continue
+			node_stack.append_array(node.children)
+			var item_to_add:Dictionary = {
+				"connection_pair_id":node.connection_pair_id,
+				"children_id":[],
+				"children_frequency":node.children_frequency
+			}
+			for child in node.children:
+				item_to_add["children_id"].append(child.id)
+			level_dict["nodes"][node.id]=item_to_add
 		level_dict["rooms"]=[]
 		for room_name in level.rooms:
 			var room:Room = level.rooms[room_name]
