@@ -109,7 +109,8 @@ static func _generate_level_possibilities(input_level:LevelData) -> ValidatedLev
 				unused_connections = _recreate_unused_connections(starter_room, used_rooms)
 				connections_order = connections_order.filter(
 					func (c:Connection):
-						return used_rooms.has(c.room.name)
+						if used_rooms.has(c.room.name):
+							return used_rooms[(c.room.name)].room.passages[c.connected_passage]!=null
 				)
 				continue
 			var incomming_connection:Connection = possible_connections.pop_back()
