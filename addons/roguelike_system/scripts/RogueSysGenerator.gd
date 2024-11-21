@@ -20,24 +20,31 @@ func _create_used_room(room:Room)->Room:
 		#used_room.passages[passage_name]=null
 	return used_room
 
-func _choose_random_element_array(array:Array):
-	return array[random.randi_range(0,array.size()-1)]
+func _choose_random_element_array(array:Array, weights:Array) -> int:
+	return array[random.rand_weighted(weights)]
 
 func generate_level(input_level:ValidatedLevelData, input_seed:int = 0) -> LevelData:
 	random = RandomNumberGenerator.new()
 	if input_seed!=0:
 		random.seed = input_seed
 	var used_rooms := {}
+	var nodes := input_level.nodes
 	var conn_pairs := input_level.connectionPairs
-	var chosen_possibility:Array = _choose_random_element_array(input_level.possibilities)
-	for conn_pair_id:int in chosen_possibility:
-		var conn_pair := conn_pairs[conn_pair_id]
+	var curr_node := input_level.root_node
+	while true:
+		if curr_node == input_level.root_node:
+			curr_node = nodes[_choose_random_element_array(curr_node.children, curr_node.children_frequency)]
+			continue
+		elif curr_node.connection_pair_id == -2:
+			break #-2 is the connection_pair_id for the end node
+		var conn_pair:ConnectionPair = conn_pairs[curr_node.connection_pair_id]
 		if !used_rooms.has(conn_pair.first.room.name):
 			used_rooms[conn_pair.first.room.name] = conn_pair.first.room
 		if !used_rooms.has(conn_pair.second.room.name):
 			used_rooms[conn_pair.second.room.name] = conn_pair.second.room
 		conn_pair.first.room.passages[conn_pair.first.connected_passage] = conn_pair.second
 		conn_pair.second.room.passages[conn_pair.second.connected_passage] = conn_pair.first
+		curr_node = nodes[_choose_random_element_array(curr_node.children, curr_node.children_frequency)]
 	var return_level := LevelData.new()
 	return_level.rooms = used_rooms
 	return_level.starter_room = used_rooms[input_level.starter_room.name]

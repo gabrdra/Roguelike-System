@@ -118,23 +118,28 @@ static func export_data(map_data:MapData, path:String) -> void:
 		var level_dict := {
 			"name":level_name,
 			"starter_room_name": level.starter_room.name,
-			"nodes":{},
+			"nodes":[],
+			"root_node_id":level.root_node.id,
 			"connection_pairs":level.connectionPairs
 		}
 		var node_stack:= [level.root_node]
+		var nodes_added := {}#works as a set, adds the ids of each node
+		var nodes:Array = []
 		while !node_stack.is_empty():
 			var node:ViablePathGraphNode = node_stack.pop_back()
-			if level_dict["nodes"].has(node.id):
+			if nodes_added.has(node.id):
 				continue
+			nodes_added[node.id]=true
 			node_stack.append_array(node.children)
 			var item_to_add:Dictionary = {
 				"connection_pair_id":node.connection_pair_id,
 				"children_id":[],
 				"children_frequency":node.children_frequency
 			}
+			nodes.append(item_to_add)
 			for child in node.children:
 				item_to_add["children_id"].append(child.id)
-			level_dict["nodes"][node.id]=item_to_add
+		level_dict["nodes"] = nodes
 		level_dict["rooms"]=[]
 		for room_name in level.rooms:
 			var room:Room = level.rooms[room_name]
@@ -204,8 +209,12 @@ static func read_exported_data(path: String) -> MapData:
 					connections.append(connection)
 				level.rooms[room_dict["name"]].passages[passage_dict["name"]] = connections
 		level.starter_room = level.rooms[level_dict["starter_room_name"]]
-		#print(level_dict["possibilities"].size())
-		level.possibilities = level_dict["possibilities"] as Array[Array]
+		var nodes:Array[ViablePathGraphNode] = []
+		for node_info in level_dict["nodes"]:
+			var node:ViablePathGraphNode = ViablePathGraphNode.new(node_info["connection_pair_id"], node_info["children_id"], node_info["children_frequency"])
+			nodes.append(node)
+		level.nodes = nodes
+		level.root_node = level.nodes[level_dict["root_node_id"]]
 		var conn_pairs:Array[ConnectionPair] = []
 		for conn_pair_str in level_dict["connection_pairs"]:
 			var conn_pair_str_split:PackedStringArray = conn_pair_str.split(" - ")
