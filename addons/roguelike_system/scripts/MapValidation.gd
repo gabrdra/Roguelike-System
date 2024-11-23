@@ -154,6 +154,7 @@ static func _generate_level_possibilities(input_level:LevelData) -> ValidatedLev
 					used_rooms.erase(incomming_connection_room.room.name)
 				else:
 					incomming_connection_room.room.passages[incomming_connection.connected_passage] = null
+					unused_connections = _recreate_unused_connections(starter_room, used_rooms)
 		if connections_order.is_empty() or !level_is_valid:
 			break
 		var instance_array:Array[int] = []
@@ -195,6 +196,7 @@ static func _generate_level_possibilities(input_level:LevelData) -> ValidatedLev
 			used_rooms.erase(incomming_connection_room.room.name)
 		else:
 			incomming_connection_room.room.passages[incomming_connection.connected_passage] = null
+			unused_connections = _recreate_unused_connections(starter_room, used_rooms)
 	if validated_level.root_node.children.is_empty():
 		return null
 	_add_id_to_nodes(validated_level.root_node)
