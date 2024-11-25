@@ -151,6 +151,9 @@ static func _generate_level_possibilities(input_level:LevelData) -> ValidatedLev
 							return c.room.name != incomming_connection_room.room.name
 					)
 					used_rooms.erase(incomming_connection_room.room.name)
+				else:
+					incomming_connection_room.room.passages[incomming_connection.connected_passage] = null
+					unused_connections = _recreate_unused_connections(starter_room, used_rooms)
 		if connections_order.is_empty() or !level_is_valid:
 			break
 		var possibility:Array[int] = []
@@ -190,6 +193,9 @@ static func _generate_level_possibilities(input_level:LevelData) -> ValidatedLev
 					return c.room.name != incomming_connection_room.room.name
 			)
 			used_rooms.erase(incomming_connection_room.room.name)
+		else:
+				incomming_connection_room.room.passages[incomming_connection.connected_passage] = null
+				unused_connections = _recreate_unused_connections(starter_room, used_rooms)
 	if validated_level.possibilities.is_empty():
 		return null
 	return validated_level
