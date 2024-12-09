@@ -16,13 +16,11 @@ static func validate_map(map_data:MapData) -> MapData:
 		if level.starter_room == null:
 			var message:= "The "+level_name+" has no starter room"
 			printerr(message)
-			RogueSys.throw_error.emit(message)
 			return null
 		var validated_level := _validate_level(level, duplicated_map_data.passages_holder_name)
 		if validated_level == null:
 			var message:= "The "+level_name+" couldn't generate at least one viable instance"
 			printerr(message)
-			RogueSys.throw_error.emit(message)
 			return null
 		validated_levels[level_name]=validated_level
 	return MapData.new(validated_levels, duplicated_map_data.passages_holder_name)
@@ -56,11 +54,8 @@ static func _multiply_rooms(level:LevelData) -> void:
 
 static func _validate_level(level:LevelData, passages_holder_name:String) -> ValidatedLevelData:
 	var still_valid:=true
-	var required_rooms_names:Array[String] = []
 	for room_name:String in level.rooms:
 		var room:Room = level.rooms[room_name]
-		if room.required:
-			required_rooms_names.append(room.name)
 		still_valid = still_valid and _validate_room(room, passages_holder_name)
 		if !still_valid:
 			return null
@@ -243,6 +238,7 @@ static func _remove_rooms_from_used_rooms(used_rooms:Dictionary, initial_room_to
 			var child_room:BacktrackData = used_rooms[connection.room.name]
 			rooms_to_erase_array.append(child_room)
 		used_rooms.erase(room_to_erase.room.name)
+	#this is unnecessary, the same thing is being done right after but that time it's necessary
 	connections_order = connections_order.filter(
 		func (c:Connection):
 			return !erased_rooms.has(c.room.name)

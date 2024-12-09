@@ -124,7 +124,6 @@ func _on_export_map_file_dialog_file_selected(path: String) -> void:
 	var validated_map := MapValidation.validate_map(RogueSys.map_data)
 	if validated_map == null:
 		#await get_tree().create_timer(0.1).timeout
-		#RogueSys.throw_error.emit("There were errors during map validation, check the output panel on the console")
 		printerr("There were errors during map validation")
 		return
 	SaveLoadData.export_data(validated_map, path)

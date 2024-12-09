@@ -57,19 +57,40 @@ text = "Starter room:"
 [node name="StarterRoomButton" type="OptionButton" parent="VBoxContainer/StarterRoomHolder"]
 layout_mode = 2
 
+[node name="MinimumRoomsHolder" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="MinimumRoomsLabel" type="Label" parent="VBoxContainer/MinimumRoomsHolder"]
+layout_mode = 2
+text = "Minimum rooms on level:"
+
+[node name="MinimumRoomsInput" type="SpinBox" parent="VBoxContainer/MinimumRoomsHolder"]
+layout_mode = 2
+min_value = 1.0
+max_value = 10000.0
+value = 1.0
+custom_arrow_step = 1.0
+
+[node name="MaximumRoomsHolder" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="MaximumRoomsLabel" type="Label" parent="VBoxContainer/MaximumRoomsHolder"]
+layout_mode = 2
+text = "Maximum rooms on level:"
+
+[node name="MaximumRoomsInput" type="SpinBox" parent="VBoxContainer/MaximumRoomsHolder"]
+layout_mode = 2
+min_value = 1.0
+max_value = 10000.0
+value = 10000.0
+custom_arrow_step = 1.0
+
 [node name="VSplitContainer2" type="HSeparator" parent="VBoxContainer"]
 layout_mode = 2
 
 [node name="ExportMapButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 text = "Export Map"
-
-[node name="ExportReport" type="RichTextLabel" parent="VBoxContainer"]
-layout_mode = 2
-bbcode_enabled = true
-text = "Export status:
-"
-fit_content = true
 
 [node name="DeleteLevelConfirmation" type="ConfirmationDialog" parent="."]
 title = "Delete level"

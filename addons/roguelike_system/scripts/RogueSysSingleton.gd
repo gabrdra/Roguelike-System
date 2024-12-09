@@ -1,7 +1,6 @@
 @tool
 class_name RogueSysSingleton extends Node
 
-signal throw_error
 signal finished_loading_plugin_data
 
 const user_settings_path := "user://roguesysplugin_user_settings.res"
@@ -20,11 +19,7 @@ func load_user_settings() -> void:
 func save_user_settings() -> void:
 	ResourceSaver.save(user_settings, user_settings_path)
 
-func get_show_errors() -> bool:
-	return user_settings.show_errors
 	
-func set_show_errors(value: bool) -> void:
-	user_settings.show_errors = value
 
 func get_current_map_path() -> String:
 	return user_settings.current_map_path

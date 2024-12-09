@@ -20,7 +20,6 @@ func create_new_map() -> void:
 	if map_path == "":
 		var message := "Path for new map empty."
 		printerr(message)
-		RogueSys.throw_error.emit(message)
 	RogueSys.create_new_map(map_path)
 	display_current_values()
 	RogueSys.save_user_settings()
@@ -35,7 +34,6 @@ func load_map() -> void:
 	if map_path == "":
 		var message := "Path for map is empty."
 		printerr(message)
-		RogueSys.throw_error.emit(message)
 		return
 	if SaveLoadData.load_plugin_data(map_path):
 		RogueSys.set_current_map_path(map_path)
@@ -97,13 +95,6 @@ func _on_load_map_button_button_down() -> void:
 	map_file_dialog.file_mode = FileDialog.FILE_MODE_OPEN_FILE
 	map_file_dialog.popup_centered_ratio(0.5)
 	map_file_dialog.current_path = RogueSys.get_current_map_path()
-	
-
-
-func _on_popup_errors_toggle_toggled(toggled_on: bool) -> void:
-	RogueSys.set_show_errors(toggled_on)
-	display_current_values()
-	RogueSys.save_user_settings()
 
 
 func _on_change_passages_button_button_down() -> void:
