@@ -2,10 +2,23 @@ class_name LevelData extends Resource
 
 var rooms:Dictionary = {}#Room name will be key and the room will be the value
 var starter_room:Room
+var min_rooms: int:
+	get:
+		return min_rooms
+	set(value):
+		min_rooms = min(max(value, 1),max_rooms if max_rooms else 10000)
+var max_rooms: int:
+	get:
+		return max_rooms
+	set(value):
+		max_rooms = max(min(value, 10000), min_rooms if min_rooms else 1)
 
-func _init(_rooms:={}, _starter_room:=Room.new()):
+
+func _init(_rooms:={}, _starter_room:=Room.new(), _min_rooms:=1, _max_rooms:=10000):
 	rooms = _rooms
 	starter_room = _starter_room
+	min_rooms = _min_rooms
+	max_rooms = _max_rooms
 
 func duplicate_level_data() -> LevelData:
 	var duplicated_rooms:= {}
@@ -32,4 +45,4 @@ func duplicate_level_data() -> LevelData:
 					)
 				)
 			duplicated_rooms[origin_room.name].passages[origin_room_passage_name]=duplicated_connections
-	return LevelData.new(duplicated_rooms,duplicated_rooms[starter_room.name])
+	return LevelData.new(duplicated_rooms,duplicated_rooms[starter_room.name], min_rooms, max_rooms)

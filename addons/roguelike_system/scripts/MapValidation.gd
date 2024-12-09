@@ -64,7 +64,7 @@ static func _validate_level(level:LevelData, passages_holder_name:String) -> Val
 static func _generate_level_possibilities(input_level:LevelData) -> ValidatedLevelData:
 	_multiply_rooms(input_level)
 	var input_rooms:Dictionary = input_level.rooms
-	var validated_level = ValidatedLevelData.new(input_level.rooms, input_level.starter_room)
+	var validated_level = ValidatedLevelData.new(input_level.rooms, input_level.starter_room, input_level.min_rooms, input_level.max_rooms)
 	var connections_pair_indexes:={}
 	var used_rooms:= {}
 	var required_rooms_names:Array[String] = []
@@ -151,21 +151,22 @@ static func _generate_level_possibilities(input_level:LevelData) -> ValidatedLev
 					unused_connections = _recreate_unused_connections(starter_room, used_rooms)
 		if connections_order.is_empty() or !level_is_valid:
 			break
-		var possibility:Array[int] = []
-		for conn in connections_order:
-			var other_side_conn = used_rooms[conn.room.name].room.passages[conn.connected_passage]
-			var conn_pair = ConnectionPair.new(conn, other_side_conn)
-			var index = -1
-			if connections_pair_indexes.has(conn_pair.to_string()):
-				index = connections_pair_indexes[conn_pair.to_string()]
-			if index == -1 and connections_pair_indexes.has(conn_pair.inverted_to_string()):
-				index = connections_pair_indexes[conn_pair.inverted_to_string()]
-			if index == -1:
-				connections_pair_indexes[conn_pair.to_string()] = validated_level.connectionPairs.size()
-				index = validated_level.connectionPairs.size()
-				validated_level.connectionPairs.append(conn_pair)
-			possibility.append(index)
-		validated_level.possibilities.append(possibility)
+		if used_rooms.size() <= input_level.max_rooms and used_rooms.size() >= input_level.min_rooms:
+			var possibility:Array[int] = []
+			for conn in connections_order:
+				var other_side_conn = used_rooms[conn.room.name].room.passages[conn.connected_passage]
+				var conn_pair = ConnectionPair.new(conn, other_side_conn)
+				var index = -1
+				if connections_pair_indexes.has(conn_pair.to_string()):
+					index = connections_pair_indexes[conn_pair.to_string()]
+				if index == -1 and connections_pair_indexes.has(conn_pair.inverted_to_string()):
+					index = connections_pair_indexes[conn_pair.inverted_to_string()]
+				if index == -1:
+					connections_pair_indexes[conn_pair.to_string()] = validated_level.connectionPairs.size()
+					index = validated_level.connectionPairs.size()
+					validated_level.connectionPairs.append(conn_pair)
+				possibility.append(index)
+			validated_level.possibilities.append(possibility)
 		
 		var incomming_connection = used_rooms[connections_order.back().room.name].room.passages[connections_order.back().connected_passage]
 		var latest_connection:Connection = connections_order.pop_back()

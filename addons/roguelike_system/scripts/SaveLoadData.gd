@@ -17,7 +17,9 @@ static func save_plugin_data(path:String) -> void:
 		var level:LevelData = RogueSys.map_data.levels[level_name]
 		var level_dict := {
 			"name":level_name,
-			"starter_room_name": null
+			"starter_room_name": null,
+			"min_rooms":level.min_rooms,
+			"max_rooms":level.max_rooms
 		}
 		if(level.starter_room!=null):
 			level_dict["starter_room_name"] = level.starter_room.name
@@ -90,6 +92,8 @@ static func load_plugin_data(path: String) -> bool:
 				level.rooms[room_dict["name"]].passages[passage_dict["name"]] = connections
 		if level_dict["starter_room_name"] != null:
 			level.starter_room = level.rooms[level_dict["starter_room_name"]]
+		level.min_rooms = level_dict["min_rooms"]
+		level.max_rooms = level_dict["max_rooms"]
 		local_map_data.levels[level_dict.name]=level
 	local_map_data.passages_holder_name = data_dict["passages_holder_name"]
 	RogueSys.map_data = local_map_data
@@ -114,7 +118,9 @@ static func export_data(map_data:MapData, path:String) -> void:
 			"name":level_name,
 			"starter_room_name": level.starter_room.name,
 			"possibilities": level.possibilities,
-			"connection_pairs":level.connectionPairs
+			"connection_pairs":level.connectionPairs,
+			"min_rooms":level.min_rooms,
+			"max_rooms":level.max_rooms
 		}
 		level_dict["rooms"]=[]
 		for room_name in level.rooms:
@@ -185,6 +191,8 @@ static func read_exported_data(path: String) -> MapData:
 					connections.append(connection)
 				level.rooms[room_dict["name"]].passages[passage_dict["name"]] = connections
 		level.starter_room = level.rooms[level_dict["starter_room_name"]]
+		level.min_rooms = level_dict["min_rooms"]
+		level.max_rooms = level_dict["max_rooms"]
 		#print(level_dict["possibilities"].size())
 		level.possibilities = level_dict["possibilities"] as Array[Array]
 		var conn_pairs:Array[ConnectionPair] = []

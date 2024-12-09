@@ -3,7 +3,6 @@ extends MarginContainer
 @onready var map_file_dialog: FileDialog = $MapFileDialog
 @onready var passages_holder_window: Window = $PassagesHolderWindow
 @onready var save_current_map_dialog: ConfirmationDialog = $SaveCurrentMapDialog
-@onready var popup_errors_toggle: CheckButton = $VBoxContainer/PopupErrorsToggle
 @onready var current_map_file_path_label: Label = $VBoxContainer/CurrentMapFilePathLabel
 @onready var passages_holder_confirm_button: Button = $PassagesHolderWindow/Background/VBoxContainer/HBoxContainer/PassagesHolderConfirmButton
 @onready var passages_holder_input: LineEdit = $PassagesHolderWindow/Background/VBoxContainer/PassagesHolderInput
@@ -14,8 +13,6 @@ var map_path := ""
 
 func display_current_values()->void:
 	current_map_file_path_label.text = "Current map file path: \n"+RogueSys.get_current_map_path()
-	popup_errors_toggle.set_pressed_no_signal(RogueSys.get_show_errors())
-
 func create_new_map() -> void:
 	if map_path == "":
 		var message := "Path for new map empty."
