@@ -51,11 +51,6 @@ visible = false
 layout_mode = 2
 metadata/_tab_index = 4
 
-[node name="ErrorDialog" type="AcceptDialog" parent="."]
-position = Vector2i(635, 265)
-size = Vector2i(634, 100)
-dialog_text = "There must be a node on the scene, direct child of root, named Passages"
-
 [connection signal="tab_changed" from="TabContainer" to="." method="_on_tab_container_tab_changed"]
 [connection signal="visibility_changed" from="TabContainer/Room Details" to="TabContainer/Room Details" method="_on_visibility_changed"]
 [connection signal="visibility_changed" from="TabContainer/Levels Manager" to="TabContainer/Levels Manager" method="_on_visibility_changed"]

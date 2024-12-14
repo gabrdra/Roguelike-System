@@ -17,7 +17,9 @@ static func save_plugin_data(path:String) -> void:
 		var level:LevelData = RogueSys.map_data.levels[level_name]
 		var level_dict := {
 			"name":level_name,
-			"starter_room_name": null
+			"starter_room_name": null,
+			"min_rooms":level.min_rooms,
+			"max_rooms":level.max_rooms
 		}
 		if(level.starter_room!=null):
 			level_dict["starter_room_name"] = level.starter_room.name
@@ -50,26 +52,21 @@ static func save_plugin_data(path:String) -> void:
 static func load_plugin_data(path: String) -> bool:
 	var file = FileAccess.open(path, FileAccess.READ)
 	if file == null:
-		RogueSys.throw_error.emit("Failed to open file for reading")
 		printerr("Failed to open file for reading")
 		return false
 	var file_content = file.get_as_text()
 	file.close()
 	var data_dict = JSON.parse_string(file_content)
 	if data_dict == null:
-		RogueSys.throw_error.emit("Error with plugin save file")
 		printerr("Error with plugin save file")
 		return false
 	if !data_dict.has("file_type"):
-		RogueSys.throw_error.emit("Error with plugin save file")
 		printerr("Error with plugin save file")
 		return false
 	if data_dict["file_type"] != "save_data":
-		RogueSys.throw_error.emit("Error with plugin save file")
 		printerr("Error with plugin save file")
 		return false
 	if !data_dict.has("passages_holder_name"):
-		RogueSys.throw_error.emit("Error with plugin save file")
 		printerr("Error with plugin save file")
 		return false
 	var levels_array: Array = data_dict["levels"]
@@ -95,6 +92,8 @@ static func load_plugin_data(path: String) -> bool:
 				level.rooms[room_dict["name"]].passages[passage_dict["name"]] = connections
 		if level_dict["starter_room_name"] != null:
 			level.starter_room = level.rooms[level_dict["starter_room_name"]]
+		level.min_rooms = level_dict["min_rooms"]
+		level.max_rooms = level_dict["max_rooms"]
 		local_map_data.levels[level_dict.name]=level
 	local_map_data.passages_holder_name = data_dict["passages_holder_name"]
 	RogueSys.map_data = local_map_data
@@ -114,13 +113,15 @@ static func export_data(map_data:MapData, path:String) -> void:
 	var levels_names:= map_data.levels.keys()
 	
 	for level_name in levels_names:
-		var level:LevelData = map_data.levels[level_name]
+		var level:ValidatedLevelData = map_data.levels[level_name]
 		var level_dict := {
 			"name":level_name,
-			"starter_room_name": null
+			"starter_room_name": level.starter_room.name,
+			"possibilities": level.possibilities,
+			"connection_pairs":level.connectionPairs,
+			"min_rooms":level.min_rooms,
+			"max_rooms":level.max_rooms
 		}
-		if(level.starter_room!=null):
-			level_dict["starter_room_name"] = level.starter_room.name
 		level_dict["rooms"]=[]
 		for room_name in level.rooms:
 			var room:Room = level.rooms[room_name]
@@ -171,7 +172,7 @@ static func read_exported_data(path: String) -> MapData:
 		return return_map_data
 	var levels_array: Array = data_dict["levels"]
 	for level_dict in levels_array:
-		var level := LevelData.new()
+		var level := ValidatedLevelData.new()
 		for room_dict in level_dict["rooms"]:
 			var room := Room.new()
 			room.name = room_dict["name"]
@@ -190,6 +191,27 @@ static func read_exported_data(path: String) -> MapData:
 					connections.append(connection)
 				level.rooms[room_dict["name"]].passages[passage_dict["name"]] = connections
 		level.starter_room = level.rooms[level_dict["starter_room_name"]]
+		level.min_rooms = level_dict["min_rooms"]
+		level.max_rooms = level_dict["max_rooms"]
+		#print(level_dict["possibilities"].size())
+		level.possibilities = level_dict["possibilities"] as Array[Array]
+		var conn_pairs:Array[ConnectionPair] = []
+		for conn_pair_str in level_dict["connection_pairs"]:
+			var conn_pair_str_split:PackedStringArray = conn_pair_str.split(" - ")
+			var conn_pair_first_split:PackedStringArray  = conn_pair_str_split[0].split(": ")
+			var conn_pair_second_split:PackedStringArray = conn_pair_str_split[1].split(": ")
+			var conn_pair = ConnectionPair.new(
+				Connection.new(
+					level.rooms[conn_pair_first_split[0]],
+					conn_pair_first_split[1]
+				),
+				Connection.new(
+					level.rooms[conn_pair_second_split[0]],
+					conn_pair_second_split[1]
+				)
+			)
+			conn_pairs.append(conn_pair)
+		level.connectionPairs = conn_pairs
 		return_levels[level_dict.name]=level
 	return_map_data = MapData.new(return_levels,data_dict["passages_holder_name"])
 	return return_map_data

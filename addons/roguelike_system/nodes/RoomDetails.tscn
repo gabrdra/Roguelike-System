@@ -102,7 +102,7 @@ script = SubResource("GDScript_5jpvo")
 [node name="FileSelection" type="FileDialog" parent="RoomProperties/ScrollContainer/VBoxContainer/Scene/SceneButton"]
 title = "Open a File"
 position = Vector2i(0, 36)
-size = Vector2i(392, 175)
+size = Vector2i(392, 180)
 ok_button_text = "Open"
 file_mode = 0
 filters = PackedStringArray("*.tscn", "*.scn")
@@ -175,13 +175,6 @@ layout_mode = 2
 [node name="CurrentPassageLabel" type="Label" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer/CurrentPassageHolder"]
 layout_mode = 2
 text = "room_name: passage"
-
-[node name="Filter" type="TextEdit" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer"]
-custom_minimum_size = Vector2(100, 0)
-layout_mode = 2
-size_flags_horizontal = 3
-placeholder_text = "filter"
-scroll_fit_content_height = true
 
 [node name="HSeparator" type="HSeparator" parent="RoomProperties/ScrollContainer/VBoxContainer/MaxPasses/AdjacencySelection/Background/SelectionContainer"]
 layout_mode = 2

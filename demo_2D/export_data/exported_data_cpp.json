@@ -1,0 +1,377 @@
+{
+    "file_type": "exported_map_data",
+    "levels": [
+        {
+            "connection_pairs": [
+                "FieldHouse: Right - YellowTreesShortPath: Left",
+                "YellowTreesShortPath: Right - City: Left",
+                "City: Right - Apiary: Left",
+                "Apiary: Right - DungeonEntry: Left",
+                "Apiary: Right - TargetPractice: Left",
+                "TargetPractice: Right - DungeonEntry: Left",
+                "City: Right - DungeonEntry: Left",
+                "City: Right - TargetPractice: Left",
+                "TargetPractice: Right - Apiary: Left",
+                "FieldHouse: Right - YellowTreesLongPath1: Left",
+                "YellowTreesLongPath1: Up - YellowTreesLongPath2: Down",
+                "YellowTreesLongPath2: Right - City: Left"
+            ],
+            "name": "Overworld",
+            "possibilities": [
+                [
+                    0,
+                    1,
+                    2,
+                    3
+                ],
+                [
+                    0,
+                    1,
+                    2,
+                    4,
+                    5
+                ],
+                [
+                    0,
+                    1,
+                    6
+                ],
+                [
+                    0,
+                    1,
+                    7,
+                    8,
+                    3
+                ],
+                [
+                    0,
+                    1,
+                    7,
+                    5
+                ],
+                [
+                    9,
+                    10,
+                    11,
+                    2,
+                    3
+                ],
+                [
+                    9,
+                    10,
+                    11,
+                    2,
+                    4,
+                    5
+                ],
+                [
+                    9,
+                    10,
+                    11,
+                    6
+                ],
+                [
+                    9,
+                    10,
+                    11,
+                    7,
+                    8,
+                    3
+                ],
+                [
+                    9,
+                    10,
+                    11,
+                    7,
+                    5
+                ]
+            ],
+            "rooms": [
+                {
+                    "max_passes": 1,
+                    "name": "DoorRoom",
+                    "passages": [
+                        {
+                            "connections": [
+                                {
+                                    "connected_passage": "Left",
+                                    "name": "BossRoom"
+                                }
+                            ],
+                            "name": "Right"
+                        },
+                        {
+                            "connections": [
+                                {
+                                    "connected_passage": "Right",
+                                    "name": "BossRoom"
+                                }
+                            ],
+                            "name": "Left"
+                        }
+                    ],
+                    "required": false,
+                    "scene_uid": "uid://b2qqothya6d84"
+                },
+                {
+                    "max_passes": 1,
+                    "name": "DungeonEntry",
+                    "passages": [
+                        {
+                            "connections": [
+                                {
+                                    "connected_passage": "Right",
+                                    "name": "City"
+                                },
+                                {
+                                    "connected_passage": "Right",
+                                    "name": "Apiary"
+                                },
+                                {
+                                    "connected_passage": "Right",
+                                    "name": "TargetPractice"
+                                }
+                            ],
+                            "name": "Left"
+                        }
+                    ],
+                    "required": true,
+                    "scene_uid": "uid://dloyns2lnwh2p"
+                },
+                {
+                    "max_passes": 1,
+                    "name": "Apiary",
+                    "passages": [
+                        {
+                            "connections": [
+                                {
+                                    "connected_passage": "Right",
+                                    "name": "City"
+                                },
+                                {
+                                    "connected_passage": "Right",
+                                    "name": "TargetPractice"
+                                }
+                            ],
+                            "name": "Left"
+                        },
+                        {
+                            "connections": [
+                                {
+                                    "connected_passage": "Left",
+                                    "name": "DungeonEntry"
+                                },
+                                {
+                                    "connected_passage": "Left",
+                                    "name": "TargetPractice"
+                                }
+                            ],
+                            "name": "Right"
+                        }
+                    ],
+                    "required": false,
+                    "scene_uid": "uid://b5n3djx2tkaod"
+                },
+                {
+                    "max_passes": 1,
+                    "name": "TargetPractice",
+                    "passages": [
+                        {
+                            "connections": [
+                                {
+                                    "connected_passage": "Right",
+                                    "name": "City"
+                                },
+                                {
+                                    "connected_passage": "Right",
+                                    "name": "Apiary"
+                                }
+                            ],
+                            "name": "Left"
+                        },
+                        {
+                            "connections": [
+                                {
+                                    "connected_passage": "Left",
+                                    "name": "Apiary"
+                                },
+                                {
+                                    "connected_passage": "Left",
+                                    "name": "DungeonEntry"
+                                }
+                            ],
+                            "name": "Right"
+                        }
+                    ],
+                    "required": false,
+                    "scene_uid": "uid://rxr6qgtw3sxy"
+                },
+                {
+                    "max_passes": 1,
+                    "name": "City",
+                    "passages": [
+                        {
+                            "connections": [
+                                {
+                                    "connected_passage": "Right",
+                                    "name": "YellowTreesShortPath"
+                                },
+                                {
+                                    "connected_passage": "Right",
+                                    "name": "YellowTreesLongPath2"
+                                }
+                            ],
+                            "name": "Left"
+                        },
+                        {
+                            "connections": [
+                                {
+                                    "connected_passage": "Left",
+                                    "name": "Apiary"
+                                },
+                                {
+                                    "connected_passage": "Left",
+                                    "name": "DungeonEntry"
+                                },
+                                {
+                                    "connected_passage": "Left",
+                                    "name": "TargetPractice"
+                                }
+                            ],
+                            "name": "Right"
+                        }
+                    ],
+                    "required": true,
+                    "scene_uid": "uid://dwpgqsuqdo85j"
+                },
+                {
+                    "max_passes": 1,
+                    "name": "YellowTreesLongPath2",
+                    "passages": [
+                        {
+                            "connections": [
+                                {
+                                    "connected_passage": "Left",
+                                    "name": "City"
+                                }
+                            ],
+                            "name": "Right"
+                        },
+                        {
+                            "connections": [
+                                {
+                                    "connected_passage": "Up",
+                                    "name": "YellowTreesLongPath1"
+                                }
+                            ],
+                            "name": "Down"
+                        }
+                    ],
+                    "required": false,
+                    "scene_uid": "uid://covkdyhyhn8g3"
+                },
+                {
+                    "max_passes": 1,
+                    "name": "BossRoom",
+                    "passages": [
+                        {
+                            "connections": [
+                                {
+                                    "connected_passage": "Left",
+                                    "name": "DoorRoom"
+                                }
+                            ],
+                            "name": "Right"
+                        },
+                        {
+                            "connections": [
+                                {
+                                    "connected_passage": "Right",
+                                    "name": "DoorRoom"
+                                }
+                            ],
+                            "name": "Left"
+                        }
+                    ],
+                    "required": false,
+                    "scene_uid": "uid://6mmw8fwkksq6"
+                },
+                {
+                    "max_passes": 1,
+                    "name": "YellowTreesLongPath1",
+                    "passages": [
+                        {
+                            "connections": [
+                                {
+                                    "connected_passage": "Right",
+                                    "name": "FieldHouse"
+                                }
+                            ],
+                            "name": "Left"
+                        },
+                        {
+                            "connections": [
+                                {
+                                    "connected_passage": "Down",
+                                    "name": "YellowTreesLongPath2"
+                                }
+                            ],
+                            "name": "Up"
+                        }
+                    ],
+                    "required": false,
+                    "scene_uid": "uid://bv23r6pk5nxct"
+                },
+                {
+                    "max_passes": 1,
+                    "name": "YellowTreesShortPath",
+                    "passages": [
+                        {
+                            "connections": [
+                                {
+                                    "connected_passage": "Right",
+                                    "name": "FieldHouse"
+                                }
+                            ],
+                            "name": "Left"
+                        },
+                        {
+                            "connections": [
+                                {
+                                    "connected_passage": "Left",
+                                    "name": "City"
+                                }
+                            ],
+                            "name": "Right"
+                        }
+                    ],
+                    "required": false,
+                    "scene_uid": "uid://c1k6di0ed7jpr"
+                },
+                {
+                    "max_passes": 1,
+                    "name": "FieldHouse",
+                    "passages": [
+                        {
+                            "connections": [
+                                {
+                                    "connected_passage": "Left",
+                                    "name": "YellowTreesShortPath"
+                                },
+                                {
+                                    "connected_passage": "Left",
+                                    "name": "YellowTreesLongPath1"
+                                }
+                            ],
+                            "name": "Right"
+                        }
+                    ],
+                    "required": true,
+                    "scene_uid": "uid://cex7dwje0s3b4"
+                }
+            ],
+            "starter_room_name": "FieldHouse"
+        }
+    ],
+    "passages_holder_name": "Passages"
+}

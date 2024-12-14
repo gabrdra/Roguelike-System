@@ -44,11 +44,6 @@ text = "Load map file"
 layout_mode = 2
 text = "Change passages holder node name"
 
-[node name="PopupErrorsToggle" type="CheckButton" parent="VBoxContainer"]
-layout_mode = 2
-button_pressed = true
-text = "Popup errors"
-
 [node name="PassagesHolderWindow" type="Window" parent="."]
 auto_translate_mode = 1
 position = Vector2i(0, 36)
@@ -111,7 +106,6 @@ cancel_button_text = "No"
 [connection signal="button_down" from="VBoxContainer/RenameMapButton" to="." method="_on_rename_map_button_button_down"]
 [connection signal="button_down" from="VBoxContainer/LoadMapButton" to="." method="_on_load_map_button_button_down"]
 [connection signal="button_down" from="VBoxContainer/ChangePassagesButton" to="." method="_on_change_passages_button_button_down"]
-[connection signal="toggled" from="VBoxContainer/PopupErrorsToggle" to="." method="_on_popup_errors_toggle_toggled"]
 [connection signal="close_requested" from="PassagesHolderWindow" to="." method="_on_passages_holder_window_close_requested"]
 [connection signal="focus_exited" from="PassagesHolderWindow" to="." method="_on_passages_holder_window_close_requested"]
 [connection signal="text_changed" from="PassagesHolderWindow/Background/VBoxContainer/PassagesHolderInput" to="." method="_on_passages_holder_input_text_changed"]

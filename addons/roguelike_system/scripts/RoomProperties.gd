@@ -62,6 +62,7 @@ func fill_interface() -> void:
 	room_name_input.text = current_room.name
 	max_passes_input.value = current_room.max_passes
 	required_button.set_pressed_no_signal(current_room.required)
+	max_passes_input.editable=!current_room.required
 	update_passages()
 
 func set_passages_from_scene() -> void:
@@ -71,25 +72,21 @@ func set_passages_from_scene() -> void:
 	var scene_loaded := ResourceLoader.load(current_room.scene_uid)
 	if !scene_loaded:
 		var message := "Error loading resource"
-		RogueSys.throw_error.emit(message)
 		printerr(message)
 		return
 	var scene_instance = scene_loaded.instantiate()
 	if(!scene_instance):
 		var message := "Error instancing scene"
-		RogueSys.throw_error.emit(message)
 		printerr(message)
 		return
 	var passages_node:Node = scene_instance.get_node(RogueSys.map_data.passages_holder_name)
 	if(!passages_node):
 		var message := "There must be a node on the scene, direct child of root, named "+ RogueSys.map_data.passages_holder_name
-		RogueSys.throw_error.emit(message)
 		printerr(message)
 		return
 	var passage_children:Array = passages_node.get_children()
 	if passage_children.is_empty():
 		var message := "There are no passages nodes"
-		RogueSys.throw_error.emit(message)
 		printerr(message)
 		return
 	if current_room.passages.is_empty():
@@ -263,24 +260,20 @@ func _on_save_room_button() -> void:
 	if current_room.name=="":
 		var message:="The room must have a name"
 		printerr(message)
-		RogueSys.throw_error.emit(message)
 		return
 	if current_room.scene_uid == "":
 		var message:="The room must have a attached scene"
 		printerr(message)
-		RogueSys.throw_error.emit(message)
 		return
 	if current_room.passages.is_empty():
 		var message:="The room must have at least one passage"
 		printerr(message)
-		RogueSys.throw_error.emit(message)
 		return
 	match current_state:
 		State.CREATE:
 			if(RogueSys.get_room_by_name(current_room.name) != null):
 				var message:="Room name must be unique"
 				printerr(message)
-				RogueSys.throw_error.emit(message)
 				return
 			RogueSys.add_new_room(current_room, connections_to_add)
 		State.UPDATE:

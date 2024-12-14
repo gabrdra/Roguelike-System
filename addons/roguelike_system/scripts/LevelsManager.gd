@@ -9,6 +9,8 @@ extends MarginContainer
 @onready var create_rename_confirm_button: Button = $CreateRenameLevelWindow/Background/VBoxContainer/HBoxContainer/CreateRenameConfirmButton
 @onready var create_rename_warning_label: Label = $CreateRenameLevelWindow/Background/VBoxContainer/CreateRenameWarningLabel
 @onready var export_map_file_dialog: FileDialog = $ExportMapFileDialog
+@onready var minimum_rooms_input: SpinBox = $VBoxContainer/MinimumRoomsHolder/MinimumRoomsInput
+@onready var maximum_rooms_input: SpinBox = $VBoxContainer/MaximumRoomsHolder/MaximumRoomsInput
 
 var levels_names: Array[String]
 var current_level_required_rooms: Array[Room]
@@ -19,6 +21,8 @@ var current_action:Actions
 func fill_levels_manager_fields() -> void:
 	_set_current_level_button()
 	_set_starter_room_button()
+	_set_minimum_rooms_input()
+	_set_maximum_rooms_input()
 
 func _set_current_level_button() -> void:
 	levels_names.clear()
@@ -44,6 +48,12 @@ func _set_starter_room_button() -> void:
 			continue
 		if current_starter_room.name == room_name:
 			starter_room_button.select(current_level_required_rooms.size()-1)
+
+func _set_minimum_rooms_input() -> void:
+	minimum_rooms_input.value = RogueSys.current_level.min_rooms
+	
+func _set_maximum_rooms_input() -> void:
+	maximum_rooms_input.value = RogueSys.current_level.max_rooms
 
 func _on_visibility_changed() -> void:
 	fill_levels_manager_fields()
@@ -121,11 +131,17 @@ func _on_export_map_button_button_down() -> void:
 	#SaveLoadData.export_data(path)
 	
 func _on_export_map_file_dialog_file_selected(path: String) -> void:
-	var duplicated_map_data = RogueSys.map_data.duplicate_map_data()
-	var validated_map := MapValidation.validate_map(duplicated_map_data)
+	var validated_map := MapValidation.validate_map(RogueSys.map_data)
 	if validated_map == null:
 		#await get_tree().create_timer(0.1).timeout
-		#RogueSys.throw_error.emit("There were errors during map validation, check the output panel on the console")
 		printerr("There were errors during map validation")
 		return
 	SaveLoadData.export_data(validated_map, path)
+
+
+func _on_minimum_rooms_input_value_changed(value: float) -> void:
+	RogueSys.current_level.min_rooms = value
+
+
+func _on_maximum_rooms_input_value_changed(value: float) -> void:
+	RogueSys.current_level.max_rooms = value
