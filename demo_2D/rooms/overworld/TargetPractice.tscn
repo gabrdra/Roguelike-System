@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=4 uid="uid://rxr6qgtw3sxy"]
 
 [ext_resource type="TileSet" uid="uid://c081nu3thi57u" path="res://demo_2D/tileset/tilemapcity.tres" id="1_lio4n"]
-[ext_resource type="Script" path="res://demo_2D/scripts/Passage.gd" id="2_5kjen"]
+[ext_resource type="Script" path="res://addons/roguelike_system/user_scripts/Passage2D.gd" id="2_5kjen"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_tijut"]
 

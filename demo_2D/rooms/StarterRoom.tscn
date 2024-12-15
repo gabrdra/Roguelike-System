@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://ijvi0n5vw8w7"]
 
 [ext_resource type="Texture2D" uid="uid://lh15htj6erf0" path="res://icon.svg" id="1_0s0su"]
-[ext_resource type="Script" path="res://demo_2D/scripts/Passage.gd" id="2_8occk"]
+[ext_resource type="Script" path="res://addons/roguelike_system/user_scripts/Passage2D.gd" id="2_8occk"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_841ny"]
 size = Vector2(8, 51)

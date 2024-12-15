@@ -1,4 +1,4 @@
-class_name RoomManager2D extends Node
+class_name RoomManager extends Node
 
 @export var map_data_path:String
 
