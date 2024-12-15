@@ -1,0 +1,116 @@
+[gd_scene load_steps=7 format=3 uid="uid://cdg6eqxefsdbq"]
+
+[ext_resource type="PackedScene" uid="uid://du7uyvr4v45wy" path="res://demo_3D/nodes/Passage3D.tscn" id="1_rumkb"]
+[ext_resource type="PackedScene" uid="uid://dgj528x87qrae" path="res://demo_3D/assets/Primitive_Floor.gltf" id="2_ugksx"]
+[ext_resource type="PackedScene" uid="uid://bubnrjum6vipg" path="res://demo_3D/assets/Wall_Doorway.gltf" id="3_tu2pk"]
+[ext_resource type="PackedScene" uid="uid://blrdgalrv55q" path="res://demo_3D/assets/Wall_Decorated.gltf" id="4_lvf2e"]
+[ext_resource type="PackedScene" uid="uid://cply6kswxegb5" path="res://demo_3D/assets/Wall.gltf" id="5_lnki5"]
+[ext_resource type="PackedScene" uid="uid://cwe8lfyatr2q2" path="res://demo_3D/assets/Wall_Target.gltf" id="6_4kbaj"]
+
+[node name="Big" type="Node3D"]
+
+[node name="Passages" type="Node3D" parent="."]
+
+[node name="1" parent="Passages" instance=ExtResource("1_rumkb")]
+transform = Transform3D(1.31134e-07, 0, -1, 0, 1, 0, 1, 0, 1.31134e-07, 6, 0, 3.19211)
+
+[node name="2" parent="Passages" instance=ExtResource("1_rumkb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.770022, 0, -1.87728)
+
+[node name="3" parent="Passages" instance=ExtResource("1_rumkb")]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0.858892, 0, 9.95634)
+
+[node name="4" parent="Passages" instance=ExtResource("1_rumkb")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -6, 0, 4.77784)
+
+[node name="Scenario" type="Node3D" parent="."]
+
+[node name="Primitive_Floor" parent="Scenario" instance=ExtResource("2_ugksx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0116925, -1, 0.00545216)
+
+[node name="Primitive_Floor5" parent="Scenario" instance=ExtResource("2_ugksx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.01169, -1, 0.00545216)
+
+[node name="Primitive_Floor3" parent="Scenario" instance=ExtResource("2_ugksx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.91365, -1, 0)
+
+[node name="Primitive_Floor7" parent="Scenario" instance=ExtResource("2_ugksx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0116925, -1, 4.00545)
+
+[node name="Primitive_Floor8" parent="Scenario" instance=ExtResource("2_ugksx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.01169, -1, 4.00545)
+
+[node name="Primitive_Floor9" parent="Scenario" instance=ExtResource("2_ugksx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.91365, -1, 4)
+
+[node name="Primitive_Floor10" parent="Scenario" instance=ExtResource("2_ugksx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0116925, -1, 8.00545)
+
+[node name="Primitive_Floor11" parent="Scenario" instance=ExtResource("2_ugksx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.01169, -1, 8.00545)
+
+[node name="Primitive_Floor12" parent="Scenario" instance=ExtResource("2_ugksx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.91365, -1, 8)
+
+[node name="Primitive_Floor2" parent="Scenario" instance=ExtResource("2_ugksx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 0)
+
+[node name="Primitive_Floor6" parent="Scenario" instance=ExtResource("2_ugksx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 4, 0)
+
+[node name="Primitive_Floor4" parent="Scenario" instance=ExtResource("2_ugksx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 4, 0)
+
+[node name="Primitive_Floor13" parent="Scenario" instance=ExtResource("2_ugksx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 4)
+
+[node name="Primitive_Floor14" parent="Scenario" instance=ExtResource("2_ugksx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 4, 4)
+
+[node name="Primitive_Floor15" parent="Scenario" instance=ExtResource("2_ugksx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 4, 4)
+
+[node name="Primitive_Floor16" parent="Scenario" instance=ExtResource("2_ugksx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 8)
+
+[node name="Primitive_Floor17" parent="Scenario" instance=ExtResource("2_ugksx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 4, 8)
+
+[node name="Primitive_Floor18" parent="Scenario" instance=ExtResource("2_ugksx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 4, 8)
+
+[node name="Wall_Doorway2" parent="Scenario" instance=ExtResource("3_tu2pk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2)
+
+[node name="Wall_Doorway3" parent="Scenario" instance=ExtResource("3_tu2pk")]
+transform = Transform3D(1.31134e-07, 0, -1, 0, 1, 0, 1, 0, 1.31134e-07, 6, 0, 3.97813)
+
+[node name="Wall_Doorway5" parent="Scenario" instance=ExtResource("3_tu2pk")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -6, 0, 3.99183)
+
+[node name="Wall_Doorway4" parent="Scenario" instance=ExtResource("3_tu2pk")]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0.0728722, 0, 10)
+
+[node name="Wall2" parent="Scenario" instance=ExtResource("5_lnki5")]
+transform = Transform3D(1, 0, -1.06581e-14, 0, 1, 0, 1.06581e-14, 0, 1, 4, 0, -2)
+
+[node name="Wall7" parent="Scenario" instance=ExtResource("5_lnki5")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -6, 0, 8)
+
+[node name="Wall6" parent="Scenario" instance=ExtResource("5_lnki5")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -6, 0, 0)
+
+[node name="Wall5" parent="Scenario" instance=ExtResource("5_lnki5")]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 6, 0, 0)
+
+[node name="Wall_Decorated2" parent="Scenario" instance=ExtResource("4_lvf2e")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, -2)
+
+[node name="Wall_Decorated3" parent="Scenario" instance=ExtResource("4_lvf2e")]
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 4, 0, 10)
+
+[node name="Wall_Target2" parent="Scenario" instance=ExtResource("6_4kbaj")]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 6, 0, 8)
+
+[node name="Wall_Target3" parent="Scenario" instance=ExtResource("6_4kbaj")]
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, -3.89803, 0, 10)

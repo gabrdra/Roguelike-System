@@ -1,0 +1,34 @@
+[gd_scene load_steps=6 format=3 uid="uid://dkmah60qmqsfv"]
+
+[ext_resource type="PackedScene" uid="uid://dgj528x87qrae" path="res://demo_3D/assets/Primitive_Floor.gltf" id="1_dja8c"]
+[ext_resource type="PackedScene" uid="uid://du7uyvr4v45wy" path="res://demo_3D/nodes/Passage3D.tscn" id="2_4aac0"]
+[ext_resource type="PackedScene" uid="uid://bubnrjum6vipg" path="res://demo_3D/assets/Wall_Doorway.gltf" id="4_syy16"]
+[ext_resource type="PackedScene" uid="uid://blrdgalrv55q" path="res://demo_3D/assets/Wall_Decorated.gltf" id="5_s6460"]
+[ext_resource type="PackedScene" uid="uid://cply6kswxegb5" path="res://demo_3D/assets/Wall.gltf" id="6_345qk"]
+
+[node name="Starter" type="Node3D"]
+
+[node name="Passages" type="Node3D" parent="."]
+
+[node name="1" parent="Passages" instance=ExtResource("2_4aac0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.770022, 0, -1.87728)
+
+[node name="Scenario" type="Node3D" parent="."]
+
+[node name="Primitive_Floor" parent="Scenario" instance=ExtResource("1_dja8c")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+
+[node name="Primitive_Floor2" parent="Scenario" instance=ExtResource("1_dja8c")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.95136, 0)
+
+[node name="Wall_Doorway2" parent="Scenario" instance=ExtResource("4_syy16")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2)
+
+[node name="Wall_Decorated2" parent="Scenario" instance=ExtResource("5_s6460")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -2.14476, 0, 0)
+
+[node name="Wall2" parent="Scenario" instance=ExtResource("6_345qk")]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 2, 0, 0)
+
+[node name="Wall3" parent="Scenario" instance=ExtResource("6_345qk")]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 2)
