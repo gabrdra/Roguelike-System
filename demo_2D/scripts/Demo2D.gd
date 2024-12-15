@@ -1,4 +1,4 @@
-class_name Demo2D extends RoomManager2D
+class_name Demo2D extends RoomManager
 
 @export_category("starting values")
 @export var starter_room_name:String

@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=3 uid="uid://du7uyvr4v45wy"]
+
+[ext_resource type="PackedScene" uid="uid://brs4vkwam3jp2" path="res://demo_3D/assets/Door_A.gltf" id="1_23mr4"]
+[ext_resource type="Script" path="res://addons/roguelike_system/user_scripts/Passage3D.gd" id="1_rjbwe"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_f8oem"]
+size = Vector3(1.5, 3, 1)
+
+[node name="Passage3d" type="Node3D"]
+script = ExtResource("1_rjbwe")
+
+[node name="Door_A2" parent="." instance=ExtResource("1_23mr4")]
+
+[node name="Area3D" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.75, 1, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.549925, 0)
+shape = SubResource("BoxShape3D_f8oem")
+
+[node name="SpawnPoint" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.75, 1.58876, 1.14759)
+gizmo_extents = 1.0

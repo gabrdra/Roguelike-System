@@ -1,0 +1,21 @@
+[gd_scene load_steps=3 format=3 uid="uid://tr82sdl1ncgd"]
+
+[ext_resource type="PackedScene" uid="uid://b8uc0dgtg47dc" path="res://demo_3D/nodes/Player3D.tscn" id="1_dndy8"]
+[ext_resource type="Script" path="res://demo_3D/scripts/Demo3D.gd" id="1_nsft2"]
+
+[node name="Demo3d" type="Node3D"]
+script = ExtResource("1_nsft2")
+starter_room_name = "Starter"
+starter_level_name = "Level 1"
+spawn_point_name = "SpawnPoint"
+map_data_path = "C:/Users/joaog/Desktop/Gamedev/GodotProjects/Roguelike-System/demo_3D/export_data/3d_demo_map_exported.json"
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.531614, -0.531753, 0.659261, 0.333791, 0.846899, 0.413938, -0.77844, 0, 0.627719, 4.06661, 3.3464, 1.19436)
+
+[node name="Player3d" parent="." instance=ExtResource("1_dndy8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.23868, 0)
+
+[node name="Timer" type="Timer" parent="."]
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
