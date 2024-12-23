@@ -92,7 +92,7 @@ layout_mode = 2
 
 [node name="ExportMapButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
-text = "Export Map"
+text = "Validate level"
 
 [node name="DeleteLevelConfirmation" type="ConfirmationDialog" parent="."]
 title = "Delete level"

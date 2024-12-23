@@ -8,7 +8,7 @@ script = ExtResource("1_4dbvt")
 starter_room_name = "FieldHouse"
 starter_level_name = "Overworld"
 spawn_point_name = "SpawnPoint"
-map_data_path = "res://demo_2D/export_data/validation_with_array.json"
+map_data_path = "res://demo_2D/export_data/demo2d_exportedmap.json"
 
 [node name="Player2D" parent="." instance=ExtResource("2_dul1e")]
 

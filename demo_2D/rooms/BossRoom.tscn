@@ -1,9 +1,0 @@
-[gd_scene format=3 uid="uid://6mmw8fwkksq6"]
-
-[node name="Room" type="Node2D"]
-
-[node name="Passages" type="Node2D" parent="."]
-
-[node name="Left" type="Node2D" parent="Passages"]
-
-[node name="Right" type="Node2D" parent="Passages"]

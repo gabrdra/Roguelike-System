@@ -126,17 +126,20 @@ func _on_starter_room_button_item_selected(index: int) -> void:
 	RogueSys.set_starter_room(current_level_required_rooms[index])
 
 func _on_export_map_button_button_down() -> void:
-	export_map_file_dialog.popup_centered_ratio(0.5)
+	var validate_map = MapValidation.validate_map(RogueSys.map_data)
+	if validate_map:
+		print("Map validation successful, use the separate program to generate the instances!")
+	#export_map_file_dialog.popup_centered_ratio(0.5)
 	#var path = "res://demo_2D/export_data/map_data.json"
 	#SaveLoadData.export_data(path)
 	
-func _on_export_map_file_dialog_file_selected(path: String) -> void:
-	var validated_map := MapValidation.validate_map(RogueSys.map_data)
-	if validated_map == null:
-		#await get_tree().create_timer(0.1).timeout
-		printerr("There were errors during map validation")
-		return
-	SaveLoadData.export_data(validated_map, path)
+#func _on_export_map_file_dialog_file_selected(path: String) -> void:
+	#var validated_map := MapValidation.validate_map(RogueSys.map_data)
+	#if validated_map == null:
+		##await get_tree().create_timer(0.1).timeout
+		#printerr("There were errors during map validation")
+		#return
+	#SaveLoadData.export_data(validated_map, path)
 
 
 func _on_minimum_rooms_input_value_changed(value: float) -> void:
