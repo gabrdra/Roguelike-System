@@ -86,17 +86,17 @@ static func _generate_level_possibilities(input_level:LevelData) -> ValidatedLev
 			if outgoing_connection.room.passages[outgoing_connection.connected_passage]!=null:
 				#this connection was already used
 				continue
-			var possible_connections:Array[Connection] = input_rooms[outgoing_connection.room.name].passages[outgoing_connection.connected_passage].filter(
-				func (c:Connection):
+			var incomming_connection:Connection = null
+			for c:Connection in input_rooms[outgoing_connection.room.name].passages[outgoing_connection.connected_passage]:
 					#a connection is only possible the other side is not already being used
-					#missing filter by attempt as well
 					var valid_room := true
 					if used_rooms.has(c.room.name):
 						valid_room = used_rooms[c.room.name].room.passages[c.connected_passage] == null
 					valid_room = !used_rooms[outgoing_connection.room.name].passages_attempts[outgoing_connection.connected_passage].has(c.to_string()) and valid_room
-					return valid_room
-			)
-			if possible_connections.size() == 0:
+					if valid_room:
+						incomming_connection = c
+						break
+			if incomming_connection == null:
 				#there was no correspondent to the outgoing_connection, 
 				#meaning a invalid state was created, in order to correct it, it's necessary to remove the current room, and it's children
 				#also necessary to remove all the connections from the rooms that are being removed
@@ -108,7 +108,7 @@ static func _generate_level_possibilities(input_level:LevelData) -> ValidatedLev
 							return used_rooms[(c.room.name)].room.passages[c.connected_passage]!=null
 				)
 				continue
-			var incomming_connection:Connection = possible_connections.pop_back()
+			
 			used_rooms[outgoing_connection.room.name].passages_attempts[outgoing_connection.connected_passage][incomming_connection.to_string()] = incomming_connection
 			if !used_rooms.has(incomming_connection.room.name):
 				#if a room isn't on used_rooms yet it should be inserted
@@ -240,10 +240,10 @@ static func _remove_rooms_from_used_rooms(used_rooms:Dictionary, initial_room_to
 			rooms_to_erase_array.append(child_room)
 		used_rooms.erase(room_to_erase.room.name)
 	#this is unnecessary, the same thing is being done right after but that time it's necessary
-	connections_order = connections_order.filter(
-		func (c:Connection):
-			return !erased_rooms.has(c.room.name)
-	)
+	#connections_order = connections_order.filter(
+		#func (c:Connection):
+			#return !erased_rooms.has(c.room.name)
+	#)
 static func _recreate_unused_connections(starter_room:BacktrackData, used_rooms:Dictionary) -> Array[Connection]:
 	if used_rooms.size() == 0:
 		return []
@@ -331,36 +331,36 @@ class BacktrackData:
 static func _validate_room(room:Room, passages_holder_name:String) -> bool:
 	var still_valid:=true
 	#Check if the passages exist on the Room in the same way as in the scene
-	var loaded_room := ResourceLoader.load(room.scene_uid)
-	if !loaded_room:
-		var message := "Map validation error: error loading "+room.name+" scene"
-		printerr(message)
-		return false
-	var room_instance:Node = loaded_room.instantiate()
-	if !room_instance:
-		var message := "Map validation error: error instancing "+room.name+" scene"
-		printerr(message)
-		return false
-	var passages_node:Node = room_instance.get_node_or_null(passages_holder_name)
-	if(passages_node == null):
-		var message := "Map validation error: room " + room.name +" lacks the node "+passages_holder_name
-		printerr(message)
-		still_valid = false
-		return still_valid
-	var passages_scene:Array[Node] = passages_node.get_children()
-	var passages_found:=0
-	for passage_scene:Node in passages_scene:
-		if room.passages.has(passage_scene.name):
-			passages_found+=1
-		else:
-			var message := "Map validation error: scene corresponding to room " + room.name +" has "+passage_scene.name+" while the room inside the plugin doesn't"
-			printerr(message)
-			still_valid = false
-	if passages_found!=room.passages.size():
-		#at least one passage that should exists in the scene, doesn't exist
-		var message := "Map validation error: the room "+room.name+ " has "+str(room.passages.size()-passages_found)+" passage(s) more than it's corresponding scene"
-		printerr(message)
-		still_valid = false
+	#var loaded_room := ResourceLoader.load(room.scene_uid)
+	#if !loaded_room:
+		#var message := "Map validation error: error loading "+room.name+" scene"
+		#printerr(message)
+		#return false
+	#var room_instance:Node = loaded_room.instantiate()
+	#if !room_instance:
+		#var message := "Map validation error: error instancing "+room.name+" scene"
+		#printerr(message)
+		#return false
+	#var passages_node:Node = room_instance.get_node_or_null(passages_holder_name)
+	#if(passages_node == null):
+		#var message := "Map validation error: room " + room.name +" lacks the node "+passages_holder_name
+		#printerr(message)
+		#still_valid = false
+		#return still_valid
+	#var passages_scene:Array[Node] = passages_node.get_children()
+	#var passages_found:=0
+	#for passage_scene:Node in passages_scene:
+		#if room.passages.has(passage_scene.name):
+			#passages_found+=1
+		#else:
+			#var message := "Map validation error: scene corresponding to room " + room.name +" has "+passage_scene.name+" while the room inside the plugin doesn't"
+			#printerr(message)
+			#still_valid = false
+	#if passages_found!=room.passages.size():
+		##at least one passage that should exists in the scene, doesn't exist
+		#var message := "Map validation error: the room "+room.name+ " has "+str(room.passages.size()-passages_found)+" passage(s) more than it's corresponding scene"
+		#printerr(message)
+		#still_valid = false
 	still_valid = still_valid and _validate_room_passages(room)
 	return still_valid
 	
@@ -371,5 +371,6 @@ static func _validate_room_passages(room:Room):
 		if room.passages[room_passage_name].size() != 0:
 			continue
 		still_valid = false
+		printerr("The "+ room.name+ " has no connection at passage: "+room_passage_name)
 		break
 	return still_valid
